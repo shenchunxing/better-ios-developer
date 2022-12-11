@@ -41,6 +41,8 @@
  21.  [IB中User Defined Runtime Attributes如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#ib中user-defined-runtime-attributes如何使用) 
  22.  [如何调试BAD_ACCESS错误](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#如何调试bad_access错误) 
  23.  [lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#lldbgdb常用的调试命令) 
+ 
+  [一个 NSObject对象占用多少内存空间？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个NSObject对象占用多少内存空间)
 
 ### objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
@@ -1179,3 +1181,54 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 
  1. [ ***The LLDB Debugger*** ](http://lldb.llvm.org/lldb-gdb.html)；
  2. 苹果官方文档：[ ***iOS Debugging Magic*** ](https://developer.apple.com/library/ios/technotes/tn2239/_index.html)。
+
+
+### 一个 NSObject对象占用多少内存空间？
+
+结论：受限于内存分配的机制，一个 NSObject对象都会分配 16Bit 的内存空间。但是实际上在64位下，只使用了 8bit，在32位下，只使用了 4bit。
+首先NSObject对象的本质是一个NSObject_IMPL结构体。我们通过以下命令将 Objecttive-C 转化为 C\C++
+
+// 如果需要连接其他框架，可以使用 -framework 参数，例如 -framework UIKit
+xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m -o main.cpp
+通过将main.m转化为main.cpp 文件可以看出它的结构包含一个isa指针：
+
+struct NSObject_IMPL {
+    Class isa;
+};
+如果当前是继承自NSObject的Person类，结构如下：
+
+struct Person_IMPL {
+    Class isa;
+    // 自己的成员变量
+    int _age;
+    int _height;
+};
+or（参考上面 NSObject_IMPL 的结构）
+
+struct Person_IMPL {
+    struct NSObject_IMPL NSObject_IVARS;
+    // 自己的成员变量
+    int _age;
+    int _height;
+};
+下面通过一个例子来验证一下以上的结论
+
+初始化一个NSObject对象
+
+NSObject *object = [[NSObject alloc] init];
+导入运行时头文件 #import <objc/runtime.h>，利用 class_getInstanceSize 方法，传入实例的类，即可获取当前实例实际占用内存的大小
+
+NSLog(@"object 实际占用内存大小为 %zd",class_getInstanceSize([object class]));
+// 打印结果为 8
+之后我们导入 #import <malloc/malloc.h>
+
+NSLog(@"object 指针指向内存的大小为 %zd",malloc_size((__bridge const void *)object));
+// 打印结果为 16
+Class_getInstanceSize底层实现：对象在分配内存空间时，会进行内存对齐，所以在 iOS 中，分配内存空间都是 16字节 的倍数。如果存在继承关系，则需要父类的大小
+
+size_t class_getInstanceSize(Class cls)
+{
+    if (!cls) return 0;
+    return cls->alignedInstanceSize();
+}
+可以通过以下网址 ：openSource.apple.com/tarballs 来查看源代码。
