@@ -19,6 +19,11 @@
     }
     @end
  ```
+  22.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#22-runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）) 
+  23.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#23-使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？) 
+
+  24.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#24-objc中的类方法和实例方法有什么本质区别和联系？) 
+
 
 
 ### 16. objc中向一个nil对象发送消息将会发生什么？
