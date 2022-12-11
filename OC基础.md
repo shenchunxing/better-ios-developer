@@ -1,3 +1,6 @@
+ #索引
+ 
+ 
  16.  [objc中向一个nil对象发送消息将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#16-objc中向一个nil对象发送消息将会发生什么) 
  17.  [objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#17-objc中向一个对象发送消息obj-foo和objc_msgsend函数之间有什么关系) 
  18.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#18-什么时候会报unrecognized-selector的异常) 
@@ -19,12 +22,10 @@
     }
     @end
  ```
-  22.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#22-runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）) 
-  23.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#23-使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？) 
-
-  24.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#24-objc中的类方法和实例方法有什么本质区别和联系？) 
-
-
+ 
+ 22.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#22-runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）) 
+ 23.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#23-使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？) 
+ 24.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#24-objc中的类方法和实例方法有什么本质区别和联系？) 
 
 ### 16. objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
@@ -433,7 +434,7 @@ objc Runtime开源代码对- (Class)class方法的实现:
  
  参考： [Apple Documentation-Objective-C Runtime-NSObject-methodForSelector:]( https://developer.apple.com/documentation/objectivec/nsobject/1418863-methodforselector?language=objc "Apple Documentation-Objective-C Runtime-NSObject-methodForSelector:") 
  
-### 23. 使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？
+### 23. 使用runtimeAssociate方法关联的对象,需要在主对象dealloc的时候释放么?
 
  - 在ARC下不需要。
  - <p><del> 在MRC中,对于使用retain或copy策略的需要 。</del></p>在MRC下也不需要
