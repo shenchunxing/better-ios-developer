@@ -1,12 +1,10 @@
- # 索引
- 
- 
- 16.  [objc中向一个nil对象发送消息将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#16-objc中向一个nil对象发送消息将会发生什么) 
- 17.  [objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#17-objc中向一个对象发送消息obj-foo和objc_msgsend函数之间有什么关系) 
- 18.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#18-什么时候会报unrecognized-selector的异常) 
- 19.  [一个objc对象如何进行内存布局？（考虑有父类的情况）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#19-一个objc对象如何进行内存布局考虑有父类的情况) 
- 20. [一个objc对象的isa的指针指向什么？有什么作用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#20-一个objc对象的isa的指针指向什么有什么作用)
- 21.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#21-下面的代码输出什么) 
+
+ 1.  [objc中向一个nil对象发送消息将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#16-objc中向一个nil对象发送消息将会发生什么) 
+ 2.  [objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#17-objc中向一个对象发送消息obj-foo和objc_msgsend函数之间有什么关系) 
+ 3.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#18-什么时候会报unrecognized-selector的异常) 
+ 4.  [一个objc对象如何进行内存布局？（考虑有父类的情况）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#19-一个objc对象如何进行内存布局考虑有父类的情况) 
+ 5. [一个objc对象的isa的指针指向什么？有什么作用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#20-一个objc对象的isa的指针指向什么有什么作用)
+ 6.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#21-下面的代码输出什么) 
 
 
  ```Objective-C
@@ -23,27 +21,27 @@
     @end
  ```
  
- 22.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#22-runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）) 
- 23.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#23-使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？) 
- 24.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#24-objc中的类方法和实例方法有什么本质区别和联系？) 
+ 7.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#22-runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）) 
+ 8.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#23-使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？) 
+ 9.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#24-objc中的类方法和实例方法有什么本质区别和联系？) 
  
-  1. [ 25. `_objc_msgForward` 函数是做什么的，直接调用它将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#25-_objc_msgforward函数是做什么的直接调用它将会发生什么)
- 2. [26. runtime如何实现weak变量的自动置nil？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#26-runtime如何实现weak变量的自动置nil)
- 3.  [27. 能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#27-能否向编译后得到的类中增加实例变量能否向运行时创建的类中添加实例变量为什么) 
+ 10. [`_objc_msgForward` 函数是做什么的，直接调用它将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#25-_objc_msgforward函数是做什么的直接调用它将会发生什么)
+ 11. [runtime如何实现weak变量的自动置nil？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#26-runtime如何实现weak变量的自动置nil)
+ 12.  [能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#27-能否向编译后得到的类中增加实例变量能否向运行时创建的类中添加实例变量为什么) 
  
-  1.  [45. addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#45-addobserverforkeypathoptionscontext各个参数的作用分别是什么observer中需要实现哪个方法才能获得kvo回调) 
- 2.  [46. 如何手动触发一个value的KVO](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#46-如何手动触发一个value的kvo) 
- 3.  [47. 若一个类有实例变量 NSString *_foo ，调用setValue:forKey:时，可以以foo还是 _foo 作为key？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#47-若一个类有实例变量-nsstring-_foo-调用setvalueforkey时可以以foo还是-_foo-作为key) 
- 4.  [48. KVC的keyPath中的集合运算符如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#48-kvc的keypath中的集合运算符如何使用) 
- 5.  [49. KVC和KVO的keyPath一定是属性么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#49-kvc和kvo的keypath一定是属性么) 
- 6.  [50. 如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#50-如何关闭默认的kvo的默认实现并进入自定义的kvo实现) 
- 7.  [51. apple用什么方式实现对一个对象的KVO？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#51-apple用什么方式实现对一个对象的kvo) 
- 8.  [52. IBOutlet连出来的视图属性为什么可以被设置成weak?](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#52-iboutlet连出来的视图属性为什么可以被设置成weak) 
- 9.  [53. IB中User Defined Runtime Attributes如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#53-ib中user-defined-runtime-attributes如何使用) 
- 0.  [54. 如何调试BAD_ACCESS错误](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#54-如何调试bad_access错误) 
- 1.  [55. lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#55-lldbgdb常用的调试命令) 
+ 13.  [addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#45-addobserverforkeypathoptionscontext各个参数的作用分别是什么observer中需要实现哪个方法才能获得kvo回调) 
+ 14.  [如何手动触发一个value的KVO](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#46-如何手动触发一个value的kvo) 
+ 15.  [若一个类有实例变量 NSString *_foo ，调用setValue:forKey:时，可以以foo还是 _foo 作为key？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#47-若一个类有实例变量-nsstring-_foo-调用setvalueforkey时可以以foo还是-_foo-作为key) 
+ 16.  [KVC的keyPath中的集合运算符如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#48-kvc的keypath中的集合运算符如何使用) 
+ 17.  [KVC和KVO的keyPath一定是属性么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#49-kvc和kvo的keypath一定是属性么) 
+ 18.  [如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#50-如何关闭默认的kvo的默认实现并进入自定义的kvo实现) 
+ 19.  [apple用什么方式实现对一个对象的KVO？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#51-apple用什么方式实现对一个对象的kvo) 
+ 20.  [IBOutlet连出来的视图属性为什么可以被设置成weak?](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#52-iboutlet连出来的视图属性为什么可以被设置成weak) 
+ 21.  [IB中User Defined Runtime Attributes如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#53-ib中user-defined-runtime-attributes如何使用) 
+ 22.  [如何调试BAD_ACCESS错误](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#54-如何调试bad_access错误) 
+ 23.  [lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#55-lldbgdb常用的调试命令) 
 
-### 16. objc中向一个nil对象发送消息将会发生什么？
+### objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
 
 1、 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如：  
@@ -96,7 +94,7 @@ struct objc_class {
 objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。
 那么，回到本题，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。
 
-### 17. objc中向一个对象发送消息[obj foo]和`objc_msgSend()`函数之间有什么关系？
+### objc中向一个对象发送消息[obj foo]和`objc_msgSend()`函数之间有什么关系？
 具体原因同上题：该方法编译之后就是`objc_msgSend()`函数调用.
 
 我们用 clang 分析下，clang 提供一个命令，可以将Objective-C的源码改写成C++语言，借此可以研究下[obj foo]和`objc_msgSend()`函数之间有什么关系。
@@ -143,7 +141,7 @@ clang -rewrite-objc main.m
 
 >  [obj foo];在objc编译时，会被转意为：`objc_msgSend(obj, @selector(foo));`。
 
-### 18. 什么时候会报unrecognized selector的异常？
+### 什么时候会报unrecognized selector的异常？
 
 简单来说：
 
@@ -177,7 +175,7 @@ objc在向一个对象发送消息时，runtime库会根据对象的isa指针找
 
 为了能更清晰地理解这些方法的作用，git仓库里也给出了一个Demo，名称叫“ `_objc_msgForward_demo` ”,可运行起来看看。
 
-### 19. 一个objc对象如何进行内存布局？（考虑有父类的情况）
+### 一个objc对象如何进行内存布局？（考虑有父类的情况）
 
  - 所有父类的成员变量和自己的成员变量都会存放在该对象所对应的存储空间中.
  - 每一个对象内部都有一个isa指针,指向他的类对象,类对象中存放着本对象的
@@ -217,14 +215,14 @@ objc在向一个对象发送消息时，runtime库会根据对象的isa指针找
 如图:
 ![https://github.com/ChenYilong](http://i.imgur.com/w6tzFxz.png)
 
-### 20. 一个objc对象的isa的指针指向什么？有什么作用？
+### 一个objc对象的isa的指针指向什么？有什么作用？
 `isa` 顾名思义 `is a` 表示对象所属的类。
 
 `isa` 指向他的类对象，从而可以找到对象上的方法。
 
 同一个类的不同对象，他们的 isa 指针是一样的。
 
-### 21. 下面的代码输出什么？
+### 下面的代码输出什么？
 
 
 
@@ -437,7 +435,7 @@ objc Runtime开源代码对- (Class)class方法的实现:
 参考链接：[微博@Chun_iOS](http://weibo.com/junbbcom)的博文[刨根问底Objective－C Runtime（1）－ Self & Super](http://chun.tips/blog/2014/11/05/bao-gen-wen-di-objective%5Bnil%5Dc-runtime(1)%5Bnil%5D-self-and-super/)
 
 
-### 22. runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）
+### runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）
 
 每一个类对象中都一个方法列表，方法列表中记录着方法的名称、方法实现、以及参数类型，其实selector 本质就是方法名称，通过这个方法名称就可以在方法列表中找到对应的方法实现。
 
@@ -450,7 +448,7 @@ objc Runtime开源代码对- (Class)class方法的实现:
  
  参考： [Apple Documentation-Objective-C Runtime-NSObject-methodForSelector:]( https://developer.apple.com/documentation/objectivec/nsobject/1418863-methodforselector?language=objc "Apple Documentation-Objective-C Runtime-NSObject-methodForSelector:") 
  
-### 23. 使用runtimeAssociate方法关联的对象,需要在主对象dealloc的时候释放么?
+### 使用runtimeAssociate方法关联的对象,需要在主对象dealloc的时候释放么?
 
  - 在ARC下不需要。
  - <p><del> 在MRC中,对于使用retain或copy策略的需要 。</del></p>在MRC下也不需要
@@ -531,7 +529,7 @@ objc_setAssociatedObject (
 
 
 
-### 24. objc中的类方法和实例方法有什么本质区别和联系？
+### objc中的类方法和实例方法有什么本质区别和联系？
 
 类方法：
 
@@ -551,7 +549,7 @@ objc_setAssociatedObject (
  2. 实例方法中直接调用实例方法
  2. 实例方法中也可以调用类方法(通过类名)
 
-### 25. `_objc_msgForward`函数是做什么的，直接调用它将会发生什么？
+### `_objc_msgForward`函数是做什么的，直接调用它将会发生什么？
 
 > `_objc_msgForward`是 IMP 类型，用于消息转发的：当向一个对象发送一条消息，但它并没有实现的时候，`_objc_msgForward`会尝试做消息转发。
 
@@ -821,7 +819,7 @@ typedef void (*voidIMP)(id, SEL, ...)
 
 同时 [ ***RAC(ReactiveCocoa)*** ](https://github.com/ReactiveCocoa/ReactiveCocoa) 源码中也用到了该方法。
 
-### 26. runtime如何实现weak变量的自动置nil？
+### runtime如何实现weak变量的自动置nil？
 
 
 > runtime 对注册的类， 会进行布局，对于 weak 对象会放入一个 hash 表中。 用 weak 指向的对象内存地址作为 key，当此对象的引用计数为0的时候会 dealloc，假如 weak 指向的对象内存地址是a，那么就会以a为键， 在这个 weak 表中搜索，找到所有以a为键的 weak 对象，从而设置为 nil。
@@ -911,7 +909,7 @@ objc_storeWeak(&obj1, 0);
 
 
 
-### 27. 能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？ 
+### 能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？ 
 
  - 不能向编译后得到的类中增加实例变量；
  - 能向运行时创建的类中添加实例变量；
@@ -922,7 +920,7 @@ objc_storeWeak(&obj1, 0);
 
  - 运行时创建的类是可以添加实例变量，调用 `class_addIvar` 函数。但是得在调用 `objc_allocateClassPair` 之后，`objc_registerClassPair` 之前，原因同上。
 
-### 45. addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？
+### addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？
 
 ```Objective-C
 // 添加键值观察
@@ -949,7 +947,7 @@ observer中需要实现一下方法：
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 ```
 
-### 46. 如何手动触发一个value的KVO
+### 如何手动触发一个value的KVO
 
 所谓的“手动触发”是区别于“自动触发”：
 
@@ -1014,19 +1012,19 @@ observer中需要实现一下方法：
 
 参考链接： [Manual Change Notification---Apple 官方文档](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOCompliance.html#//apple_ref/doc/uid/20002178-SW3) 
 
-### 47. 若一个类有实例变量 `NSString *_foo` ，调用setValue:forKey:时，可以以foo还是 `_foo` 作为key？
+### 若一个类有实例变量 `NSString *_foo` ，调用setValue:forKey:时，可以以foo还是 `_foo` 作为key？
 都可以。
-### 48. KVC的keyPath中的集合运算符如何使用？
+### KVC的keyPath中的集合运算符如何使用？
 
  1. 必须用在集合对象上或普通对象的集合属性上
  2. 简单集合运算符有@avg， @count ， @max ， @min ，@sum，
  3. 格式 @"@sum.age"或 @"集合属性.@max.age"
 
-### 49. KVC和KVO的keyPath一定是属性么？
+### KVC和KVO的keyPath一定是属性么？
 
 KVC 支持实例变量，KVO 只能手动支持[手动设定实例变量的KVO实现监听](https://yq.aliyun.com/articles/30483)
 
-### 50. 如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？
+### 如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？
 
 
 请参考：
@@ -1034,7 +1032,7 @@ KVC 支持实例变量，KVO 只能手动支持[手动设定实例变量的KVO�
   1. [《如何自己动手实现 KVO》](http://tech.glowing.com/cn/implement-kvo/)
   2. [**KVO for manually implemented properties**]( http://stackoverflow.com/a/10042641/3395008 ) 
 
-### 51. apple用什么方式实现对一个对象的KVO？ 
+### apple用什么方式实现对一个对象的KVO？ 
 
 
 
@@ -1132,7 +1130,7 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 
 而“回调的调用时机”就是在你调用 `didChangeValueForKey:` 方法时。
 
-### 52. IBOutlet连出来的视图属性为什么可以被设置成weak?
+### IBOutlet连出来的视图属性为什么可以被设置成weak?
 
 参考链接：[ ***Should IBOutlets be strong or weak under ARC?*** ](http://stackoverflow.com/questions/7678469/should-iboutlets-be-strong-or-weak-under-arc)
 
@@ -1148,14 +1146,14 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 - [《第52题 IBOutlet连出来的视图属性为什么可以被设置成weak? #51》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/51 ) 
 - [《关于weak的一个问题 #39》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/39 ) 
 
-### 53. IB中User Defined Runtime Attributes如何使用？ 
+### IB中User Defined Runtime Attributes如何使用？ 
 
 它能够通过KVC的方式配置一些你在interface builder 中不能配置的属性。当你希望在IB中作尽可能多得事情，这个特性能够帮助你编写更加轻量级的viewcontroller
 
 <p align="center"><a href="https://mp.weixin.qq.com/s/A4e5h3xgIEh6PInf1Rjqsw"><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfecd2fpfuj307907q3yt.jpg"></a></p>
 
 
-### 54. 如何调试BAD_ACCESS错误
+### 如何调试BAD_ACCESS错误
 
 
  1. 重写object的respondsToSelector方法，现实出现EXEC_BAD_ACCESS前访问的最后一个object
@@ -1169,7 +1167,7 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 <p align="center"><a href="https://mp.weixin.qq.com/s/A4e5h3xgIEh6PInf1Rjqsw"><img src="http://ww4.sinaimg.cn/large/006y8mN6gy1g71n53zsvpj30qc09sdh7.jpg"></a></p>
 
 
-### 55. lldb（gdb）常用的调试命令？
+### lldb（gdb）常用的调试命令？
 
  - breakpoint 设置断点定位到某一个函数
  - n 断点指针下一步
