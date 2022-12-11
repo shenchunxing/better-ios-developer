@@ -1,6 +1,9 @@
  [runloop和线程有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#runloop和线程有什么关系) 
+ 
  [runloop的mode作用是什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#runloop的mode作用是什么) 
+ 
  [以+ scheduledTimerWithTimeInterval...的方式触发的timer，在滑动页面上的列表时，timer会暂定回调，为什么？如何解决？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#以-scheduledtimerwithtimeinterval的方式触发的timer在滑动页面上的列表时timer会暂定回调为什么如何解决) 
+ 
  [猜想runloop内部是如何实现的？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#猜想runloop内部是如何实现的) 
  
  ### runloop和线程有什么关系？
