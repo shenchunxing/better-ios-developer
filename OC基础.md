@@ -1191,26 +1191,29 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 // 如果需要连接其他框架，可以使用 -framework 参数，例如 -framework UIKit
 xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m -o main.cpp
 通过将main.m转化为main.cpp 文件可以看出它的结构包含一个isa指针：
-
+```Objective-C
 struct NSObject_IMPL {
     Class isa;
 };
+```
 如果当前是继承自NSObject的Person类，结构如下：
-
+```Objective-C
 struct Person_IMPL {
     Class isa;
     // 自己的成员变量
     int _age;
     int _height;
 };
+```
 or（参考上面 NSObject_IMPL 的结构）
-
+```Objective-C
 struct Person_IMPL {
     struct NSObject_IMPL NSObject_IVARS;
     // 自己的成员变量
     int _age;
     int _height;
 };
+```
 下面通过一个例子来验证一下以上的结论
 
 初始化一个NSObject对象
@@ -1225,10 +1228,11 @@ NSLog(@"object 实际占用内存大小为 %zd",class_getInstanceSize([object cl
 NSLog(@"object 指针指向内存的大小为 %zd",malloc_size((__bridge const void *)object));
 // 打印结果为 16
 Class_getInstanceSize底层实现：对象在分配内存空间时，会进行内存对齐，所以在 iOS 中，分配内存空间都是 16字节 的倍数。如果存在继承关系，则需要父类的大小
-
+```Objective-C
 size_t class_getInstanceSize(Class cls)
 {
     if (!cls) return 0;
     return cls->alignedInstanceSize();
 }
+```
 可以通过以下网址 ：openSource.apple.com/tarballs 来查看源代码。
