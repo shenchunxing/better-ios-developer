@@ -4,7 +4,7 @@
  3.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#什么时候会报unrecognized-selector的异常) 
  4.  [一个objc对象如何进行内存布局？（考虑有父类的情况）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个objc对象如何进行内存布局考虑有父类的情况) 
  5. [一个objc对象的isa的指针指向什么？有什么作用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个objc对象的isa的指针指向什么有什么作用)
- 6.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#21-下面的代码输出什么) 
+ 6.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#下面的代码输出什么) 
 
 
  ```Objective-C
@@ -22,9 +22,9 @@
  ```
 
  
- 7.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#runtime如何通过selector找到对应的IMP地址?) 
- 8.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#使用runtime的Associate方法关联的对象,需要在主对象dealloc的时候释放么?) 
- 9.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#objc中的类方法和实例方法有什么本质区别和联系?) 
+ 7.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#runtime如何通过selector找到对应的IMP地址) 
+ 8.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#使用runtime的Associate方法关联的对象,需要在主对象dealloc的时候释放么) 
+ 9.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#objc中的类方法和实例方法有什么本质区别和联系) 
  
  10. [`_objc_msgForward` 函数是做什么的，直接调用它将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#_objc_msgforward函数是做什么的直接调用它将会发生什么)
  11. [runtime如何实现weak变量的自动置nil？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#runtime如何实现weak变量的自动置nil)

@@ -1,9 +1,9 @@
- 13.  [37. 使用block时什么情况会发生引用循环，如何解决？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#37-使用block时什么情况会发生引用循环如何解决)
- 14.  [38. 在block内如何修改block外部变量？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#38-在block内如何修改block外部变量) 
-  15.  [39. 使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#39-使用系统的某些block-api如uiview的block版本写动画时是否也考虑引用循环问题) 
+ [使用block时什么情况会发生引用循环，如何解决？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#使用block时什么情况会发生引用循环如何解决)
+ [在block内如何修改block外部变量？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#在block内如何修改block外部变量) 
+ [使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#使用系统的某些block-api如uiview的block版本写动画时是否也考虑引用循环问题) 
 
 
-### 37. 使用block时什么情况会发生引用循环，如何解决？
+### 使用block时什么情况会发生引用循环，如何解决？
 一个对象中强引用了 block，在 block 中又强引用了该对象，就会发生循环引用。
 
 ARC 下的解决方法是：
@@ -92,7 +92,7 @@ self.block();
 在 [《iOS面试题集锦（附答案）》]( https://github.com/ChenYilong/iOSInterviewQuestions ) 中有这样一道题目： 
 在block内如何修改block外部变量？（38题）答案如下：
 
-### 38. 在block内如何修改block外部变量？
+### 在block内如何修改block外部变量？
 
 
 注：本题代码请在仓库中查看以 Demo38 开头的工程（公众号请点击原文查看 GitHub 仓库）
@@ -570,7 +570,7 @@ int main(int argc, char * argv[]) {
 ![](https://tva1.sinaimg.cn/large/007S8ZIlly1gfl28fzqzhj31k40m2amd.jpg)
 
 
-### 39. 使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？ 
+### 使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？ 
 
 注：39题对应Demo 请在仓库中查看以 Demo39 开头的工程。 
 
