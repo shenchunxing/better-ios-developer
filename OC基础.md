@@ -1183,7 +1183,7 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
  2. 苹果官方文档：[ ***iOS Debugging Magic*** ](https://developer.apple.com/library/ios/technotes/tn2239/_index.html)。
 
 
-### 一个 NSObject对象占用多少内存空间？
+### 一个NSObject对象占用多少内存空间？
 
 结论：受限于内存分配的机制，一个 NSObject对象都会分配 16Bit 的内存空间。但是实际上在64位下，只使用了 8bit，在32位下，只使用了 4bit。
 首先NSObject对象的本质是一个NSObject_IMPL结构体。我们通过以下命令将 Objecttive-C 转化为 C\C++
