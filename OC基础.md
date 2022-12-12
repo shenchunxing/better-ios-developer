@@ -43,6 +43,7 @@
  23.  [lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#lldbgdb常用的调试命令) 
  
   [一个 NSObject对象占用多少内存空间？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个NSObject对象占用多少内存空间)
+  [类对象和元类对象？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#类对象和元类对象)
 
 ### objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
@@ -1192,47 +1193,163 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m -o main.cpp
 通过将main.m转化为main.cpp 文件可以看出它的结构包含一个isa指针：
 ```Objective-C
+#import <Foundation/Foundation.h>
+#import <objc/runtime.h>
+#import <malloc/malloc.h>
+
 struct NSObject_IMPL {
-    Class isa;
+    Class isa;//8
 };
-```
-如果当前是继承自NSObject的Person类，结构如下：
-```Objective-C
+
 struct Person_IMPL {
-    Class isa;
-    // 自己的成员变量
-    int _age;
-    int _height;
-};
-```
-or（参考上面 NSObject_IMPL 的结构）
-```Objective-C
-struct Person_IMPL {
-    struct NSObject_IMPL NSObject_IVARS;
-    // 自己的成员变量
-    int _age;
-    int _height;
-};
-```
-下面通过一个例子来验证一下以上的结论
+    struct NSObject_IMPL NSObject_IVARS; // 8
+    int _age; // 4
+}; // 16 内存对齐：结构体的大小必须是最大成员大小的倍数
 
-初始化一个NSObject对象
+struct Student_IMPL {
+    struct Person_IMPL Person_IVARS; // 16
+    int _no; // 4
+}; // 16
 
-NSObject *object = [[NSObject alloc] init];
-导入运行时头文件 #import <objc/runtime.h>，利用 class_getInstanceSize 方法，传入实例的类，即可获取当前实例实际占用内存的大小
-
-NSLog(@"object 实际占用内存大小为 %zd",class_getInstanceSize([object class]));
-// 打印结果为 8
-之后我们导入 #import <malloc/malloc.h>
-
-NSLog(@"object 指针指向内存的大小为 %zd",malloc_size((__bridge const void *)object));
-// 打印结果为 16
-Class_getInstanceSize底层实现：对象在分配内存空间时，会进行内存对齐，所以在 iOS 中，分配内存空间都是 16字节 的倍数。如果存在继承关系，则需要父类的大小
-```Objective-C
-size_t class_getInstanceSize(Class cls)
+// Person
+@interface Person : NSObject
 {
-    if (!cls) return 0;
-    return cls->alignedInstanceSize();
+    @public
+    int _age; //4
+}
+@property (nonatomic, assign) int height;
+@end
+
+@implementation Person
+
+@end
+
+@interface Student : Person
+{
+    int _no; //4
+}
+@end
+
+@implementation Student
+
+@end
+
+@interface GoodStudent : Student
+{
+    int _library; //4
+    NSString *_value;//8
+    NSString *_name; //8
+}
+@end
+
+@implementation GoodStudent
+
+@end
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        Student *stu = [[Student alloc] init];
+        NSLog(@"stu - %zd", class_getInstanceSize([Student class])); //24：class_getInstanceSize 内存对齐：最大成员的倍数
+        NSLog(@"stu - %zd", malloc_size((__bridge const void *)stu));//32：malloc_size 内存对齐：16的倍数
+        
+        GoodStudent *good = [[GoodStudent alloc] init];
+        NSLog(@"good - %zd", class_getInstanceSize([GoodStudent class]));//40
+        NSLog(@"good - %zd", malloc_size((__bridge const void *)good));//48
+//
+        Person *person = [[Person alloc] init];
+        [person setHeight:10];
+        [person height];
+        person->_age = 20;
+        
+        Person *person1 = [[Person alloc] init];
+        person1->_age = 10;
+        
+        
+        Person *person2 = [[Person alloc] init];
+        person2->_age = 30;
+        
+        NSLog(@"person - %zd", class_getInstanceSize([Person class])); //16 isa = 8 ， age = 4, height = 4,没有height也会是16，因为必须是8的倍数
+        NSLog(@"person - %zd", malloc_size((__bridge const void *)person));//16
+    }
+    return 0;
 }
 ```
-可以通过以下网址 ：openSource.apple.com/tarballs 来查看源代码。
+
+### 类对象和元类对象
+```Objective-C
+@interface MJPerson : NSObject
+{
+    int _age;
+    int _height;
+    int _no;
+}
+@end
+
+@implementation MJPerson
+- (void)test {
+    
+}
+@end
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        NSObject *object1 = [[NSObject alloc] init];
+        NSObject *object2 = [[NSObject alloc] init];
+        
+        Class objectClass1 = [object1 class];
+        Class objectClass2 = [object2 class];
+        Class objectClass3 = object_getClass(object1);
+        Class objectClass4 = object_getClass(object2);
+        Class objectClass5 = [NSObject class];
+        
+        //元类
+        Class objectMetaClass = object_getClass(objectClass5);
+        
+        NSLog(@"instance - %p %p\n",
+              object1,
+              object2);
+        
+        //相等，都是NSObject类对象
+        NSLog(@"class - %p\n %p\n %p\n %p\n %p\n %d\n",
+              objectClass1,
+              objectClass2,
+              objectClass3,
+              objectClass4,
+              objectClass5,
+              class_isMetaClass(objectClass3)); //false
+        
+        //传入类对象，得到的肯定是元类
+        NSLog(@"objectMetaClass - %hhd",class_isMetaClass(object_getClass([MJPerson class]))); //1
+        NSLog(@"objectMetaClass - %hhd",class_isMetaClass(object_getClass([NSObject class]))); //1
+        
+        NSLog(@"%p",object_getClass(objectMetaClass)); //NSObject的元类的元类是其本身
+        NSLog(@"%p",class_getSuperclass(objectMetaClass)); //NSObject的元类的父类是NSObject类对象
+    }
+    return 0;
+}
+
+//区别下
+ 1.Class objc_getClass(const char *aClassName)
+ 1> 传入字符串类名
+ 2> 返回对应的类对象
+ 
+ 2.Class object_getClass(id obj)
+ 1> 传入的obj可能是instance对象、class对象、meta-class对象
+ 2> 返回值
+ a) 如果是instance对象，返回class对象
+ b) 如果是class对象，返回meta-class对象
+ c) 如果是meta-class对象，返回NSObject（基类）的meta-class对象
+ 
+ 3.- (Class)class、+ (Class)class
+ 1> 返回的就是类对象
+ 
+ - (Class) {
+     return self->isa;
+ }
+ 
+ + (Class) {
+     return self;
+ }
+
+
+```
