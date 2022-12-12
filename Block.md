@@ -3,6 +3,12 @@
  [在block内如何修改block外部变量？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#在block内如何修改block外部变量) 
  
  [使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#使用系统的某些block-api如uiview的block版本写动画时是否也考虑引用循环问题) 
+ 
+ [Block的修饰符](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#Block的修饰符) 
+ 
+ [Block的类型](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#Block的类型) 
+ 
+ [block的内存管理](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block.md#block的内存管理) 
 
 
 ### 使用block时什么情况会发生引用循环，如何解决？
@@ -794,3 +800,362 @@ https://tva1.sinaimg.cn/large/007S8ZIlgy1gfct4s2979j30y00lq0y0.jpg
 - 也可以使用可以使用 Xcode 的 Debug 工具--内存图查看，使用方法
 - ![https://github.com/ChenYilong](https://i.loli.net/2020/06/02/pDLde8Hgkt4X69u.gif)
 - 使用 Facebook 开源的一个检测工具  [***FBRetainCycleDetector***](https://github.com/facebook/FBRetainCycleDetector) 。
+
+
+### Block的修饰符
+```Objective-C
+void (^block)(void);//定义一个block
+
+@interface TestObject : NSObject
+@end
+
+@implementation TestObject
+- (void)dealloc {
+    NSLog(@"对象已经被释放");
+}
+@end
+```
+
+强引用
+```Objective-C
+void test__strong() {
+    {
+        TestObject *obj = [[TestObject alloc] init];
+        NSLog(@"before block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //1
+        block = ^(){ //全局的block变量，被栈上的代码块赋值，会执行copy操作，从栈指向了堆
+            NSLog(@"obj对象地址:%@",obj);
+        };
+        NSLog(@"after block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //3   由于代码块创建的时候在栈上，内部对obj有强引用,而在赋值给全局变量block的时候,被拷贝到了堆上（对obj又引用了一次）,所以加了2次引用计数.
+        
+        //当前block
+        NSLog(@"堆 - %@",[block class]);//从栈拷贝到了堆
+        
+        //obj无法被释放，因为block堆obj还是有强引用
+        
+    }
+    block();
+}
+```
+
+弱引用
+```Objective-C
+void test__weak() {
+    {
+        TestObject *obj = [[TestObject alloc] init];
+        NSLog(@"before block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //1
+        __weak NSObject *weak_obj = obj;
+        block = ^(){ //block对weak_obj是有强引用， 但是weak_obj是一个弱指针不会增加引用计数
+            NSLog(@"obj对象地址:%@",weak_obj);
+        };
+        NSLog(@"after block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //1 ,weak不新增引用计数
+        NSLog(@"堆 - %@",[block class]);
+        
+    }
+    block();
+}
+```
+
+block内部使用强引用，防止block修饰的弱引用对象被提前释放
+```Objective-C
+void test_use_strong() {
+    TestObject *obj = [[TestObject alloc] init];
+    __weak TestObject *weakObj = obj;
+    NSLog(@"before block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //1
+    block = ^(){
+        __strong TestObject *strongObj = weakObj; //确保weakObj不被释放掉
+        NSLog(@"obj对象地址:%@",strongObj);
+        dispatch_async(dispatch_queue_create(DISPATCH_QUEUE_PRIORITY_DEFAULT, NULL), ^{
+            for (int i = 0; i < 10000; i++) {
+                // 模拟一个耗时的任务
+            }
+            NSLog(@"耗时的任务 结束 obj对象地址:%@",strongObj); //这里的strongObj还是存在的。只有离开作用于，strongObj才会被释放
+        });
+    };
+    NSLog(@"after block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj));//1
+    block();
+}
+```
+
+CXPerson被block强引用着
+```Objective-C
+@interface CXPerson : NSObject
+@property (nonatomic, copy) NSString *name;
+@end
+
+@implementation CXPerson
+- (void)dealloc {
+    NSLog(@"CXPerson dealloc");
+}
+@end
+
+typedef void(^CXBlock) (void);
+
+void block_strong() {
+    CXBlock block;
+    
+    {
+        CXPerson *p = [[CXPerson alloc] init];
+        p.name = @"shenchuxning";
+        block = ^{
+            NSLog(@"name = %@" , p.name); //CXPerson被block强引用着
+        };
+    }
+} //作用域结束CXBlock不会存在，强引用的CXPerson也被释放了
+```
+
+
+### Block的类型
+```Objective-C
+void test()
+{
+    // __NSGlobalBlock__ : __NSGlobalBlock : NSBlock : NSObject
+    void (^block)(void) = ^{
+        NSLog(@"Hello");
+    };
+    
+    NSLog(@"%@", [block class]);//__NSGlobalBlock__
+    NSLog(@"%@", [[block class] superclass]);//NSBlock
+    NSLog(@"%@", [[[block class] superclass] superclass]);//NSObject
+    NSLog(@"%@", [[[[block class] superclass] superclass] superclass]);//null
+}
+```
+
+```Objective-C
+int age = 20;
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        int a = 10;
+        
+        void (^block1)(void) = ^{ //没有访问auto变量，__NSGlobalBlock__，存放在全局区（数据段）
+            NSLog(@"Hello");
+        };
+        
+        int age = 10;
+        //被block2变量强引用着，block在堆上
+        void (^block2)(void) = ^{ //访问了自动变量，__NSMallocBlock__，存放在堆
+            NSLog(@"Hello - %d", age);
+        };
+    
+        //__NSGlobalBlock__ __NSMallocBlock__
+        NSLog(@"%@ %@", [block1 class], [block2 class]);
+        
+        //访问了auto变量，但是没有被强引用，__NSStackBlock__（存放在栈）
+        NSLog(@"%@",[^{
+            NSLog(@"%d", age);
+        } class]);
+        
+        //没有被强引用，还是__NSStackBlock__
+        __block int height = 10;
+        NSLog(@"%@",[^{
+            height = 20;
+            NSLog(@"%d", height);
+        } class]);
+        
+        NSLog(@"-------------");
+    }
+    return 0;
+}
+```
+
+
+以下代码在MRC环境下
+```Objective-C
+#import <Foundation/Foundation.h>
+#import "MJPerson.h"
+
+void (^block)(void);
+void test2()
+{
+    
+    // NSStackBlock
+    int age = 10;
+    block = [^{ //MRC下block变量不会强引用该block对象,block离开test2作用域就销毁了
+        NSLog(@"block---------%d", age); //不copy会访问混乱
+    } copy];
+    NSLog(@"block类型%@",[block class]); //MRC下,必须copy,会变成mallocblock
+    [block release];
+}
+
+void test()
+{
+    // Global：没有访问auto变量
+    void (^block1)(void) = ^{
+        NSLog(@"block1---------");
+    };
+    
+    // Stack：访问了auto变量
+    int age = 10;
+    void (^block2)(void) = ^{
+        NSLog(@"block2---------%d", age);
+    };
+    NSLog(@"%p", [block2 copy]);//arc会自动copy,mrc需要手动，在堆上
+    
+    NSLog(@"全局:%@ 不copy在栈:%@ copy后在堆:%@", [block1 class],  [block2 class] ,[[block2 copy] class]);
+}
+
+int age = 10;
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        int a = 10;
+        
+        NSLog(@"代码区：%p", __func__);
+        NSLog(@"数据段：age %p", &age);
+        NSLog(@"栈：a %p", &a);
+        NSLog(@"堆：obj = %p", [[NSObject alloc] init]);
+        NSLog(@"数据段：class %p", [MJPerson class]);
+        
+        test2();
+        block();
+        test();
+    }
+    return 0;
+}
+```
+
+以下代码在MRC环境下
+```Objective-C
+#import <Foundation/Foundation.h>
+#import "MJPerson.h"
+
+typedef void (^MJBlock) (void);
+
+struct __Block_byref_age_0 {
+    void *__isa;
+    struct __Block_byref_age_0 *__forwarding;
+    int __flags;
+    int __size;
+    int age;
+};
+
+struct __main_block_desc_0 {
+    size_t reserved;
+    size_t Block_size;
+    void (*copy)(void);
+    void (*dispose)(void);
+};
+
+struct __block_impl {
+    void *isa;
+    int Flags;
+    int Reserved;
+    void *FuncPtr;
+};
+
+struct __main_block_impl_0 {
+    struct __block_impl impl;
+    struct __main_block_desc_0* Desc;
+    struct __Block_byref_age_0 *age;
+};
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        
+        MJPerson *person = [[MJPerson alloc] init];
+        
+        MJBlock block = [^{
+            NSLog(@"%p", person);
+        } copy];
+        
+        NSLog(@"%d",[person retainCount]); //2,copy从栈拷贝到了堆，对person有强引用，如果不copy，引用计数还是1
+        [person release];
+        
+        block();
+        
+        [block release]; //block持有person,block结束person才能释放
+    }
+    return 0;
+}
+```
+
+
+### block的内存管理
+```Objective-C
+#import <Foundation/Foundation.h>
+
+typedef void (^MJBlock) (void);
+
+struct __Block_byref_age_0 {//__block修饰的普通类型生成的结构体
+    void *__isa;
+    struct __Block_byref_age_0 *__forwarding;
+    int __flags;
+    int __size;
+    int age;
+};
+
+struct __Block_byref_bweakObj_1 {//__block修饰的对象类型生成的结构体
+  void *__isa;
+    struct __Block_byref_bweakObj_1 *__forwarding;
+ int __flags;
+ int __size;
+ void (*__Block_byref_id_object_copy)(void*, void*); //对象类型才会生成这两个函数copy和dispose
+ void (*__Block_byref_id_object_dispose)(void*);
+ NSObject *__weak bweakObj; //auto对象类型，受修饰符影响生成强弱引用，注意：这里只有ARC才会retain，MRC是不会retain的
+};
+
+struct __main_block_desc_0 {
+    size_t reserved;
+    size_t Block_size;
+    void (*copy)(void);
+    void (*dispose)(void);
+};
+
+struct __block_impl {
+    void *isa;
+    int Flags;
+    int Reserved;
+    void *FuncPtr;
+};
+
+struct __main_block_impl_0 {
+    struct __block_impl impl;
+    struct __main_block_desc_0* Desc;
+    struct __Block_byref_age_0 *age;
+    NSObject *__weak weakObject;//auto对象类型，受修饰符影响生成强弱引用
+    struct __Block_byref_bweakObj_1 *bweakObj;
+};
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        
+        int no = 20;
+        
+        __block int age = 10; //1.__block修饰的普通变量
+        
+        NSObject *object = [[NSObject alloc] init];
+        __weak NSObject *weakObject = object; //2.auto对象变量
+        
+        __block __weak NSObject *bweakObj = object; //3.__block和__weak同时修饰的auto对象变量
+        
+        //注意：block在栈上时，不会对__block变量age和auto对象产生强引用
+        
+        MJBlock block = ^{
+            //栈上的block被拷贝到堆，首先会生成void (*copy)(struct __main_block_impl_0*, struct __main_block_impl_0*) 和 void (*dispose)(struct __main_block_impl_0*);两个函数
+            
+            //__block普通变量age的内存管理：block被拷贝到堆上，会调用block内部的copy函数，copy内部会调用_Block_object_assign函数，这里的_Block_object_assign函数最后一个参数是8，对__block变量形成强引用（这里必定是强引用，和修饰符无关）,生成__Block_byref_age_0的结构体，里面有age变量 = 10，
+            
+            //对象类型的auto变量weakObject的内存管理：会调用block内部的copy函数，copy内部会调用_Block_object_assign函数，这里的_Block_object_assign函数最后一个参数是3，会根据修饰符生成对应的强或者弱引用，这里是弱引用NSObject *__weak weakObject;
+            
+            //__block对象变量bweakObj的内存管理：block被拷贝到堆上，会调用block内部的copy函数，copy内部会调用_Block_object_assign函数，这里的_Block_object_assign函数最后一个参数是8，对__block变量形成强引用（这里必定是强引用，和修饰符无关）,生成__Block_byref_bweakObj_1的结构体，里面有weak修饰的bweakObj变量，
+            
+            age = 20;
+            
+            NSLog(@"%d", no);//20
+            NSLog(@"%d", age);//20
+            NSLog(@"%p", weakObject);//堆地址
+            NSLog(@"%p", bweakObj);
+        };
+        
+        struct __main_block_impl_0* blockImpl = (__bridge struct __main_block_impl_0*)block;
+        block();
+        
+        
+        //__block普通变量从堆中移除的时候，调用dispose函数，内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放__block变量。这里的_Block_object_dispose函数最后一个参数是8
+        //auto对象变量从堆中移除的时候，调用dispose函数，内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放__block变量。这里的_Block_object_dispose函数最后一个参数是3
+        //__block对象变量从堆中移除的时候，调用dispose函数，内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放__block变量。这里的_Block_object_dispose函数最后一个参数是8
+    }
+    return 0;
+}
+
+```
