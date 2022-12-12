@@ -51,6 +51,9 @@
   [class的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#class的结构)
   
   [通知的原理？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#通知的原理)
+  
+  [Category？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#Category)
+  
 
 ### objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
@@ -1951,3 +1954,12 @@ NSObserverModel:定义了一个观察者模型用于保存观察者，通知消�
   
  }
 ```
+
+
+### Category
+compile source按照编译顺序，后编译的会执行，并且分类的优先级比本类高。分类创建的属性，没有成员变量，无法保存住属性值。通过runtime动态将分类的方法合并到类对象、元类对象的方法列表中。class extension (匿名分类\类扩展)在编译期就加入到方法列表中了。Category是运行时加入的
+
+![图片](/图片/category.png)
+![图片](/图片/category2.png)
+![图片](/图片/load.png)
+![图片](/图片/initialize.png)
