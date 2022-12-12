@@ -1035,6 +1035,10 @@ observer中需要实现一下方法：
 
 KVC 支持实例变量，KVO 只能手动支持[手动设定实例变量的KVO实现监听](https://yq.aliyun.com/articles/30483)
 
+![图片](/图片/kvc1.png)
+![图片](/图片/kvc2.png)
+
+
 ### 如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？
 
 
@@ -1835,8 +1839,13 @@ int main(int argc, const char * argv[]) {
 
 ###  通知的原理
 nsnotification发送在什么线程，默认响应就在什么线程，和注册位置无关。所以说NSNotification是线程安全的。
-通知是同步的。子线程发送消息，就会变成异步.可以使用addObserverForName：object: queue: usingBlock:。NSNotificationQueue是异步发送，也就是延迟发送。在同一个线程发送和响应
+
+通知是同步的。子线程发送消息，就会变成异步.可以使用addObserverForName：object: queue: usingBlock:。
+
+NSNotificationQueue是异步发送，也就是延迟发送。在同一个线程发送和响应
+
 不移除通知，iOS9.0之后，不会crash，原因：通知中心对观察者的引用是weak
+
 多次添加同一个通知，会导致发送一次这个通知的时候，响应多次通知回调。因为在添加的时候不会做去重操作   
 
 NSNotificationQueue和runloop的关系
