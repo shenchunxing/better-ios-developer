@@ -49,6 +49,8 @@
   [isa的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#isa的结构)
   
   [class的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#class的结构)
+  
+  [通知的原理？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#通知的原理)
 
 ### objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
@@ -1139,6 +1141,173 @@ KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa �
 
 而“回调的调用时机”就是在你调用 `didChangeValueForKey:` 方法时。
 
+自定义的KVO实现
+```Objective-C
+MJPerson
+#import "MJPerson.h"
+
+@implementation MJPerson
+
+- (void)setAge:(int)age
+{
+    _age = age;
+    
+    NSLog(@"setAge:");
+}
+
+//- (int)age
+//{
+//    return _age;
+//}
+
+- (void)willChangeValueForKey:(NSString *)key
+{
+    [super willChangeValueForKey:key];
+    
+    NSLog(@"willChangeValueForKey");
+}
+
+- (void)didChangeValueForKey:(NSString *)key
+{
+    NSLog(@"didChangeValueForKey - begin");
+    
+    [super didChangeValueForKey:key];
+    
+    NSLog(@"didChangeValueForKey - end");
+}
+
+@end
+
+继承自MJPerson的子类
+#import "NSKVONotifying_MJPerson.h"
+
+@implementation NSKVONotifying_MJPerson
+
+- (void)setAge:(int)age
+{
+    _NSSetIntValueAndNotify();
+}
+
+// 伪代码
+void _NSSetIntValueAndNotify()
+{
+    [self willChangeValueForKey:@"age"];
+    [super setAge:age];
+    [self didChangeValueForKey:@"age"];
+}
+
+- (void)didChangeValueForKey:(NSString *)key
+{
+    // 通知监听器，某某属性值发生了改变
+    [oberser observeValueForKeyPath:key ofObject:self change:nil context:nil];
+}
+
+@end
+
+
+#import "ViewController.h"
+#import "MJPerson.h"
+#import <objc/runtime.h>
+
+@interface ViewController ()
+@property (strong, nonatomic) MJPerson *person1;
+@property (strong, nonatomic) MJPerson *person2;
+@end
+
+// 反编译工具 - Hopper
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.person1 = [[MJPerson alloc] init];
+    self.person1.age = 1;
+    
+    self.person2 = [[MJPerson alloc] init];
+    self.person2.age = 2;
+    
+    
+    NSLog(@"person1添加KVO监听之前 - %@ %@",
+          object_getClass(self.person1),
+          object_getClass(self.person2));
+    NSLog(@"person1添加KVO监听之前 - %p %p",
+          [self.person1 methodForSelector:@selector(setAge:)],
+          [self.person2 methodForSelector:@selector(setAge:)]);
+    
+    // 给person1对象添加KVO监听
+    NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
+    [self.person1 addObserver:self forKeyPath:@"age" options:options context:@"123"];
+    
+    NSLog(@"person1添加KVO监听之后 - %@ %@",
+          object_getClass(self.person1),//类对象地址变了
+          object_getClass(self.person2));
+    NSLog(@"person1添加KVO监听之后 - %p %p",
+          [self.person1 methodForSelector:@selector(setAge:)],//方法在类对象中，地址也变了
+          [self.person2 methodForSelector:@selector(setAge:)]);
+
+    NSLog(@"类对象 - %@ %@",
+          object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
+          object_getClass(self.person2)); // self.person2.isa //MJPerson
+    
+    NSLog(@"类对象地址 - %p %p",
+          object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
+          object_getClass(self.person2)); // self.person2.isa //MJPerson
+
+    NSLog(@"元类对象 - %@ %@",
+          object_getClass(object_getClass(self.person1)), // self.person1.isa.isa //NSKVONotifying_MJPerson
+          object_getClass(object_getClass(self.person2))); // self.person2.isa.isa //MJPerson
+    
+    NSLog(@"元类对象地址 - %p %p",
+          object_getClass(object_getClass(self.person1)), // self.person1.isa.isa //NSKVONotifying_MJPerson
+          object_getClass(object_getClass(self.person2))); // self.person2.isa.isa //MJPerson
+    
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    // NSKVONotifying_MJPerson是使用Runtime动态创建的一个类，是MJPerson的子类
+    // self.person1.isa == NSKVONotifying_MJPerson
+    [self.person1 setAge:21];
+    
+    // self.person2.isa = MJPerson
+//    [self.person2 setAge:22];
+}
+
+- (void)dealloc {
+    [self.person1 removeObserver:self forKeyPath:@"age"];
+}
+
+// 当监听对象的属性值发生改变时，就会调用
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    NSLog(@"监听到%@的%@属性值改变了 - %@ - %@", object, keyPath, change, context);
+}
+
+@end
+```
+给KVO添加筛选条件
+ 重写automaticallyNotifiesObserversForKey，需要筛选的key返回NO。
+ setter里添加判断后手动触发KVO
+```Objective-C
+ + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
+     if ([key isEqualToString:@"age"]) {
+         return NO;
+     }
+     return [super automaticallyNotifiesObserversForKey:key];
+ }
+ ​
+ - (void)setAge:(NSInteger)age {
+     if (age >= 18) {
+         [self willChangeValueForKey:@"age"];
+         _age = age;
+         [self didChangeValueForKey:@"age"];
+     }else {
+         _age = age;
+     }
+ }
+```
+
 ### IBOutlet连出来的视图属性为什么可以被设置成weak?
 
 参考链接：[ ***Should IBOutlets be strong or weak under ARC?*** ](http://stackoverflow.com/questions/7678469/should-iboutlets-be-strong-or-weak-under-arc)
@@ -1435,6 +1604,10 @@ int main(int argc, const char * argv[]) {
 
 
 ### class的结构
+
+方法调用轨迹：
+![图片](/图片/isa-superclass.png)
+
 ```Objective-C
 #ifndef MJClassInfo_h
 #define MJClassInfo_h
@@ -1585,7 +1758,187 @@ int main(int argc, const char * argv[]) {
     }
     return 0;
 }
+
+
+#import <Foundation/Foundation.h>
+#import <objc/runtime.h>
+#import "Person.h"
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        //类对象
+        NSObject *obj1 = [[NSObject alloc] init];
+        NSObject *obj2 = [[NSObject alloc] init];
+        Class c1 = [obj1 class];
+        Class c2 = [obj2 class];
+        Class c3 = [NSObject class];
+        Class c4 = object_getClass(obj1);
+        Class c5 = object_getClass(obj2);
+        
+        NSLog(@"obj1 = %p",obj1); //0x1012acb10
+        NSLog(@"obj2 = %p",obj2);//0x1012ac880
+        NSLog(@"c1 = %p",c1); //0x1fc49ffc8
+        NSLog(@"c2 = %p",c2);//0x1fc49ffc8
+        NSLog(@"c3 = %p",c3);//0x1fc49ffc8
+        NSLog(@"c4 = %p",c4);//0x1fc49ffc8
+        NSLog(@"c5 = %p",c5);//0x1fc49ffc8
+        
+        
+        NSLog(@"--------------------------------------------");
+        
+        NSObject *obj3 = [[NSObject alloc] init];
+        Class cls1 = object_getClass([NSObject class]); //元类地址0x1fc49ffa0
+        Class cls2 = [[NSObject class] class]; //类地址0x1fc49ffc8
+        Class cls3 = [[obj3 class] class];//类地址0x1fc49ffc8
+        NSLog(@"cls1 = %p,cls2 = %p,cls3 = %p",cls1 ,cls2,cls3);
+        
+        
+        NSLog(@"--------------------------------------------");
+        
+       
+        Person *p           = [[Person alloc] init];
+        Class  class1       = object_getClass(p); // 获取p ---> 类对象
+        Class  class2       = [p class];  // 获取p ---> 类对象
+        NSLog(@"class1 === %p class1Name == %@ class2 === %p class2Name == %@",class1,class1,class2,class2);
+        
+        /** 元类查找过程 */
+        Class  class3       = objc_getMetaClass(object_getClassName(p)); // 获取p ---> 元类
+        NSLog(@"class3 == %p class3Name == %@ class3 is  MetaClass:%d",class3,class3,class_isMetaClass(class3));//1
+        
+        Class  class4       = objc_getMetaClass(object_getClassName(class3)); // 获取class3 ---> 元类  此时的元类，class4就是根元类。
+        NSLog(@"class4 == %p class4Name == %@",class4,class4); // class4 == 0x106defe78 class4Name == NSObject
+        
+        
+        /** 元类查找结束，至此。我们都知道 根元类 的superClass指针是指向 根类对象 的；根类对象的isa指针有指向根元类对象；根元类对象的isa指针指向根元类自己；根类对象的superClass指针指向nil */
+        Class  class5       = class_getSuperclass(class1);  // 获取 类对象的父类对象
+        NSLog(@"class5 == %p class5Name == %@",class5,class5);  //class5 == 0x106defec8 class5Name == NSObject
+
+        // 此时返现class5 已经是NSObject，我们再次获取class5的父类，验证class5是否是 根类对象
+        Class  class6       = class_getSuperclass(class5);  // 获取 class5的父类对象
+        NSLog(@"class6 == %p class6Name == %@",class6,class6); // class6 == 0x0 class6Name == (null) 至此根类对象验证完毕。
+        
+        
+        /** 验证根类对象与根元类对象的关系 */
+        Class  class7       = objc_getMetaClass(object_getClassName(class5)); // 获取根类对象 对应的  根元类 是否是class4 对应的指针地址
+        NSLog(@"class7 == %p class7Name == %@",class7,class7);  // class7 == 0x106defe78 class7Name == NSObject
+        
+        Class  class8      =  class_getSuperclass(class4);  // 获取根元类class4  superClass 指针的指向 是否是根类对象class5 的指针地址
+        NSLog(@"class8 == %p class8Name == %@",class8,class8);  // class8 == 0x106defec8 class8Name == NSObject； class8与class5指针地址相同
+        
+        Class  class9       = objc_getMetaClass(object_getClassName(class4)); // 获取根元类 isa 指针是否是指向自己
+        NSLog(@"class9 == %p class9Name == %@",class9,class9);  //  class9 == 0x106defe78 class9Name == NSObject； class9 与 class4、class7指针地址相同
+    }
+    return 0;
+}
+
 ```
 
-方法调用轨迹：
-![图片](/图片/isa-superclass.png)
+###  通知的原理
+nsnotification发送在什么线程，默认响应就在什么线程，和注册位置无关。所以说NSNotification是线程安全的。
+通知是同步的。子线程发送消息，就会变成异步.可以使用addObserverForName：object: queue: usingBlock:。NSNotificationQueue是异步发送，也就是延迟发送。在同一个线程发送和响应
+不移除通知，iOS9.0之后，不会crash，原因：通知中心对观察者的引用是weak
+多次添加同一个通知，会导致发送一次这个通知的时候，响应多次通知回调。因为在添加的时候不会做去重操作   
+
+NSNotificationQueue和runloop的关系
+     NSNotificationQueue将通知添加到队列中时，其中postringStyle参数就是定义通知调用和runloop状态之间关系。
+
+     该参数的三个可选参数：
+     NSPostWhenIdle：runloop空闲的时候回调通知方法
+     NSPostASAP：runloop在执行timer事件或sources事件完成的时候回调通知方法
+     NSPostNow：runloop立即回调通知方法
+     
+     NSNotificationQueue只是把通知添加到通知队列，并不会主动发送
+     NSNotificationQueue依赖runloop，如果线程runloop没开启就不生效。
+     NSNotificationQueue发送通知需要runloop循环中会触发NotifyASAP和NotifyIdle从而调用NSNotificationCenter
+     NSNotificationCenter 内部的发送方法其实是同步的，所以NSNotificationQueue的异步发送其实是延迟发送。
+
+      
+```Objective-C
+ NSNotification ： 存储通知信息，包含NSNotificationName通知名、对象objetct、useInfo字典
+ @interface NSNotification : NSObject
+  @property (readonly, copy) NSNotificationName name;
+ @property (nullable, readonly, retain) id object;
+ @property (nullable, readonly, copy) NSDictionary *userInfo;
+ ```
+NSNotificationCenter ： 单例实现。并且通知中心维护了一个包含所有注册的观察者的集合
+  
+NSObserverModel:定义了一个观察者模型用于保存观察者，通知消息名，观察者收到通知后执行代码所在的操作队列和执行代码的回调
+```Objective-C
+ @interface NSObserverModel : NSObject
+ @property (nonatomic, strong) id observer;  //观察者对象
+ @property (nonatomic, assign) SEL selector;  //执行的方法
+ @property (nonatomic, copy) NSString *notificationName; //通知名字
+ @property (nonatomic, strong) id object;  //携带参数
+ @property (nonatomic, strong) NSOperationQueue *operationQueue;//队列
+ @property (nonatomic, copy) OperationBlock block;  //回调
+ ```
+向通知中心注册观察者，源码如下：
+```Objective-C
+ - (void)addObserver:(id)observer selector:(SEL)aSelector name:(nullable NSString*)aName object:(nullable id)anObject{
+  //如果不存在，那么即创建
+     if (![self.obsetvers objectForKey:aName]) {
+         NSMutableArray *arrays = [[NSMutableArray alloc]init];
+        // 创建数组模型
+         NSObserverModel *observerModel = [[NSObserverModel alloc]init];
+         observerModel.observer = observer;
+         observerModel.selector = aSelector;
+         observerModel.notificationName = aName;
+         observerModel.object = anObject;
+         [arrays addObject:observerModel];
+       //填充进入数组
+         [self.obsetvers setObject:arrays forKey:aName];
+  
+  
+     }else{
+  
+         //如果存在，取出来，继续添加减去即可
+         NSMutableArray *arrays = (NSMutableArray*)[self.obsetvers objectForKey:aName];
+         // 创建数组模型
+         NSObserverModel *observerModel = [[NSObserverModel alloc]init];
+         observerModel.observer = observer;
+         observerModel.selector = aSelector;
+         observerModel.notificationName = aName;
+         observerModel.object = anObject;
+         [arrays addObject:observerModel];
+   }
+ }
+ ```
+发送通知
+```Objective-C  
+ - (void)postNotification:(YFLNotification *)notification
+ {
+     //name 取出来对应观察者数组，执行任务
+     NSMutableArray *arrays = (NSMutableArray*)[self.obsetvers objectForKey:notification.name];
+  
+     [arrays enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+  
+         //取出数据模型
+         NSObserverModel *observerModel = obj;
+         id observer = observerModel.observer;
+         SEL secector = observerModel.selector;
+  
+         if (!observerModel.operationQueue) {
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+             [observer performSelector:secector withObject:notification];
+ #pragma clang diagnostic pop
+         }else{
+  
+             //创建任务
+             NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
+  
+                 //这里用block回调出去
+                 observerModel.block(notification);
+  
+             }];
+  
+             // 如果添加观察者 传入 队列，那么就任务放在队列中执行(子线程异步执行)
+             NSOperationQueue *operationQueue = observerModel.operationQueue;
+             [operationQueue addOperation:operation];
+  
+         }
+  
+     }];
+  
+ }
+```
