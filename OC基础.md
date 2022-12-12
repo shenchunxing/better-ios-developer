@@ -52,7 +52,9 @@
   
   [通知的原理？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#通知的原理)
   
-  [Category？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#Category)
+  [Category分类的知识点](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#Category)
+  
+  [关联对象的原理和使用](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#关联对象)
   
 
 ### objc中向一个nil对象发送消息将会发生什么？
@@ -1959,7 +1961,118 @@ NSObserverModel:定义了一个观察者模型用于保存观察者，通知消�
 ### Category
 compile source按照编译顺序，后编译的会执行，并且分类的优先级比本类高。分类创建的属性，没有成员变量，无法保存住属性值。通过runtime动态将分类的方法合并到类对象、元类对象的方法列表中。class extension (匿名分类\类扩展)在编译期就加入到方法列表中了。Category是运行时加入的
 
+category 的实现原理，如何被加载的?
+ category 编译完成的时候和类是分开的，在程序运行时才通过runtime合并在一起。
+ _objc_init是Objcet-C runtime的入口函数，主要读取Mach-O文件完成OC的内存布局，以及初始化runtime相关数据结构。这个函数里会调用到两外两个函数，map_images和load_Images
+ map_images追溯进去发现其内部调用了_read_images函数，_read_images会读取各种类及相关分类的信息。
+ 读取到相关的信息后通过addUnattchedCategoryForClass函数建立类和分类的关联。
+ 建立关联后通过remethodizeClass -> attachCategories重新规划方法列表、协议列表、属性列表，把分类的内容合并到主类
+ 在map_images处理完成后，开始load_images的流程。首先会调用prepare_load_methods做加载准备，这里面会通过schedule_class_load递归查找到NSObject然后从上往下调用类的load方法。
+ 处理完类的load方法后取出非懒加载的分类通过add_category_to_loadable_list添加到一个全局列表里
+ 最后调用call_load_methods调用分类的load函数
+ 
+ 分类中添加实例变量和属性分别会发生什么，还是什么时候会发生问题？
+     添加实例变量编译时报错
+     添加属性没问题，但是在运行的时候使用这个属性程序crash。原因是没有实例变量也没有set/get方法
+     
+ 分类中为什么不能添加成员变量（runtime除外）？
+      类对象在创建的时候已经定好了成员变量，但是分类是运行时加载的，无法添加。
+      类对象里的 class_ro_t 类型的数据在运行期间不能改变，再添加方法和协议都是修改的 class_rw_t 的数据。
+      分类添加方法、协议是把category中的方法，协议放在category_t结构体中，再拷贝到类对象里面。但是category_t里面没有成员变量列表。
+      虽然category可以写上属性，其实是通过关联对象实现的，需要手动添加setter & getter。    
+
 ![图片](/图片/category.png)
 ![图片](/图片/category2.png)
+
+
+因为分类会覆盖本类的同名方法，想要调用本类方法怎么做？
+ 倒序遍历方法列表，找到相同的方法名就行，因为本类的在方法列表第一个
+ 
+ ```Objective-C
+void invokeOriginalMethod(id target , SEL selector) {
+    uint count;
+    Method *list = class_copyMethodList([target class], &count);
+    for ( int i = count - 1 ; i >= 0; i--) {
+        Method method = list[i];
+        SEL name = method_getName(method);
+        IMP imp = method_getImplementation(method);
+        if (name == selector) {
+            ((void (*)(id, SEL))imp)(target, name);
+            break;
+        }
+    }
+    free(list);
+}
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        MJPerson *person = [[MJPerson alloc] init];
+        invokeOriginalMethod(person, @selector(run));
+        
+    }
+    return 0;
+}
+ ```
+
+load方法
 ![图片](/图片/load.png)
+
+
+initialize方法
 ![图片](/图片/initialize.png)
+
+
+### 关联对象
+    使用关联对象，需要在主对象 dealloc 的时候手动释放么？
+     不需要，主对象通过 dealloc -> object_dispose -> object_remove_assocations 进行关联对象的释放
+     
+```Objective-C     
+#import "MJPerson+Test.h"
+#import <objc/runtime.h>
+
+@implementation MJPerson (Test)
+/**
+ void objc_setAssociatedObject(id _Nonnull object, const void * _Nonnull key,
+                         id _Nullable value, objc_AssociationPolicy policy)
+ AssociationsManager = {static AssociationsHashMap map}
+ AssociationsHashMap map = [{object : AssociationsMap = {key : Associations = {policy,value}}}]
+ */
+- (void)setName:(NSString *)name  //key确保唯一就行，_cmd、@selector(name)、static类型的字符串都可以作为key
+{
+    objc_setAssociatedObject(self, @selector(name), name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (NSString *)name
+{
+    // 隐式参数
+    // _cmd == @selector(name)
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setWeight:(int)weight
+{
+    objc_setAssociatedObject(self, @selector(weight), @(weight), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (int)weight
+{
+    // _cmd == @selector(weight)
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+
+@end
+```
+     
+关联对象的实现和原理
+ 关联对象不存储在关联对象本身内存中，而是存储在一个全局容器中；
+ 这个容器是由 AssociationsManager 管理并在它维护的一个单例 Hash 表AssociationsHashMap ；
+
+ 第一层 AssociationsHashMap：类名object ：bucket（map）
+ 第二层 ObjectAssociationMap：key（name）：ObjcAssociation（value和policy）
+ 
+ AssociationsManager 使用 AssociationsManagerLock 自旋锁保证了线程安全。
+ 通过objc_setAssociatedObject给某对象添加关联值
+ 通过objc_getAssociatedObject获取某对象的关联值
+ 通过objc_removeAssociatedObjects移除某对象的关联值 
+
+![图片](/图片/关联对象结构.png)
