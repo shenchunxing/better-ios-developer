@@ -10,13 +10,11 @@
 
    [关于runloop的几点说明](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#关于runloop的几点说明)
    
-      [输入源](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#输入源)
+   [输入源](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#输入源)
       
-         [定时源](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#定时源)
+   [定时源](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#定时源)
          
-            [观察者](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#观察者)
-
-   [什么时候使用runloop](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#什么时候使用runloop)
+   [观察者](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#观察者)
  
    [RunLoop的事件队列](https://github.com/shenchunxing/ios_interview_questions/blob/master/Runloop.md#RunLoop的事件队列)
 
