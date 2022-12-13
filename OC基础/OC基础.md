@@ -1,10 +1,10 @@
 
- 1.  [objc中向一个nil对象发送消息将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#objc中向一个nil对象发送消息将会发生什么) 
- 2.  [objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#objc中向一个对象发送消息obj-foo和objc_msgsend函数之间有什么关系) 
- 3.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#什么时候会报unrecognized-selector的异常) 
- 4.  [一个objc对象如何进行内存布局？（考虑有父类的情况）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个objc对象如何进行内存布局考虑有父类的情况) 
- 5. [一个objc对象的isa的指针指向什么？有什么作用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个objc对象的isa的指针指向什么有什么作用)
- 6.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#下面的代码输出什么) 
+ 1.  [objc中向一个nil对象发送消息将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#objc中向一个nil对象发送消息将会发生什么) 
+ 2.  [objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#objc中向一个对象发送消息obj-foo和objc_msgsend函数之间有什么关系) 
+ 3.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#什么时候会报unrecognized-selector的异常) 
+ 4.  [一个objc对象如何进行内存布局？（考虑有父类的情况）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#一个objc对象如何进行内存布局考虑有父类的情况) 
+ 5. [一个objc对象的isa的指针指向什么？有什么作用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#一个objc对象的isa的指针指向什么有什么作用)
+ 6.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#下面的代码输出什么) 
 
 
  ```Objective-C
@@ -22,39 +22,39 @@
  ```
 
  
- 7.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#runtime如何通过selector找到对应的IMP地址) 
- 8.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#使用runtime的Associate方法关联的对象,需要在主对象dealloc的时候释放么) 
- 9.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#objc中的类方法和实例方法有什么本质区别和联系) 
+ 7.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#runtime如何通过selector找到对应的IMP地址) 
+ 8.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#使用runtime的Associate方法关联的对象,需要在主对象dealloc的时候释放么) 
+ 9.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#objc中的类方法和实例方法有什么本质区别和联系) 
  
- 10. [`_objc_msgForward` 函数是做什么的，直接调用它将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#_objc_msgforward函数是做什么的直接调用它将会发生什么)
- 11. [runtime如何实现weak变量的自动置nil？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#runtime如何实现weak变量的自动置nil)
- 12.  [能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#能否向编译后得到的类中增加实例变量能否向运行时创建的类中添加实例变量为什么) 
+ 10. [`_objc_msgForward` 函数是做什么的，直接调用它将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#_objc_msgforward函数是做什么的直接调用它将会发生什么)
+ 11. [runtime如何实现weak变量的自动置nil？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#runtime如何实现weak变量的自动置nil)
+ 12.  [能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#能否向编译后得到的类中增加实例变量能否向运行时创建的类中添加实例变量为什么) 
  
- 13.  [addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#addobserverforkeypathoptionscontext各个参数的作用分别是什么observer中需要实现哪个方法才能获得kvo回调) 
- 14.  [如何手动触发一个value的KVO](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#46-如何手动触发一个value的kvo) 
- 15.  [若一个类有实例变量 NSString *_foo ，调用setValue:forKey:时，可以以foo还是 _foo 作为key？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#若一个类有实例变量-nsstring-_foo-调用setvalueforkey时可以以foo还是-_foo-作为key) 
- 16.  [KVC的keyPath中的集合运算符如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#kvc的keypath中的集合运算符如何使用) 
- 17.  [KVC和KVO的keyPath一定是属性么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#kvc和kvo的keypath一定是属性么) 
- 18.  [如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#如何关闭默认的kvo的默认实现并进入自定义的kvo实现) 
- 19.  [apple用什么方式实现对一个对象的KVO？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#apple用什么方式实现对一个对象的kvo) 
- 20.  [IBOutlet连出来的视图属性为什么可以被设置成weak?](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#iboutlet连出来的视图属性为什么可以被设置成weak) 
- 21.  [IB中User Defined Runtime Attributes如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#ib中user-defined-runtime-attributes如何使用) 
- 22.  [如何调试BAD_ACCESS错误](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#如何调试bad_access错误) 
- 23.  [lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#lldbgdb常用的调试命令) 
+ 13.  [addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#addobserverforkeypathoptionscontext各个参数的作用分别是什么observer中需要实现哪个方法才能获得kvo回调) 
+ 14.  [如何手动触发一个value的KVO](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#46-如何手动触发一个value的kvo) 
+ 15.  [若一个类有实例变量 NSString *_foo ，调用setValue:forKey:时，可以以foo还是 _foo 作为key？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#若一个类有实例变量-nsstring-_foo-调用setvalueforkey时可以以foo还是-_foo-作为key) 
+ 16.  [KVC的keyPath中的集合运算符如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#kvc的keypath中的集合运算符如何使用) 
+ 17.  [KVC和KVO的keyPath一定是属性么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#kvc和kvo的keypath一定是属性么) 
+ 18.  [如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#如何关闭默认的kvo的默认实现并进入自定义的kvo实现) 
+ 19.  [apple用什么方式实现对一个对象的KVO？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#apple用什么方式实现对一个对象的kvo) 
+ 20.  [IBOutlet连出来的视图属性为什么可以被设置成weak?](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#iboutlet连出来的视图属性为什么可以被设置成weak) 
+ 21.  [IB中User Defined Runtime Attributes如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#ib中user-defined-runtime-attributes如何使用) 
+ 22.  [如何调试BAD_ACCESS错误](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#如何调试bad_access错误) 
+ 23.  [lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#lldbgdb常用的调试命令) 
  
-  [一个 NSObject对象占用多少内存空间？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#一个NSObject对象占用多少内存空间)
+  [一个 NSObject对象占用多少内存空间？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#一个NSObject对象占用多少内存空间)
   
-  [类对象和元类对象？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#类对象和元类对象)
+  [类对象和元类对象？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#类对象和元类对象)
   
-  [isa的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#isa的结构)
+  [isa的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#isa的结构)
   
-  [class的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#class的结构)
+  [class的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#class的结构)
   
-  [通知的原理？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#通知的原理)
+  [通知的原理？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#通知的原理)
   
-  [Category分类的知识点](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#Category)
+  [Category分类的知识点](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#Category)
   
-  [关联对象的原理和使用](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础.md#关联对象)
+  [关联对象的原理和使用](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#关联对象)
   
 
 ### objc中向一个nil对象发送消息将会发生什么？

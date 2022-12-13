@@ -1,15 +1,15 @@
 
-[动态方法解析过程](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime.md#动态方法解析过程) 
+[动态方法解析过程](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime/RunTime.md#动态方法解析过程) 
 
-[消息转发](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime.md#消息转发) 
+[消息转发](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime/RunTime.md#消息转发) 
 
-[@dynamic和synthesize](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime.md#@dynamic和synthesize) 
+[@dynamic和synthesize](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime/RunTime.md#@dynamic和synthesize) 
 
-[super关键字](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime.md#super关键字) 
+[super关键字](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime/RunTime.md#super关键字) 
 
-[消息转发的伪代码](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime.md#消息转发的伪代码) 
+[消息转发的伪代码](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime/RunTime.md#消息转发的伪代码) 
 
-[isKindOfClass和isMemberOfClass](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime.md#消isKindOfClass和isMemberOfClass) 
+[isKindOfClass和isMemberOfClass](https://github.com/shenchunxing/ios_interview_questions/blob/master/RunTime/RunTime.md#消isKindOfClass和isMemberOfClass) 
 
 
 
@@ -17,7 +17,7 @@
 
  ```Objective-C
 #import "MJPerson.h"
-#import <objc/runtime.h>
+#import <objc/RunTime/RunTime.h>
 
 @implementation MJPerson
 
@@ -112,7 +112,7 @@ anInvocation.selector 方法名
 ### @dynamic和synthesize
  ```Objective-C
 #import "MJPerson.h"
-#import <objc/runtime.h>
+#import <objc/RunTime/RunTime.h>
 
 @implementation MJPerson
 
@@ -171,7 +171,7 @@ int age(id self, SEL _cmd)
 ### super关键字
  ```Objective-C
 #import "MJStudent.h"
-#import <objc/runtime.h>
+#import <objc/RunTime/RunTime.h>
 
 @implementation MJStudent
 
