@@ -7,15 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9A9508C61BBC315200658616 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508B81BBC315200658616 /* AppDelegate.m */; settings = {ASSET_TAGS = (); }; };
-		9A9508C71BBC315200658616 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508B91BBC315200658616 /* LaunchScreen.xib */; settings = {ASSET_TAGS = (); }; };
-		9A9508C81BBC315200658616 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508BB1BBC315200658616 /* Main.storyboard */; settings = {ASSET_TAGS = (); }; };
-		9A9508C91BBC315200658616 /* ChenPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508BE1BBC315200658616 /* ChenPerson.m */; settings = {ASSET_TAGS = (); }; };
-		9A9508CA1BBC315200658616 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508BF1BBC315200658616 /* Images.xcassets */; settings = {ASSET_TAGS = (); }; };
-		9A9508CB1BBC315200658616 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508C01BBC315200658616 /* Info.plist */; settings = {ASSET_TAGS = (); }; };
-		9A9508CC1BBC315200658616 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508C11BBC315200658616 /* main.m */; settings = {ASSET_TAGS = (); }; };
-		9A9508CD1BBC315200658616 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508C31BBC315200658616 /* Person.m */; settings = {ASSET_TAGS = (); }; };
-		9A9508CE1BBC315200658616 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508C51BBC315200658616 /* ViewController.m */; settings = {ASSET_TAGS = (); }; };
+		9A9508C61BBC315200658616 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508B81BBC315200658616 /* AppDelegate.m */; };
+		9A9508C71BBC315200658616 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508B91BBC315200658616 /* LaunchScreen.xib */; };
+		9A9508C81BBC315200658616 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508BB1BBC315200658616 /* Main.storyboard */; };
+		9A9508C91BBC315200658616 /* ChenPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508BE1BBC315200658616 /* ChenPerson.m */; };
+		9A9508CA1BBC315200658616 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A9508BF1BBC315200658616 /* Images.xcassets */; };
+		9A9508CC1BBC315200658616 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508C11BBC315200658616 /* main.m */; };
+		9A9508CD1BBC315200658616 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508C31BBC315200658616 /* Person.m */; };
+		9A9508CE1BBC315200658616 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A9508C51BBC315200658616 /* ViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -121,6 +120,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -139,7 +139,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A9508CB1BBC315200658616 /* Info.plist in Resources */,
 				9A9508CA1BBC315200658616 /* Images.xcassets in Resources */,
 				9A9508C71BBC315200658616 /* LaunchScreen.xib in Resources */,
 				9A9508C81BBC315200658616 /* Main.storyboard in Resources */,
