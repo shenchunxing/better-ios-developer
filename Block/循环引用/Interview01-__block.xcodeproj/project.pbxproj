@@ -65,8 +65,8 @@
 				2D52330220AB0C8F007CA8F3 /* main.cpp */,
 				2D5232FB20AB0BBC007CA8F3 /* main.m */,
 				2D52330420AB1B22007CA8F3 /* MJPerson.h */,
-				2D52330720AB2484007CA8F3 /* MJPerson.cpp */,
 				2D52330520AB1B22007CA8F3 /* MJPerson.m */,
+				2D52330720AB2484007CA8F3 /* MJPerson.cpp */,
 			);
 			path = "Interview01-__block";
 			sourceTree = "<group>";

@@ -23,21 +23,14 @@
     
     MJPerson *obj = [[MJPerson alloc] init];
     int a = 12;
-    NSLog(@"%p %p %p",&self,&obj,&a);//在栈空间，地址和self紧挨着
+    NSLog(@"self在栈上：%p ，obj指针在栈上：%p，obj对象在堆上：%p，a在栈上 = %p",&self,&obj,obj,&a);//在栈空间，地址和self紧挨着
     
-    NSLog(@"%p", [ViewController class]); //类地址
-    NSLog(@"%p", object_getClass([ViewController class]));//元类地址
-    NSLog(@"%p", [MJPerson class]);//类地址
-    NSLog(@"%p", object_getClass([MJPerson class]));//元类地址
+    NSLog(@"全局区-ViewController类对象地址:%p", [ViewController class]); //类地址
+    NSLog(@"全局区-ViewController元类地址：%p", object_getClass([ViewController class]));//元类地址
+    NSLog(@"全局区-MJPerson类地址：%p", [MJPerson class]);//类地址
+    NSLog(@"全局区-MJPerson元类地址：%p", object_getClass([MJPerson class]));//元类地址
     
     
 }
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 
 @end

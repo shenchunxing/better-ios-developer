@@ -23,38 +23,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A006AD3D-870A-49E0-B33B-D5B8C2160745"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "&#x4e3a;&#x4ec0;&#x4e48;&#x4e0d;&#x63a8;&#x8350;&#x5728;init&#x65b9;&#x6cd5;&#x4e2d;&#x4f7f;&#x7528;&#x70b9;&#x8bed;&#x6cd5;/Person.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "17"
-            endingLineNumber = "17"
-            landmarkName = "-init"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "7854FDD8-9D9F-45A9-BBEB-D1A22CB9E4F4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "&#x4e3a;&#x4ec0;&#x4e48;&#x4e0d;&#x63a8;&#x8350;&#x5728;init&#x65b9;&#x6cd5;&#x4e2d;&#x4f7f;&#x7528;&#x70b9;&#x8bed;&#x6cd5;/Person.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
-            landmarkName = "-setLastName:"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "6FBB9AEB-AFAE-4321-823B-788F1C03C786"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
