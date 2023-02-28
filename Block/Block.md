@@ -1,13 +1,8 @@
  [使用block时什么情况会发生引用循环，如何解决？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block/Block.md#使用block时什么情况会发生引用循环如何解决)
- 
  [在block内如何修改block外部变量？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block/Block.md#在block内如何修改block外部变量) 
- 
  [使用系统的某些block api（如UIView的block版本写动画时），是否也考虑引用循环问题？](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block/Block.md#使用系统的某些block-api如uiview的block版本写动画时是否也考虑引用循环问题) 
- 
  [Block的修饰符](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block/Block.md#Block的修饰符) 
- 
  [Block的类型](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block/Block.md#Block的类型) 
- 
  [block的内存管理](https://github.com/shenchunxing/ios_interview_questions/blob/master/Block/Block.md#block的内存管理) 
 
 
