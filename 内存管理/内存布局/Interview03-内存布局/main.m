@@ -25,8 +25,9 @@ int main(int argc, char * argv[]) {
         
         NSObject *obj = [[NSObject alloc] init];//堆
         
-        NSLog(@"\n&a=%p\n&b=%p\n&c=%p\n&d=%p\n&e=%p\n&f=%p\nstr=%p\nobj=%p\n",
-              &a, &b, &c, &d, &e, &f, str, obj);
+        NSLog(@"全局区: a = %p , b = %p ,c = %p , d = %p,str = %p",&a,&b,&c,&d,str);
+        NSLog(@"栈区: e = %p , f = %p , &obj = %p",&e,&f,&obj);
+        NSLog(@"堆区: obj = %p",obj);
         
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
     }

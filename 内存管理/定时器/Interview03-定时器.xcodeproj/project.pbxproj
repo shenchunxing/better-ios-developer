@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		061ACA6929487A3400B9F10D /* MJProxy2.m in Sources */ = {isa = PBXBuildFile; fileRef = 061ACA6829487A3400B9F10D /* MJProxy2.m */; };
+		066DFFCB29AD9B7F006FFD8B /* MJProxy2.m in Sources */ = {isa = PBXBuildFile; fileRef = 066DFFCA29AD9B7F006FFD8B /* MJProxy2.m */; };
 		2DC38FDA20D9425200A3DC90 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC38FD920D9425200A3DC90 /* AppDelegate.m */; };
 		2DC38FDD20D9425200A3DC90 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC38FDC20D9425200A3DC90 /* ViewController.m */; };
 		2DC38FE020D9425200A3DC90 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2DC38FDE20D9425200A3DC90 /* Main.storyboard */; };
@@ -18,8 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		061ACA6729487A3400B9F10D /* MJProxy2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MJProxy2.h; path = "../../../../../ios_underlying_principle/内存管理/day23/Interview04-定时器/Interview03-定时器/MJProxy2.h"; sourceTree = "<group>"; };
-		061ACA6829487A3400B9F10D /* MJProxy2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MJProxy2.m; path = "../../../../../ios_underlying_principle/内存管理/day23/Interview04-定时器/Interview03-定时器/MJProxy2.m"; sourceTree = "<group>"; };
+		066DFFC929AD9B7F006FFD8B /* MJProxy2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MJProxy2.h; sourceTree = "<group>"; };
+		066DFFCA29AD9B7F006FFD8B /* MJProxy2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MJProxy2.m; sourceTree = "<group>"; };
 		2DC38FD520D9425200A3DC90 /* Interview03-定时器.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Interview03-定时器.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC38FD820D9425200A3DC90 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2DC38FD920D9425200A3DC90 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -70,13 +70,13 @@
 				2DC38FDC20D9425200A3DC90 /* ViewController.m */,
 				2DC38FEE20D947DE00A3DC90 /* MJProxy.h */,
 				2DC38FEF20D947DE00A3DC90 /* MJProxy.m */,
-				061ACA6729487A3400B9F10D /* MJProxy2.h */,
-				061ACA6829487A3400B9F10D /* MJProxy2.m */,
 				2DC38FDE20D9425200A3DC90 /* Main.storyboard */,
 				2DC38FE120D9425300A3DC90 /* Assets.xcassets */,
 				2DC38FE320D9425300A3DC90 /* LaunchScreen.storyboard */,
 				2DC38FE620D9425300A3DC90 /* Info.plist */,
 				2DC38FE720D9425300A3DC90 /* main.m */,
+				066DFFC929AD9B7F006FFD8B /* MJProxy2.h */,
+				066DFFCA29AD9B7F006FFD8B /* MJProxy2.m */,
 			);
 			path = "Interview03-定时器";
 			sourceTree = "<group>";
@@ -153,8 +153,8 @@
 			files = (
 				2DC38FDD20D9425200A3DC90 /* ViewController.m in Sources */,
 				2DC38FF020D947DE00A3DC90 /* MJProxy.m in Sources */,
-				061ACA6929487A3400B9F10D /* MJProxy2.m in Sources */,
 				2DC38FE820D9425300A3DC90 /* main.m in Sources */,
+				066DFFCB29AD9B7F006FFD8B /* MJProxy2.m in Sources */,
 				2DC38FDA20D9425200A3DC90 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
