@@ -13,8 +13,8 @@
     {
         self = [super init];
         if (self) {
-            NSLog(@"%@", NSStringFromClass([self class]));
-            NSLog(@"%@", NSStringFromClass([super class]));
+            NSLog(@"%@", NSStringFromClass([self class]));//Son
+            NSLog(@"%@", NSStringFromClass([super class]));//Son
         }
         return self;
     }

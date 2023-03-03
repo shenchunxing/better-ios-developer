@@ -16,7 +16,7 @@
 - (void)viewDidLoad {
     
     [super viewDidLoad];
-    [self serialQueue2];
+//    [self serialQueue2];
 //    [self serialQueue];
 //    [self concurrentQueue];
 //    [self multiSerialQueue_1];
@@ -45,20 +45,16 @@
 }
 
 //一次的代码
-- (void)dispatch_once_1
-{
-    
+- (void)dispatch_once_1{
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     for (NSInteger index = 0; index < 5; index++) {
-        
         dispatch_async(queue, ^{
             [self onceCode];
         });
     }
 }
 
-- (void)onceCode
-{
+- (void)onceCode{
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSLog(@"只执行一次的代码");
@@ -66,8 +62,7 @@
 }
 
 //简单重复调用
-- (void)dispatch_apply_1
-{
+- (void)dispatch_apply_1{
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_apply(10, queue, ^(size_t index) {
         NSLog(@"%ld",index);
@@ -375,12 +370,13 @@
     for (NSInteger index = 0; index < 5; index ++) {
         
         dispatch_queue_t serial_queue = dispatch_queue_create("serial_queue", NULL);
+        //防止多个串行队列的并发执行
         dispatch_set_target_queue(serial_queue, serial_queue_target);
         [array addObject:serial_queue];
     }
     
     [array enumerateObjectsUsingBlock:^(dispatch_queue_t queue, NSUInteger idx, BOOL * _Nonnull stop) {
-        
+        //因为设置了相同的目标队列，异步也只会开启一条子线程
         dispatch_async(queue, ^{
             NSLog(@"任务%ld - %@",idx,[NSThread currentThread]);
         });
@@ -428,7 +424,7 @@
     dispatch_queue_t queue = dispatch_queue_create("concurrent queue", DISPATCH_QUEUE_CONCURRENT);
     for (NSInteger index = 0; index < 10; index ++) {
         dispatch_async(queue, ^{
-            NSLog(@"task index %ld in concurrent queue",index);
+            NSLog(@"task index %ld in concurrent queue: %@",index,[NSThread currentThread]);
         });
     }
 }
@@ -439,7 +435,7 @@
     dispatch_queue_t queue = dispatch_queue_create("serial queue", DISPATCH_QUEUE_SERIAL);
     for (NSInteger index = 0; index < 10; index ++) {
         dispatch_async(queue, ^{
-            NSLog(@"task index %ld in serial queue",index);
+            NSLog(@"task index %ld in serial queue : %@",index,[NSThread currentThread]);
         });
     }
 }
