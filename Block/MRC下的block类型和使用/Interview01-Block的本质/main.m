@@ -86,11 +86,6 @@ int main(int argc, const char * argv[]) {
         
         block_no_copyedTest();//mrc下不copy block
         block_no_copy();
-        
-//        MJPerson *p = [[MJPerson alloc] init];
-//        p.block = ^{
-//
-//        };
     }
     return 0;
 }

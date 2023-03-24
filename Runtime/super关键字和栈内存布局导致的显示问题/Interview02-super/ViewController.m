@@ -52,11 +52,15 @@
     //obj指向cls
     //obj->cls->[MJPeron class]对象,有这个关系存在，obj通过cls可以找到类对象，说明可以找到print方法，编译没问题
     //pirint里面会使用name成员，name是isa内存偏移8个字节的地址，obj指向的前8个字节就是cls，因为栈内存是挨着的。接下来的内存就是self
+
     id cls = [MJPerson class];
     void *obj = &cls;
     [(__bridge id)obj print];
     
-    NSLog(@"%p %p %p",&self,&cls,&obj);//3个栈上的地址从大到小
+    NSLog(@"self = %p",&self);
+    NSLog(@"self = %p",&self);
+    NSLog(@"cls = %p",&cls);
+    NSLog(@"obj = %p",&obj);//3个栈上的地址从大到小
     
     
     //p/x obj 打印obj的内存地址，是MJPerson实例0x000000016cf7f2d8
@@ -66,9 +70,9 @@
     
     //person指向实例，实例里面有isa和name。isa指向MJPerson类对象
     //因为isa是实例的第一个成员，所以实例的地址就是isa的地址，因此，person -> isa -> [MJPeron class]
-    MJPerson *person = [[MJPerson alloc] init];
-    NSLog(@"%p %p",obj,object_getClass(person));
-    [person print];
+//    MJPerson *person = [[MJPerson alloc] init];
+//    NSLog(@"%p %p",obj,object_getClass(person));
+//    [person print];
     
 //    long long *p = (long long *)obj;
 //    NSLog(@"%p %p", *(p+2), [ViewController class]);

@@ -23,9 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		06A01EDD29C2ADE700019F71 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		2D5232F820AB0BBC007CA8F3 /* Interview01-__block */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Interview01-__block"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D5232FB20AB0BBC007CA8F3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2D52330220AB0C8F007CA8F3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 		2D5232FA20AB0BBC007CA8F3 /* Interview01-__block */ = {
 			isa = PBXGroup;
 			children = (
-				2D52330220AB0C8F007CA8F3 /* main.cpp */,
+				06A01EDD29C2ADE700019F71 /* main.cpp */,
 				2D5232FB20AB0BBC007CA8F3 /* main.m */,
 			);
 			path = "Interview01-__block";

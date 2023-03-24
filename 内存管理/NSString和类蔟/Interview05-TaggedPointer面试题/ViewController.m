@@ -22,9 +22,9 @@
     [super viewDidLoad];
 //    [self test1];
 //    NSLog(@"---------------");
-//    [self test2];
+    [self test2];
 //    NSLog(@"---------------");
-    [self test3];
+//    [self test3];
 }
 
 - (void)test1 {
@@ -89,12 +89,12 @@
 }
 
 - (void)test2 {
-    self.strongString =  [NSString stringWithFormat:@"%@",@"string1"]; //autorelease形式释放的,这个字符串对象是NSTaggedPointerString类型，是一个常量，不受arc管理。不会被释放
-    MDMLog( self.strongString);
-    self.weakString =  self.strongString;
-    self.strongString = nil; //即使self.strongString置为空，还有self.weakString对字符串对象的引用，所以打印出来还是字符串对象，因为不收引用计数管理
-    MDMLog(self.weakString);
-    NSLog(@"%@", self.weakString);
+    NSString __strong *str =  [NSString stringWithFormat:@"%@",@"string1"];
+    MDMLog( str);
+    NSString __weak *weakStr = str;
+    str = nil;
+    MDMLog(weakStr);
+    NSLog(@"%@", weakStr);
 }
 
 - (void)test3 {
