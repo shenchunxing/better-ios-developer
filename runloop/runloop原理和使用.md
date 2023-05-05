@@ -63,7 +63,15 @@ model 主要是用来指定事件在运行循环中的优先级的，分为：
  1. NSDefaultRunLoopMode（kCFRunLoopDefaultMode）
  2. NSRunLoopCommonModes（kCFRunLoopCommonModes）
 
-讨论区： [《https://github.com/ChenYilong/iOSInterviewQuestions/issues/36》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/36 ) 
+讨论区： [《https://github.com/ChenYilong/iOSInterviewQuestions/issues/36》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/36 )
+
+### Runloop休眠的实现原理?
+ 休眠:mach_msg()这个函数从用户态转入内核态
+ 唤醒:mach_msg()这个函数从内核态转入用户态
+ 
+ 等待消息
+ 没有消息就让线程休眠
+ 有消息就唤醒线程
 
 ### 以+ scheduledTimerWithTimeInterval...的方式触发的timer，在滑动页面上的列表时，timer会暂定回调，为什么？如何解决？
 

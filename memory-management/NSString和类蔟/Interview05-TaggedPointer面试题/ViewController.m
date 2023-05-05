@@ -22,9 +22,9 @@
     [super viewDidLoad];
 //    [self test1];
 //    NSLog(@"---------------");
-    [self test2];
+//    [self test2];
 //    NSLog(@"---------------");
-//    [self test3];
+    [self test3];
 }
 
 - (void)test1 {

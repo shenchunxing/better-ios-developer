@@ -35,10 +35,10 @@
     for (int i = 0; i < 1000; i++) {
         dispatch_async(queue, ^{
             // 加锁
-            [self.lock lock];
+//            [self.lock lock];
             self.name = [NSString stringWithFormat:@"abcdefghijk"]; //报错坏内存访问,因为[_name release]被多次执行
             // 解锁
-            [self.lock unlock];
+//            [self.lock unlock];
         });
     }
     
