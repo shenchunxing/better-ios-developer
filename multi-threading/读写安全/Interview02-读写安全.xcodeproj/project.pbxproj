@@ -26,7 +26,6 @@
 		2DC38FBF20D9345200A3DC90 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2DC38FC120D9345200A3DC90 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC38FC220D9345200A3DC90 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		2DC38FC920D93B5000A3DC90 /* ViewController的副本.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ViewController的副本.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +62,6 @@
 				2DC38FB420D9345100A3DC90 /* AppDelegate.m */,
 				2DC38FB620D9345100A3DC90 /* ViewController.h */,
 				2DC38FB720D9345100A3DC90 /* ViewController.m */,
-				2DC38FC920D93B5000A3DC90 /* ViewController的副本.m */,
 				2DC38FB920D9345100A3DC90 /* Main.storyboard */,
 				2DC38FBC20D9345200A3DC90 /* Assets.xcassets */,
 				2DC38FBE20D9345200A3DC90 /* LaunchScreen.storyboard */,
