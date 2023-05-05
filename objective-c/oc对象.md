@@ -1,73 +1,12 @@
-
- 1.  [objc中向一个nil对象发送消息将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#objc中向一个nil对象发送消息将会发生什么) 
- 2.  [objc中向一个对象发送消息[obj foo]和objc_msgSend()函数之间有什么关系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#objc中向一个对象发送消息obj-foo和objc_msgsend函数之间有什么关系) 
- 3.  [什么时候会报unrecognized selector的异常？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#什么时候会报unrecognized-selector的异常) 
- 4.  [一个objc对象如何进行内存布局？（考虑有父类的情况）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#一个objc对象如何进行内存布局考虑有父类的情况) 
- 5. [一个objc对象的isa的指针指向什么？有什么作用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#一个objc对象的isa的指针指向什么有什么作用)
- 6.  [下面的代码输出什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#下面的代码输出什么) 
-
-
- ```Objective-C
-    @implementation Son : Father
-    - (id)init
-    {
-        self = [super init];
-        if (self) {
-            NSLog(@"%@", NSStringFromClass([self class]));//Son
-            NSLog(@"%@", NSStringFromClass([super class]));//Son
-        }
-        return self;
-    }
-    @end
- ```
-
- 
- 7.  [runtime如何通过selector找到对应的IMP地址？（分别考虑类方法和实例方法）](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#runtime如何通过selector找到对应的IMP地址) 
- 8.  [使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#使用runtime的Associate方法关联的对象,需要在主对象dealloc的时候释放么) 
- 9.  [objc中的类方法和实例方法有什么本质区别和联系？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#objc中的类方法和实例方法有什么本质区别和联系) 
- 
- 10. [`_objc_msgForward` 函数是做什么的，直接调用它将会发生什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#_objc_msgforward函数是做什么的直接调用它将会发生什么)
- 11. [runtime如何实现weak变量的自动置nil？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#runtime如何实现weak变量的自动置nil)
- 12.  [能否向编译后得到的类中增加实例变量？能否向运行时创建的类中添加实例变量？为什么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#能否向编译后得到的类中增加实例变量能否向运行时创建的类中添加实例变量为什么) 
- 
- 13.  [addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#addobserverforkeypathoptionscontext各个参数的作用分别是什么observer中需要实现哪个方法才能获得kvo回调) 
- 14.  [如何手动触发一个value的KVO](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#46-如何手动触发一个value的kvo) 
- 15.  [若一个类有实例变量 NSString *_foo ，调用setValue:forKey:时，可以以foo还是 _foo 作为key？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#若一个类有实例变量-nsstring-_foo-调用setvalueforkey时可以以foo还是-_foo-作为key) 
- 16.  [KVC的keyPath中的集合运算符如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#kvc的keypath中的集合运算符如何使用) 
- 17.  [KVC和KVO的keyPath一定是属性么？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#kvc和kvo的keypath一定是属性么) 
- 18.  [如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#如何关闭默认的kvo的默认实现并进入自定义的kvo实现) 
- 19.  [apple用什么方式实现对一个对象的KVO？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#apple用什么方式实现对一个对象的kvo) 
- 20.  [IBOutlet连出来的视图属性为什么可以被设置成weak?](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#iboutlet连出来的视图属性为什么可以被设置成weak) 
- 21.  [IB中User Defined Runtime Attributes如何使用？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#ib中user-defined-runtime-attributes如何使用) 
- 22.  [如何调试BAD_ACCESS错误](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#如何调试bad_access错误) 
- 23.  [lldb（gdb）常用的调试命令？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#lldbgdb常用的调试命令) 
- 
-  [一个 NSObject对象占用多少内存空间？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#一个NSObject对象占用多少内存空间)
-  
-  [类对象和元类对象？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#类对象和元类对象)
-  
-  [isa的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#isa的结构)
-  
-  [class的结构？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#class的结构)
-  
-  [通知的原理？](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#通知的原理)
-  
-  [Category分类的知识点](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#Category)
-  
-  [关联对象的原理和使用](https://github.com/shenchunxing/ios_interview_questions/blob/master/OC基础/OC基础.md#关联对象)
-  
-
+# Objective-C
 ### objc中向一个nil对象发送消息将会发生什么？
 在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:
 
 1、 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如：  
-
  
 ```Objective-C
 Person * motherInlaw = [[aPerson spouse] mother];
 ```
-
-
  如果 spouse 方法的返回值为 nil，那么发送给 nil 的消息 mother 也将返回 nil。
 
 2、 如果方法返回值为指针类型，其指针大小为小于或者等于sizeof(void*)，float，double，long double 或者 long long 的整型标量，发送给 nil 的消息将返回0。
@@ -88,9 +27,6 @@ Person * motherInlaw = [[aPerson spouse] mother];
  
 ```Objective-C
 // runtime.h（类在runtime中的定义）
-// http://weibo.com/luohanchenyilong/
-// https://github.com/ChenYilong
-
 struct objc_class {
   Class isa OBJC_ISA_AVAILABILITY; //isa指针指向Meta Class，因为Objc的类的本身也是一个Object，为了处理这个关系，runtime就创造了Meta Class，当给类发送[NSObject alloc]这样消息时，实际上是把这个消息发给了Class Object
   #if !__OBJC2__
@@ -110,55 +46,7 @@ struct objc_class {
 objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。
 那么，回到本题，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。
 
-### objc中向一个对象发送消息[obj foo]和`objc_msgSend()`函数之间有什么关系？
-具体原因同上题：该方法编译之后就是`objc_msgSend()`函数调用.
-
-我们用 clang 分析下，clang 提供一个命令，可以将Objective-C的源码改写成C++语言，借此可以研究下[obj foo]和`objc_msgSend()`函数之间有什么关系。
-
-以下面的代码为例，由于 clang 后的代码达到了10万多行，为了便于区分，添加了一个叫 iOSinit 方法，
-
-```Objective-C
-//
-//  main.m
-//  http://weibo.com/luohanchenyilong/
-//  https://github.com/ChenYilong
-//  Copyright (c) 2015年 微博@iOS程序犭袁. All rights reserved.
-//
-
-
-#import "CYLTest.h"
-
-int main(int argc, char * argv[]) {
-    @autoreleasepool {
-        CYLTest *test = [[CYLTest alloc] init];
-        [test performSelector:(@selector(iOSinit))];
-        return 0;
-    }
-}
-```
-
-在终端中输入
-
-```Objective-C
-clang -rewrite-objc main.m
-```
-就可以生成一个`main.cpp`的文件，在最低端（10万4千行左右）
-
-![https://github.com/ChenYilong](http://i.imgur.com/eAH5YWn.png)
-
-我们可以看到大概是这样的：
-
- 
-```Objective-C
-((void ()(id, SEL))(void )objc_msgSend)((id)obj, sel_registerName("foo"));
-```
-
-也就是说：
-
->  [obj foo];在objc编译时，会被转意为：`objc_msgSend(obj, @selector(foo));`。
-
 ### 什么时候会报unrecognized selector的异常？
-
 简单来说：
 
 
@@ -195,30 +83,11 @@ objc在向一个对象发送消息时，runtime库会根据对象的isa指针找
 
  - 所有父类的成员变量和自己的成员变量都会存放在该对象所对应的存储空间中.
  - 每一个对象内部都有一个isa指针,指向他的类对象,类对象中存放着本对象的
-
-
-
   1. 对象方法列表（对象能够接收的消息列表，保存在它所对应的类对象中）
   2. 成员变量的列表,
   2. 属性列表,
 
  它内部也有一个isa指针指向元对象(meta class),元对象内部存放的是类方法列表,类对象内部还有一个superclass的指针,指向他的父类对象。
-
-每个 Objective-C 对象都有相同的结构，如下图所示：
-
- ![https://github.com/ChenYilong](http://i.imgur.com/7mJlUj1.png)
-
-翻译过来就是
-
-|  Objective-C 对象的结构图 | 
- ------------- |
- ISA指针 |
- 根类的实例变量 |
- 倒数第二层父类的实例变量 |
- ... |
- 父类的实例变量 |
- 类的实例变量 | 
-
 
  - 根对象就是NSObject，它的superclass指针指向nil
 
@@ -226,166 +95,35 @@ objc在向一个对象发送消息时，runtime库会根据对象的isa指针找
  -  类对象 是放在数据段(数据区)上的, 和全局变量放在一个地方. 这也就是为什么: 同一个类对象的不同实例对象,的isa指针是一样的.
  -  实例对象存放在堆中
 
-
-
-如图:
-![https://github.com/ChenYilong](http://i.imgur.com/w6tzFxz.png)
-
 ### 一个objc对象的isa的指针指向什么？有什么作用？
-`isa` 顾名思义 `is a` 表示对象所属的类。
-
-`isa` 指向他的类对象，从而可以找到对象上的方法。
-
-同一个类的不同对象，他们的 isa 指针是一样的。
+`isa` 顾名思义 `isa` 表示对象所属的类。
+`isa` 指向他的类对象，从而可以找到对象上的方法。同一个类的不同对象，他们的 isa 指针是一样的。
 
 ### 下面的代码输出什么？
-
-
-
-
  ```Objective-C
     @implementation Son : Father
     - (id)init
     {
         self = [super init];
         if (self) {
-            NSLog(@"%@", NSStringFromClass([self class]));
-            NSLog(@"%@", NSStringFromClass([super class]));
+            NSLog(@"%@", NSStringFromClass([self class]));//Son
+            NSLog(@"%@", NSStringFromClass([super class]));//Son
         }
         return self;
     }
     @end
  ```
-
-
-**答案：**
-
-都输出 Son
-
-    NSStringFromClass([self class]) = Son
-    NSStringFromClass([super class]) = Son
- 
-
-
-这个题目主要是考察关于 Objective-C 中对 self 和 super 的理解。
- 
 super关键字，有以下几点需要注意：
 - receiver还是当前类对象，而不是父类对象；
 - super这里的含义就是优先去父类的方法列表中去查实现，很多问题都是父类中其实也没有实现，还是去根类里 去找实现，这种情况下时，其实跟直接调用self的效果是一致的。
 
 下面做详细介绍:
-
 我们都知道：self 是类的隐藏参数，指向当前调用方法的这个类的实例。那 super 呢？
-
 很多人会想当然的认为“ super 和 self 类似，应该是指向父类的指针吧！”。这是很普遍的一个误区。其实 super 是一个 Magic Keyword， 它本质是一个编译器标示符，和 self 是指向的同一个消息接受者！他们两个的不同点在于：super 会告诉编译器，调用 class 这个方法时，要去父类的方法，而不是本类里的。
-
 
 上面的例子不管调用`[self class]`还是`[super class]`，接受消息的对象都是当前 `Son ＊xxx` 这个对象。
 
 当使用 self 调用方法时，会从当前类的方法列表中开始找，如果没有，就从父类中再找；而当使用 super 时，则从父类的方法列表中开始找。然后调用父类的这个方法。
-
-
-这也就是为什么说“不推荐在 init 方法中使用点语法”，如果想访问实例变量 iVar 应该使用下划线（ `_iVar` ），而非点语法（ `self.iVar` ）。
-
-点语法（ `self.iVar` ）的坏处就是子类有可能覆写 setter 。假设 Person 有一个子类叫 ChenPerson，这个子类专门表示那些姓“陈”的人。该子类可能会覆写 lastName 属性所对应的设置方法：
-
- ```Objective-C
-//
-//  ChenPerson.m
-//  
-//
-//  Created by https://github.com/ChenYilong on 15/8/30.
-//  Copyright (c) 2015年 http://weibo.com/luohanchenyilong/ 微博@iOS程序犭袁. All rights reserved.
-//
-
-#import "ChenPerson.h"
-
-@implementation ChenPerson
-
-@synthesize lastName = _lastName;
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        NSLog(@"🔴类名与方法名：%s（在第%d行），描述：%@", __PRETTY_FUNCTION__, __LINE__, NSStringFromClass([self class]));
-        NSLog(@"🔴类名与方法名：%s（在第%d行），描述：%@", __PRETTY_FUNCTION__, __LINE__, NSStringFromClass([super class]));
-    }
-    return self;
-}
-
-- (void)setLastName:(NSString*)lastName
-{
-    //设置方法一：如果setter采用是这种方式，就可能引起崩溃
-//    if (![lastName isEqualToString:@"陈"])
-//    {
-//        [NSException raise:NSInvalidArgumentException format:@"姓不是陈"];
-//    }
-//    _lastName = lastName;
-    
-    //设置方法二：如果setter采用是这种方式，就可能引起崩溃
-    _lastName = @"陈";
-    NSLog(@"🔴类名与方法名：%s（在第%d行），描述：%@", __PRETTY_FUNCTION__, __LINE__, @"会调用这个方法,想一下为什么？");
-
-}
-
-@end
- ```
-
-在基类 Person 的默认初始化方法中，可能会将姓氏设为空字符串。此时若使用点语法（ `self.lastName` ）也即 setter 设置方法，那么调用将会是子类的设置方法，如果在刚刚的 setter 代码中采用设置方法一，那么就会抛出异常，
-
-
-为了方便采用打印的方式展示，究竟发生了什么，我们使用设置方法二。
-
-
-如果基类的代码是这样的：
-
-
- ```Objective-C
-//
-//  Person.m
-//  nil对象调用点语法
-//
-//  Created by https://github.com/ChenYilong on 15/8/29.
-//  Copyright (c) 2015年 http://weibo.com/luohanchenyilong/ 微博@iOS程序犭袁. All rights reserved.
-//  
-
-#import "Person.h"
-
-@implementation Person
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.lastName = @"";
-        //NSLog(@"🔴类名与方法名：%s（在第%d行），描述：%@", __PRETTY_FUNCTION__, __LINE__, NSStringFromClass([self class]));
-        //NSLog(@"🔴类名与方法名：%s（在第%d行），描述：%@", __PRETTY_FUNCTION__, __LINE__, self.lastName);
-    }
-    return self;
-}
-
-- (void)setLastName:(NSString*)lastName
-{
-    NSLog(@"🔴类名与方法名：%s（在第%d行），描述：%@", __PRETTY_FUNCTION__, __LINE__, @"根本不会调用这个方法");
-    _lastName = @"炎黄";
-}
-
-@end
- ```
-
-那么打印结果将会是这样的：
-
- ```Objective-C
- 🔴类名与方法名：-[ChenPerson setLastName:]（在第36行），描述：会调用这个方法,想一下为什么？
- 🔴类名与方法名：-[ChenPerson init]（在第19行），描述：ChenPerson
- 🔴类名与方法名：-[ChenPerson init]（在第20行），描述：ChenPerson
- ```
-
-我在仓库里也给出了一个相应的 Demo（名字叫：Demo_21题_下面的代码输出什么）。有兴趣可以跑起来看一下，主要看下他是怎么打印的，思考下为什么这么打印。
-
-如果对这个例子有疑问：可以参与讨论区讨论 [《21题“不推荐在 init 方法中使用点语法” #75》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/75 ) 
-
 接下来让我们利用 runtime 的相关知识来验证一下 super 关键字的本质，使用clang重写命令:
 
 
@@ -432,8 +170,6 @@ struct objc_super {
 所以，当调用 ［self class] 时，实际先调用的是 `objc_msgSend`函数，第一个参数是 Son当前的这个实例，然后在 Son 这个类里面去找 - (Class)class这个方法，没有，去父类 Father里找，也没有，最后在 NSObject类中发现这个方法。而 - (Class)class的实现就是返回self的类别，故上述输出结果为 Son。
 
 objc Runtime开源代码对- (Class)class方法的实现:
-
-
  ```Objective-C
 - (Class)class {
     return object_getClass(self);
@@ -446,7 +182,6 @@ objc Runtime开源代码对- (Class)class方法的实现:
 第二步是去 Father这个类里去找 `- (Class)class`，没有，然后去NSObject类去找，找到了。最后内部是使用 `objc_msgSend(objc_super->receiver, @selector(class))`去调用，
 
 此时已经和`[self class]`调用相同了，故上述输出结果仍然返回 Son。
-
 
 参考链接：[微博@Chun_iOS](http://weibo.com/junbbcom)的博文[刨根问底Objective－C Runtime（1）－ Self & Super](http://chun.tips/blog/2014/11/05/bao-gen-wen-di-objective%5Bnil%5Dc-runtime(1)%5Bnil%5D-self-and-super/)
 
@@ -465,10 +200,6 @@ objc Runtime开源代码对- (Class)class方法的实现:
  参考： [Apple Documentation-Objective-C Runtime-NSObject-methodForSelector:]( https://developer.apple.com/documentation/objectivec/nsobject/1418863-methodforselector?language=objc "Apple Documentation-Objective-C Runtime-NSObject-methodForSelector:") 
  
 ### 使用runtime的Associate方法关联的对象,需要在主对象dealloc的时候释放么?
-
- - 在ARC下不需要。
- - <p><del> 在MRC中,对于使用retain或copy策略的需要 。</del></p>在MRC下也不需要
-
 > 无论在MRC下还是ARC下均不需要。
 
 
@@ -541,30 +272,6 @@ objc_setAssociatedObject (
 
 对象的内存销毁时间表：[参考链接](http://stackoverflow.com/a/10843510/3395008)。
 
-
-
-
-
-### objc中的类方法和实例方法有什么本质区别和联系?
-
-类方法：
-
- 1. 类方法是属于类对象的
- 2. 类方法只能通过类对象调用
- 2. 类方法中的self是类对象
- 2. 类方法可以调用其他的类方法
- 2. 类方法中不能访问成员变量
- 2. 类方法中不能直接调用对象方法
-
-实例方法：
-
- 1. 实例方法是属于实例对象的
- 2. 实例方法只能通过实例对象调用
- 2. 实例方法中的self是实例对象
- 2. 实例方法中可以访问成员变量
- 2. 实例方法中直接调用实例方法
- 2. 实例方法中也可以调用类方法(通过类名)
-
 ### `_objc_msgForward`函数是做什么的，直接调用它将会发生什么？
 
 > `_objc_msgForward`是 IMP 类型，用于消息转发的：当向一个对象发送一条消息，但它并没有实现的时候，`_objc_msgForward`会尝试做消息转发。
@@ -573,20 +280,12 @@ objc_setAssociatedObject (
 
     IMP msgForwardIMP = _objc_msgForward;
 
-
-
 在[上篇](https://github.com/ChenYilong/iOSInterviewQuestions)中的《objc中向一个对象发送消息`[obj foo]`和`objc_msgSend()`函数之间有什么关系？》曾提到`objc_msgSend`在“消息传递”中的作用。在“消息传递”过程中，`objc_msgSend`的动作比较清晰：首先在 Class 中的缓存查找 IMP （没缓存则初始化缓存），如果没找到，则向父类的 Class 查找。如果一直查找到根类仍旧没有实现，则用`_objc_msgForward`函数指针代替 IMP 。最后，执行这个 IMP 。
 
 
 
 Objective-C运行时是开源的，所以我们可以看到它的实现。打开[ ***Apple Open Source 里Mac代码里的obj包*** ](http://www.opensource.apple.com/tarballs/objc4/)下载一个最新版本，找到 `objc-runtime-new.mm`，进入之后搜索`_objc_msgForward`。
-
-![https://github.com/ChenYilong](http://i.imgur.com/rGBfaoL.png)
-
 里面有对`_objc_msgForward`的功能解释：
-
-![https://github.com/ChenYilong](http://i.imgur.com/vcThcdA.png)
-
 
 ```Objective-C
 /***********************************************************************
@@ -607,8 +306,6 @@ Objective-C运行时是开源的，所以我们可以看到它的实现。打开
 
 ```Objective-C
 //  objc-runtime-new.mm 文件里与 _objc_msgForward 有关的三个函数使用伪代码展示
-//  Created by https://github.com/ChenYilong
-//  Copyright (c)  微博@iOS程序犭袁(http://weibo.com/luohanchenyilong/). All rights reserved.
 //  同时，这也是 obj_msgSend 的实现过程
 
 id objc_msgSend(id self, SEL op, ...) {
@@ -672,11 +369,6 @@ OBJC_AVAILABLE(10.0, 2.0, 9.0, 1.0, 2.0);
 call (void)instrumentObjcMessageSends(YES)
 ```
 
-以第二种为例，操作如下所示：
-
-![https://github.com/ChenYilong](http://i.imgur.com/uEwTCC4.png)
-
-
 之后，运行时发送的所有消息都会打印到`/tmp/msgSend-xxxx`文件里了。
 
 终端中输入命令前往：
@@ -685,32 +377,11 @@ call (void)instrumentObjcMessageSends(YES)
 open /private/tmp
 ```
 
-
-
-
-
-![https://github.com/ChenYilong](http://i.imgur.com/Fh5hhCw.png)
-
-
-
 可能看到有多条，找到最新生成的，双击打开
-
-
 
 在模拟器上执行执行以下语句（这一套调试方案仅适用于模拟器，真机不可用，关于该调试方案的拓展链接：[ ***Can the messages sent to an object in Objective-C be monitored or printed out?*** ](http://stackoverflow.com/a/10750398/3395008)），向一个对象发送一条错误的消息：
 
-
-
-
 ```Objective-C
-//
-//  main.m
-//  CYLObjcMsgForwardTest
-//
-//  Created by http://weibo.com/luohanchenyilong/.
-//  Copyright (c) 2015年 微博@iOS程序犭袁. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 #import "CYLTest.h"
@@ -725,17 +396,7 @@ int main(int argc, char * argv[]) {
 
 ```
 
-![https://github.com/ChenYilong](http://i.imgur.com/UjbmVvB.png)
-
-
 你可以在`/tmp/msgSend-xxxx`（我这一次是`/tmp/msgSend-9805`）文件里，看到打印出来：
-
-
-
-![https://github.com/ChenYilong](http://i.imgur.com/AAERz1T.png)
-
-
- 
 ```Objective-C
 + CYLTest NSObject initialize
 + CYLTest NSObject alloc
@@ -770,28 +431,17 @@ int main(int argc, char * argv[]) {
 上面前4个方法均是模板方法，开发者可以重写(override)，由 runtime 来调用。最常见的实现消息转发：就是重写方法3和4，吞掉一个消息或者代理给其他对象都是没问题的
 
 也就是说`_objc_msgForward`在进行消息转发的过程中会涉及以下这几个方法：
-
  1. `resolveInstanceMethod:`方法 (或 `resolveClassMethod:`)。
-
  2. `forwardingTargetForSelector:`方法
-
  3. `methodSignatureForSelector:`方法
-
  4. `forwardInvocation:`方法
-
  5. `doesNotRecognizeSelector:` 方法
-
-为了能更清晰地理解这些方法的作用，git仓库里也给出了一个Demo，名称叫“ `_objc_msgForward_demo` ”,可运行起来看看。
-
 
 下面回答下第二个问题“直接`_objc_msgForward`调用它将会发生什么？”
 
 直接调用`_objc_msgForward`是非常危险的事，如果用不好会直接导致程序Crash，但是如果用得好，能做很多非常酷的事。
 
-就好像跑酷，干得好，叫“耍酷”，干不好就叫“作死”。
-
 正如前文所说：
-
 > `_objc_msgForward`是 IMP 类型，用于消息转发的：当向一个对象发送一条消息，但它并没有实现的时候，`_objc_msgForward`会尝试做消息转发。
 
 如何调用`_objc_msgForward`？
@@ -838,7 +488,7 @@ typedef void (*voidIMP)(id, SEL, ...)
 ### runtime如何实现weak变量的自动置nil？
 
 
-> runtime 对注册的类， 会进行布局，对于 weak 对象会放入一个 hash 表中。 用 weak 指向的对象内存地址作为 key，当此对象的引用计数为0的时候会 dealloc，假如 weak 指向的对象内存地址是a，那么就会以a为键， 在这个 weak 表中搜索，找到所有以a为键的 weak 对象，从而设置为 nil。
+> runtime 对注册的类， 会进行布局，对于 weak 对象会放入一个 hash 表中。 用 weak 指向的对象内存地址（堆地址）作为 key，weak指针地址（栈地址）作为value。当此对象的引用计数为0的时候会 dealloc，假如 weak 指向的对象内存地址是a，那么就会以a为键， 在这个 weak 表中搜索，找到所有以a为键的 weak 对象，从而设置为 nil。
 
 在[上篇](https://github.com/ChenYilong/iOSInterviewQuestions)中的《runtime 如何实现 weak 属性》有论述。（注：在[上篇](https://github.com/ChenYilong/iOSInterviewQuestions)的《使用runtime Associate方法关联的对象，需要在主对象dealloc的时候释放么？》里给出的“对象的内存销毁时间表”也提到`__weak`引用的解除时间。）
 
@@ -857,16 +507,10 @@ typedef void (*voidIMP)(id, SEL, ...)
 
 参考讨论区 ： [《有一点说的很容易误导人 #6》](https://github.com/ChenYilong/iOSInterviewQuestions/issues/6) 
 
-
 下面我们将基于`objc_storeWeak(&a, b)`函数，使用伪代码模拟“runtime如何实现weak属性”：
- 
-
-
  
 ```Objective-C
 // 使用伪代码模拟：runtime如何实现weak属性
-// http://weibo.com/luohanchenyilong/
-// https://github.com/ChenYilong
 
  id obj1;
  objc_initWeak(&obj1, obj);
@@ -895,21 +539,13 @@ obj_storeWeak(&obj1, obj);
 
 >  weak 修饰的指针默认值是 nil （在Objective-C中向nil发送消息是安全的）
 
-
-
-
 然后`obj_destroyWeak`函数将0（nil）作为参数，调用`objc_storeWeak`函数。
 
 `objc_storeWeak(&obj1, 0);`
 
 前面的源代码与下列源代码相同。
-
-
-
 ```Objective-C
 // 使用伪代码模拟：runtime如何实现weak属性
-// http://weibo.com/luohanchenyilong/
-// https://github.com/ChenYilong
 
 id obj1;
 obj1 = 0;
@@ -936,386 +572,7 @@ objc_storeWeak(&obj1, 0);
 
  - 运行时创建的类是可以添加实例变量，调用 `class_addIvar` 函数。但是得在调用 `objc_allocateClassPair` 之后，`objc_registerClassPair` 之前，原因同上。
 
-### addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？
 
-```Objective-C
-// 添加键值观察
-/*
-1 观察者，负责处理监听事件的对象
-2 观察的属性
-3 观察的选项
-4 上下文
-*/
-[self.person addObserver:self forKeyPath:@"name" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:@"Person Name"];
-```
-observer中需要实现一下方法：
-
-
-
-```Objective-C
-// 所有的 kvo 监听到事件，都会调用此方法
-/*
- 1. 观察的属性
- 2. 观察的对象
- 3. change 属性变化字典（新／旧）
- 4. 上下文，与监听的时候传递的一致
- */
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
-```
-
-### 如何手动触发一个value的KVO
-
-所谓的“手动触发”是区别于“自动触发”：
-
-自动触发是指类似这种场景：在注册 KVO 之前设置一个初始值，注册之后，设置一个不一样的值，就可以触发了。
-
-想知道如何手动触发，必须知道自动触发 KVO 的原理：
-
-键值观察通知依赖于 NSObject 的两个方法:  `willChangeValueForKey:` 和 `didChangevlueForKey:` 。在一个被观察属性发生改变之前，  `willChangeValueForKey:` 一定会被调用，这就
-会记录旧的值。而当改变发生后，  `observeValueForKey:ofObject:change:context:` 会被调用，继而 `didChangeValueForKey:` 也会被调用。如果可以手动实现这些调用，就可以实现“手动触发”了。
-
-那么“手动触发”的使用场景是什么？一般我们只在希望能控制“回调的调用时机”时才会这么做。
-
-具体做法如下：
-
-
-
-如果这个  `value` 是  表示时间的 `self.now` ，那么代码如下：最后两行代码缺一不可。
-
-相关代码已放在仓库里。
-
- ```Objective-C
-//  .m文件
-//  Created by https://github.com/ChenYilong
-//  微博@iOS程序犭袁(http://weibo.com/luohanchenyilong/).
-//  手动触发 value 的KVO，最后两行代码缺一不可。
-
-//@property (nonatomic, strong) NSDate *now;
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    _now = [NSDate date];
-    [self addObserver:self forKeyPath:@"now" options:NSKeyValueObservingOptionNew context:nil];
-    NSLog(@"1");
-    [self willChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"2");
-    [self didChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"4");
-}
- ```
-
-但是平时我们一般不会这么干，我们都是等系统去“自动触发”。“自动触发”的实现原理：
-
-
- > 比如调用 `setNow:` 时，系统还会以某种方式在中间插入 `wilChangeValueForKey:` 、  `didChangeValueForKey:` 和 `observeValueForKeyPath:ofObject:change:context:` 的调用。
-
-
-大家可能以为这是因为 `setNow:` 是合成方法，有时候我们也能看到有人这么写代码:
-
- ```Objective-C
-- (void)setNow:(NSDate *)aDate {
-    [self willChangeValueForKey:@"now"]; // 没有必要
-    _now = aDate;
-    [self didChangeValueForKey:@"now"];// 没有必要
-}
- ```
-
-这完全没有必要，不要这么做，这样的话，KVO代码会被调用两次。KVO在调用存取方法之前总是调用 `willChangeValueForKey:`  ，之后总是调用 `didChangeValueForkey:` 。怎么做到的呢?答案是通过 isa 混写（isa-swizzling）。下文《apple用什么方式实现对一个对象的KVO？》会有详述。
-
-
-其中会触发两次，具体原因可以查看文档[Apple document : Key-Value Observing Programming Guide-Manual Change Notification]( https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOCompliance.html#//apple_ref/doc/uid/20002178-SW3 "") ，主要是 `+automaticallyNotifiesObserversForKey:` 类方法了。
-
-
-
-参考链接： [Manual Change Notification---Apple 官方文档](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOCompliance.html#//apple_ref/doc/uid/20002178-SW3) 
-
-### 若一个类有实例变量 `NSString *_foo` ，调用setValue:forKey:时，可以以foo还是 `_foo` 作为key？
-都可以。
-### KVC的keyPath中的集合运算符如何使用？
-
- 1. 必须用在集合对象上或普通对象的集合属性上
- 2. 简单集合运算符有@avg， @count ， @max ， @min ，@sum，
- 3. 格式 @"@sum.age"或 @"集合属性.@max.age"
-
-### KVC和KVO的keyPath一定是属性么？
-
-KVC 支持实例变量，KVO 只能手动支持[手动设定实例变量的KVO实现监听](https://yq.aliyun.com/articles/30483)
-
-![图片](/图片/kvc1.png)
-![图片](/图片/kvc2.png)
-
-
-### 如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？
-
-
-请参考：
-
-  1. [《如何自己动手实现 KVO》](http://tech.glowing.com/cn/implement-kvo/)
-  2. [**KVO for manually implemented properties**]( http://stackoverflow.com/a/10042641/3395008 ) 
-
-### apple用什么方式实现对一个对象的KVO？ 
-
-
-
-[Apple 的文档](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html)对 KVO 实现的描述：
-
- > Automatic key-value observing is implemented using a technique called isa-swizzling... When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class ...
-
-从[Apple 的文档](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html)可以看出：Apple 并不希望过多暴露 KVO 的实现细节。不过，要是借助 runtime 提供的方法去深入挖掘，所有被掩盖的细节都会原形毕露：
-
- > 当你观察一个对象时，一个新的类会被动态创建。这个类继承自该对象的原本的类，并重写了被观察属性的 setter 方法。重写的 setter 方法会负责在调用原 setter 方法之前和之后，通知所有观察对象：值的更改。最后通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa 指针 ( isa 指针告诉 Runtime 系统这个对象的类是什么 ) 指向这个新创建的子类，对象就神奇的变成了新创建的子类的实例。我画了一张示意图，如下所示：
-
-
-<p align="center"><a href="https://mp.weixin.qq.com/s/A4e5h3xgIEh6PInf1Rjqsw"><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfec69ggukj30qh0fvjta.jpg"></a></p>
-
-
- KVO 确实有点黑魔法：
-
-
- > Apple 使用了 ` isa 混写（isa-swizzling）`来实现 KVO 。
-
-
-下面做下详细解释：
-
-键值观察通知依赖于 NSObject 的两个方法:  `willChangeValueForKey:` 和 `didChangevlueForKey:` 。在一个被观察属性发生改变之前，  `willChangeValueForKey:` 一定会被调用，这就会记录旧的值。而当改变发生后， `observeValueForKey:ofObject:change:context:` 会被调用，继而  `didChangeValueForKey:` 也会被调用。可以手动实现这些调用，但很少有人这么做。一般我们只在希望能控制回调的调用时机时才会这么做。大部分情况下，改变通知会自动调用。
-
- 比如调用 `setNow:` 时，系统还会以某种方式在中间插入 `wilChangeValueForKey:` 、  `didChangeValueForKey:`  和 `observeValueForKeyPath:ofObject:change:context:` 的调用。大家可能以为这是因为 `setNow:` 是合成方法，有时候我们也能看到有人这么写代码:
-
- ```Objective-C
-- (void)setNow:(NSDate *)aDate {
-    [self willChangeValueForKey:@"now"]; // 没有必要
-    _now = aDate;
-    [self didChangeValueForKey:@"now"];// 没有必要
-}
- ```
-
-这完全没有必要，不要这么做，这样的话，KVO代码会被调用两次。KVO在调用存取方法之前总是调用 `willChangeValueForKey:`  ，之后总是调用 `didChangeValueForkey:` 。怎么做到的呢?答案是通过 isa 混写（isa-swizzling）。第一次对一个对象调用 `addObserver:forKeyPath:options:context:` 时，框架会创建这个类的新的 KVO 子类，并将被观察对象转换为新子类的对象。在这个 KVO 特殊子类中， Cocoa 创建观察属性的 setter ，大致工作原理如下:
-
- ```Objective-C
-- (void)setNow:(NSDate *)aDate {
-    [self willChangeValueForKey:@"now"];
-    [super setValue:aDate forKey:@"now"];
-    [self didChangeValueForKey:@"now"];
-}
- ```
-这种继承和方法注入是在运行时而不是编译时实现的。这就是正确命名如此重要的原因。只有在使用KVC命名约定时，KVO才能做到这一点。
-
-KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa 指针 ( isa 指针告诉 Runtime 系统这个对象的类是什么 ) 指向这个新创建的子类，对象就神奇的变成了新创建的子类的实例。这在[Apple 的文档](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html)可以得到印证：
-
- > Automatic key-value observing is implemented using a technique called isa-swizzling... When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class ...
-
-
-然而 KVO 在实现中使用了 ` isa 混写（ isa-swizzling）` ，这个的确不是很容易发现：Apple 还重写、覆盖了 `-class` 方法并返回原来的类。 企图欺骗我们：这个类没有变，就是原本那个类。。。
-
-但是，假设“被监听的对象”的类对象是 `MYClass` ，有时候我们能看到对 `NSKVONotifying_MYClass` 的引用而不是对  `MYClass`  的引用。借此我们得以知道 Apple 使用了 ` isa 混写（isa-swizzling）`。具体探究过程可参考[ 这篇博文 ](https://www.mikeash.com/pyblog/friday-qa-2009-01-23.html)。
-
-
-那么 `wilChangeValueForKey:` 、  `didChangeValueForKey:`  和 `observeValueForKeyPath:ofObject:change:context:` 这三个方法的执行顺序是怎样的呢？
-
- `wilChangeValueForKey:` 、  `didChangeValueForKey:` 很好理解，`observeValueForKeyPath:ofObject:change:context:` 的执行时机是什么时候呢？
-
- 先看一个例子：
-
-代码已放在仓库里。
-
- ```Objective-C
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self addObserver:self forKeyPath:@"now" options:NSKeyValueObservingOptionNew context:nil];
-    NSLog(@"1");
-    [self willChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"2");
-    [self didChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"4");
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-    NSLog(@"3");
-}
-
- ```
-
-
-
-如果单单从下面这个例子的打印上， 
-
-顺序似乎是 `wilChangeValueForKey:` 、 `observeValueForKeyPath:ofObject:change:context:` 、 `didChangeValueForKey:` 。
-
-其实不然，这里有一个 `observeValueForKeyPath:ofObject:change:context:`  , 和 `didChangeValueForKey:` 到底谁先调用的问题：如果 `observeValueForKeyPath:ofObject:change:context:` 是在 `didChangeValueForKey:` 内部触发的操作呢？ 那么顺序就是： `wilChangeValueForKey:` 、  `didChangeValueForKey:`  和 `observeValueForKeyPath:ofObject:change:context:` 
-
-不信你把 `didChangeValueForKey:` 注视掉，看下 `observeValueForKeyPath:ofObject:change:context:` 会不会执行。
-
-了解到这一点很重要，正如  [46. 如何手动触发一个value的KVO](https://github.com/ChenYilong/iOSInterviewQuestions/blob/master/01《招聘一个靠谱的iOS》面试题参考答案/《招聘一个靠谱的iOS》面试题参考答案（下）.md#46-如何手动触发一个value的kvo)  所说的：
-
-“手动触发”的使用场景是什么？一般我们只在希望能控制“回调的调用时机”时才会这么做。
-
-而“回调的调用时机”就是在你调用 `didChangeValueForKey:` 方法时。
-
-自定义的KVO实现
-```Objective-C
-MJPerson
-#import "MJPerson.h"
-
-@implementation MJPerson
-
-- (void)setAge:(int)age
-{
-    _age = age;
-    
-    NSLog(@"setAge:");
-}
-
-//- (int)age
-//{
-//    return _age;
-//}
-
-- (void)willChangeValueForKey:(NSString *)key
-{
-    [super willChangeValueForKey:key];
-    
-    NSLog(@"willChangeValueForKey");
-}
-
-- (void)didChangeValueForKey:(NSString *)key
-{
-    NSLog(@"didChangeValueForKey - begin");
-    
-    [super didChangeValueForKey:key];
-    
-    NSLog(@"didChangeValueForKey - end");
-}
-
-@end
-
-继承自MJPerson的子类
-#import "NSKVONotifying_MJPerson.h"
-
-@implementation NSKVONotifying_MJPerson
-
-- (void)setAge:(int)age
-{
-    _NSSetIntValueAndNotify();
-}
-
-// 伪代码
-void _NSSetIntValueAndNotify()
-{
-    [self willChangeValueForKey:@"age"];
-    [super setAge:age];
-    [self didChangeValueForKey:@"age"];
-}
-
-- (void)didChangeValueForKey:(NSString *)key
-{
-    // 通知监听器，某某属性值发生了改变
-    [oberser observeValueForKeyPath:key ofObject:self change:nil context:nil];
-}
-
-@end
-
-
-#import "ViewController.h"
-#import "MJPerson.h"
-#import <objc/runtime.h>
-
-@interface ViewController ()
-@property (strong, nonatomic) MJPerson *person1;
-@property (strong, nonatomic) MJPerson *person2;
-@end
-
-// 反编译工具 - Hopper
-
-@implementation ViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    self.person1 = [[MJPerson alloc] init];
-    self.person1.age = 1;
-    
-    self.person2 = [[MJPerson alloc] init];
-    self.person2.age = 2;
-    
-    
-    NSLog(@"person1添加KVO监听之前 - %@ %@",
-          object_getClass(self.person1),
-          object_getClass(self.person2));
-    NSLog(@"person1添加KVO监听之前 - %p %p",
-          [self.person1 methodForSelector:@selector(setAge:)],
-          [self.person2 methodForSelector:@selector(setAge:)]);
-    
-    // 给person1对象添加KVO监听
-    NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
-    [self.person1 addObserver:self forKeyPath:@"age" options:options context:@"123"];
-    
-    NSLog(@"person1添加KVO监听之后 - %@ %@",
-          object_getClass(self.person1),//类对象地址变了
-          object_getClass(self.person2));
-    NSLog(@"person1添加KVO监听之后 - %p %p",
-          [self.person1 methodForSelector:@selector(setAge:)],//方法在类对象中，地址也变了
-          [self.person2 methodForSelector:@selector(setAge:)]);
-
-    NSLog(@"类对象 - %@ %@",
-          object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
-          object_getClass(self.person2)); // self.person2.isa //MJPerson
-    
-    NSLog(@"类对象地址 - %p %p",
-          object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
-          object_getClass(self.person2)); // self.person2.isa //MJPerson
-
-    NSLog(@"元类对象 - %@ %@",
-          object_getClass(object_getClass(self.person1)), // self.person1.isa.isa //NSKVONotifying_MJPerson
-          object_getClass(object_getClass(self.person2))); // self.person2.isa.isa //MJPerson
-    
-    NSLog(@"元类对象地址 - %p %p",
-          object_getClass(object_getClass(self.person1)), // self.person1.isa.isa //NSKVONotifying_MJPerson
-          object_getClass(object_getClass(self.person2))); // self.person2.isa.isa //MJPerson
-    
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    // NSKVONotifying_MJPerson是使用Runtime动态创建的一个类，是MJPerson的子类
-    // self.person1.isa == NSKVONotifying_MJPerson
-    [self.person1 setAge:21];
-    
-    // self.person2.isa = MJPerson
-//    [self.person2 setAge:22];
-}
-
-- (void)dealloc {
-    [self.person1 removeObserver:self forKeyPath:@"age"];
-}
-
-// 当监听对象的属性值发生改变时，就会调用
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    NSLog(@"监听到%@的%@属性值改变了 - %@ - %@", object, keyPath, change, context);
-}
-
-@end
-```
-给KVO添加筛选条件
- 重写automaticallyNotifiesObserversForKey，需要筛选的key返回NO。
- setter里添加判断后手动触发KVO
-```Objective-C
- + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
-     if ([key isEqualToString:@"age"]) {
-         return NO;
-     }
-     return [super automaticallyNotifiesObserversForKey:key];
- }
- ​
- - (void)setAge:(NSInteger)age {
-     if (age >= 18) {
-         [self willChangeValueForKey:@"age"];
-         _age = age;
-         [self didChangeValueForKey:@"age"];
-     }else {
-         _age = age;
-     }
- }
-```
 
 ### IBOutlet连出来的视图属性为什么可以被设置成weak?
 
@@ -1333,13 +590,6 @@ void _NSSetIntValueAndNotify()
 - [《第52题 IBOutlet连出来的视图属性为什么可以被设置成weak? #51》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/51 ) 
 - [《关于weak的一个问题 #39》]( https://github.com/ChenYilong/iOSInterviewQuestions/issues/39 ) 
 
-### IB中User Defined Runtime Attributes如何使用？ 
-
-它能够通过KVC的方式配置一些你在interface builder 中不能配置的属性。当你希望在IB中作尽可能多得事情，这个特性能够帮助你编写更加轻量级的viewcontroller
-
-<p align="center"><a href="https://mp.weixin.qq.com/s/A4e5h3xgIEh6PInf1Rjqsw"><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfecd2fpfuj307907q3yt.jpg"></a></p>
-
-
 ### 如何调试BAD_ACCESS错误
 
 
@@ -1350,9 +600,6 @@ void _NSSetIntValueAndNotify()
  3. 设置全局断点快速定位问题代码所在行
  4. Xcode 7 已经集成了BAD_ACCESS捕获功能：**Address Sanitizer**。
 用法如下：在配置中勾选✅Enable Address Sanitizer
-
-<p align="center"><a href="https://mp.weixin.qq.com/s/A4e5h3xgIEh6PInf1Rjqsw"><img src="http://ww4.sinaimg.cn/large/006y8mN6gy1g71n53zsvpj30qc09sdh7.jpg"></a></p>
-
 
 ### lldb（gdb）常用的调试命令？
 
@@ -1615,7 +862,8 @@ int main(int argc, const char * argv[]) {
 ### class的结构
 
 方法调用轨迹：
-![图片](/图片/isa-superclass.png)
+
+![1653926-120b85207083df9c.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ba8c0651157f4add9a3ccd5b080075a7~tplv-k3u1fbpfcp-watermark.image?)
 
 ```Objective-C
 #ifndef MJClassInfo_h
@@ -1842,237 +1090,8 @@ int main(int argc, const char * argv[]) {
 
 ```
 
-###  通知的原理
-nsnotification发送在什么线程，默认响应就在什么线程，和注册位置无关。所以说NSNotification是线程安全的。
-
-通知是同步的。子线程发送消息，就会变成异步.可以使用addObserverForName：object: queue: usingBlock:。
-
-NSNotificationQueue是异步发送，也就是延迟发送。在同一个线程发送和响应
-
-不移除通知，iOS9.0之后，不会crash，原因：通知中心对观察者的引用是weak
-
-多次添加同一个通知，会导致发送一次这个通知的时候，响应多次通知回调。因为在添加的时候不会做去重操作   
-
-NSNotificationQueue和runloop的关系
-     NSNotificationQueue将通知添加到队列中时，其中postringStyle参数就是定义通知调用和runloop状态之间关系。
-
-     该参数的三个可选参数：
-     NSPostWhenIdle：runloop空闲的时候回调通知方法
-     NSPostASAP：runloop在执行timer事件或sources事件完成的时候回调通知方法
-     NSPostNow：runloop立即回调通知方法
-     
-     NSNotificationQueue只是把通知添加到通知队列，并不会主动发送
-     NSNotificationQueue依赖runloop，如果线程runloop没开启就不生效。
-     NSNotificationQueue发送通知需要runloop循环中会触发NotifyASAP和NotifyIdle从而调用NSNotificationCenter
-     NSNotificationCenter 内部的发送方法其实是同步的，所以NSNotificationQueue的异步发送其实是延迟发送。
-
-      
-```Objective-C
- NSNotification ： 存储通知信息，包含NSNotificationName通知名、对象objetct、useInfo字典
- @interface NSNotification : NSObject
-  @property (readonly, copy) NSNotificationName name;
- @property (nullable, readonly, retain) id object;
- @property (nullable, readonly, copy) NSDictionary *userInfo;
- ```
-NSNotificationCenter ： 单例实现。并且通知中心维护了一个包含所有注册的观察者的集合
-  
-NSObserverModel:定义了一个观察者模型用于保存观察者，通知消息名，观察者收到通知后执行代码所在的操作队列和执行代码的回调
-```Objective-C
- @interface NSObserverModel : NSObject
- @property (nonatomic, strong) id observer;  //观察者对象
- @property (nonatomic, assign) SEL selector;  //执行的方法
- @property (nonatomic, copy) NSString *notificationName; //通知名字
- @property (nonatomic, strong) id object;  //携带参数
- @property (nonatomic, strong) NSOperationQueue *operationQueue;//队列
- @property (nonatomic, copy) OperationBlock block;  //回调
- ```
-向通知中心注册观察者，源码如下：
-```Objective-C
- - (void)addObserver:(id)observer selector:(SEL)aSelector name:(nullable NSString*)aName object:(nullable id)anObject{
-  //如果不存在，那么即创建
-     if (![self.obsetvers objectForKey:aName]) {
-         NSMutableArray *arrays = [[NSMutableArray alloc]init];
-        // 创建数组模型
-         NSObserverModel *observerModel = [[NSObserverModel alloc]init];
-         observerModel.observer = observer;
-         observerModel.selector = aSelector;
-         observerModel.notificationName = aName;
-         observerModel.object = anObject;
-         [arrays addObject:observerModel];
-       //填充进入数组
-         [self.obsetvers setObject:arrays forKey:aName];
-  
-  
-     }else{
-  
-         //如果存在，取出来，继续添加减去即可
-         NSMutableArray *arrays = (NSMutableArray*)[self.obsetvers objectForKey:aName];
-         // 创建数组模型
-         NSObserverModel *observerModel = [[NSObserverModel alloc]init];
-         observerModel.observer = observer;
-         observerModel.selector = aSelector;
-         observerModel.notificationName = aName;
-         observerModel.object = anObject;
-         [arrays addObject:observerModel];
-   }
- }
- ```
-发送通知
-```Objective-C  
- - (void)postNotification:(YFLNotification *)notification
- {
-     //name 取出来对应观察者数组，执行任务
-     NSMutableArray *arrays = (NSMutableArray*)[self.obsetvers objectForKey:notification.name];
-  
-     [arrays enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-  
-         //取出数据模型
-         NSObserverModel *observerModel = obj;
-         id observer = observerModel.observer;
-         SEL secector = observerModel.selector;
-  
-         if (!observerModel.operationQueue) {
- #pragma clang diagnostic push
- #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-             [observer performSelector:secector withObject:notification];
- #pragma clang diagnostic pop
-         }else{
-  
-             //创建任务
-             NSBlockOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-  
-                 //这里用block回调出去
-                 observerModel.block(notification);
-  
-             }];
-  
-             // 如果添加观察者 传入 队列，那么就任务放在队列中执行(子线程异步执行)
-             NSOperationQueue *operationQueue = observerModel.operationQueue;
-             [operationQueue addOperation:operation];
-  
-         }
-  
-     }];
-  
- }
-```
 
 
-### Category
-compile source按照编译顺序，后编译的会执行，并且分类的优先级比本类高。分类创建的属性，没有成员变量，无法保存住属性值。通过runtime动态将分类的方法合并到类对象、元类对象的方法列表中。class extension (匿名分类\类扩展)在编译期就加入到方法列表中了。Category是运行时加入的
-
-category 的实现原理，如何被加载的?
- category 编译完成的时候和类是分开的，在程序运行时才通过runtime合并在一起。
- _objc_init是Objcet-C runtime的入口函数，主要读取Mach-O文件完成OC的内存布局，以及初始化runtime相关数据结构。这个函数里会调用到两外两个函数，map_images和load_Images
- map_images追溯进去发现其内部调用了_read_images函数，_read_images会读取各种类及相关分类的信息。
- 读取到相关的信息后通过addUnattchedCategoryForClass函数建立类和分类的关联。
- 建立关联后通过remethodizeClass -> attachCategories重新规划方法列表、协议列表、属性列表，把分类的内容合并到主类
- 在map_images处理完成后，开始load_images的流程。首先会调用prepare_load_methods做加载准备，这里面会通过schedule_class_load递归查找到NSObject然后从上往下调用类的load方法。
- 处理完类的load方法后取出非懒加载的分类通过add_category_to_loadable_list添加到一个全局列表里
- 最后调用call_load_methods调用分类的load函数
- 
- 分类中添加实例变量和属性分别会发生什么，还是什么时候会发生问题？
-     添加实例变量编译时报错
-     添加属性没问题，但是在运行的时候使用这个属性程序crash。原因是没有实例变量也没有set/get方法
-     
- 分类中为什么不能添加成员变量（runtime除外）？
-      类对象在创建的时候已经定好了成员变量，但是分类是运行时加载的，无法添加。
-      类对象里的 class_ro_t 类型的数据在运行期间不能改变，再添加方法和协议都是修改的 class_rw_t 的数据。
-      分类添加方法、协议是把category中的方法，协议放在category_t结构体中，再拷贝到类对象里面。但是category_t里面没有成员变量列表。
-      虽然category可以写上属性，其实是通过关联对象实现的，需要手动添加setter & getter。    
-
-![图片](/图片/category.png)
-![图片](/图片/category2.png)
 
 
-因为分类会覆盖本类的同名方法，想要调用本类方法怎么做？
- 倒序遍历方法列表，找到相同的方法名就行，因为本类的在方法列表第一个
- 
- ```Objective-C
-void invokeOriginalMethod(id target , SEL selector) {
-    uint count;
-    Method *list = class_copyMethodList([target class], &count);
-    for ( int i = count - 1 ; i >= 0; i--) {
-        Method method = list[i];
-        SEL name = method_getName(method);
-        IMP imp = method_getImplementation(method);
-        if (name == selector) {
-            ((void (*)(id, SEL))imp)(target, name);
-            break;
-        }
-    }
-    free(list);
-}
 
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-        MJPerson *person = [[MJPerson alloc] init];
-        invokeOriginalMethod(person, @selector(run));
-        
-    }
-    return 0;
-}
- ```
-
-load方法
-![图片](/图片/load.png)
-
-
-initialize方法
-![图片](/图片/initialize.png)
-
-
-### 关联对象
-    使用关联对象，需要在主对象 dealloc 的时候手动释放么？
-     不需要，主对象通过 dealloc -> object_dispose -> object_remove_assocations 进行关联对象的释放
-     
-```Objective-C     
-#import "MJPerson+Test.h"
-#import <objc/runtime.h>
-
-@implementation MJPerson (Test)
-/**
- void objc_setAssociatedObject(id _Nonnull object, const void * _Nonnull key,
-                         id _Nullable value, objc_AssociationPolicy policy)
- AssociationsManager = {static AssociationsHashMap map}
- AssociationsHashMap map = [{object : AssociationsMap = {key : Associations = {policy,value}}}]
- */
-- (void)setName:(NSString *)name  //key确保唯一就行，_cmd、@selector(name)、static类型的字符串都可以作为key
-{
-    objc_setAssociatedObject(self, @selector(name), name, OBJC_ASSOCIATION_COPY_NONATOMIC);
-}
-
-- (NSString *)name
-{
-    // 隐式参数
-    // _cmd == @selector(name)
-    return objc_getAssociatedObject(self, _cmd);
-}
-
-- (void)setWeight:(int)weight
-{
-    objc_setAssociatedObject(self, @selector(weight), @(weight), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (int)weight
-{
-    // _cmd == @selector(weight)
-    return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-
-@end
-```
-     
-关联对象的实现和原理
- 关联对象不存储在关联对象本身内存中，而是存储在一个全局容器中；
- 这个容器是由 AssociationsManager 管理并在它维护的一个单例 Hash 表AssociationsHashMap ；
-
- 第一层 AssociationsHashMap：类名object ：bucket（map）
- 第二层 ObjectAssociationMap：key（name）：ObjcAssociation（value和policy）
- 
- AssociationsManager 使用 AssociationsManagerLock 自旋锁保证了线程安全。
- 通过objc_setAssociatedObject给某对象添加关联值
- 通过objc_getAssociatedObject获取某对象的关联值
- 通过objc_removeAssociatedObjects移除某对象的关联值 
-
-![图片](/图片/关联对象结构.png)
