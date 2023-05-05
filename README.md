@@ -8,3 +8,4 @@
 | RunLoop | [runloop原理和使用](runtime/runloop原理和使用.md)|
 | 多线程 | [多线程](multi-threading/多线程.md) <br> [@synchronized原理](block/synchronized.md) |
 | 内存管理 | [内存管理](memory-management/iOS下的内存管理.md) |
+| 架构设计 | [架构设计](architecture-and-design-patterns/架构设计.md) |
