@@ -2,7 +2,7 @@
 
 | Project | Article |
 |:-------:|:------|
-| objective-c | [OC对象本质相关面试题](objective-c/OC对象本质相关面试题.md) <br> [Notification相关面试题](objective-c/Notification相关面试题.md) <br> [KVC相关面试题](objective-c/KVC相关面试题.md) <br> [KVO相关面试题](objective-c/KVO相关面试题.md) <br> [Category相关面试题](objective-c/Category相关面试题.md) |
+| objective-c | [OC对象本质](objective-c/OC对象本质.md) <br> [Notification](objective-c/Notification.md) <br> [KVC](objective-c/KVC.md) <br> [KVO](objective-c/KVO.md) <br> [Category](objective-c/Category.md) |
 | Block | [block的内存管理](block/block的内存管理.md) <br> [block的循环引用](block/block的循环引用.md) |
 | Runtime | [runtime原理和使用](runtime/runtime原理和使用.md)|
 | RunLoop | [runloop原理和使用](runloop/runloop原理和使用.md)|
