@@ -2,7 +2,7 @@
 
 | Project | Article |
 |:-------:|:------|
-| objective-c | [一个NSObject对象占用多少内存空间?](objective-c/一个NSObject对象占用多少内存空间.md) <br> [class和metaclass](objective-c/class和metaclass.md) <br> [isa结构和方法调用轨迹](objective-c/isa结构和方法调用轨迹.md) <br> [oc对象](objective-c/oc对象.md) <br> [kvc和kvo](objective-c/kvc和kvo.md) <br> [category原理和使用](objective-c/category原理和使用.md) |
+| objective-c | [oc对象](objective-c/oc对象.md) <br> [kvc和kvo](objective-c/kvc和kvo.md) <br> [category原理和使用](objective-c/category原理和使用.md) <br> [KVC相关面试题](objective-c/KVC相关面试题.md) <br> [KVO相关面试题](objective-c/KVO相关面试题.md) |
 | Block | [block的内存管理](block/block的内存管理.md) <br> [block的循环引用](block/block的循环引用.md) |
 | Runtime | [runtime原理和使用](runtime/runtime原理和使用.md)|
 | RunLoop | [runloop原理和使用](runloop/runloop原理和使用.md)|
