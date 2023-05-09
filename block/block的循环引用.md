@@ -58,7 +58,15 @@ self.block();
 在block内如何修改block外部变量？（38题）答案如下：
 
 ### 在block内如何修改block外部变量？
+
+
+注：本题代码请在仓库中查看以 Demo38 开头的工程（公众号请点击原文查看 GitHub 仓库）
+ 
+先描述下问题：
+
 默认情况下，在block中访问的外部变量是复制过去的，即：**写操作不对原变量生效**。但是你可以加上 `__block` 来让其写操作生效，示例代码如下:
+
+
  ```Objective-C
     __block int a = 0;
     void (^foo)(void) = ^{ 
@@ -67,18 +75,465 @@ self.block();
     foo(); 
     //这里，a的值被修改为1
  ```
-面试官肯定会追问“为什么写操作就生效了？” 实际上需要有几个必要条件：
+
+
+这是网上常见的描述。你同样可以在面试中这样回答，但你并没有答到“点子上”。真正的原因，并没有这么“神奇”，而且这种说法也有点牵强。面试官肯定会追问“为什么写操作就生效了？” 实际上需要有几个必要条件：
+
  - "将 auto 从栈 copy 到堆"
  - “将 auto 变量封装为结构体(对象)”
 
 
 我会将本问题分下面几个部分，分别作答：
+
  - 该问题研究的是哪种 `block` 类型?
  - 在 `block` 内为什么不能修改 `block` 外部变量
  - 最优解及原理解析
  - 其他几种解法
  - 改外部变量必要条件之"将 auto 从栈 copy 到堆"
  - 改外部变量必要条件之“将 auto 变量封装为结构体(对象)”
+ 
+
+ 该问题研究的是哪种 block 类型?
+-------------
+
+今天我们讨论是 `__NSMallocBlock__` (或者叫 `_NSConcreteMallocBlock`，两者是叫法不同，指的是同一个东西)。
+
+
+Block 类型| 环境
+:-------------:|:-------------:
+`__NSGlobalBlock__` | 没有访问 auto 变量
+`__NSStackBlock__` | 访问了 auto 变量
+`__NSMallocBlock__` | `__NSStackBlock__` 调用了 copy
+
+每一种类型的 block 调用 copy 后的结果如下所示
+
+
+Block 的类 | 副本源的配置存储域| 复制效果
+:-------------:|:-------------:|:-------------:
+`_NSConcreteGlobalBlock`| 程序的数据区域 | 什么也不做
+`_NSConcreteStackBlock` | 栈|  从栈复制到堆
+`_NSConcreteMallocBlock`| 堆 | 引用计数增加
+
+
+在 ARC 环境下，编译器会根据情况自动将栈上的 block 复制到堆上，比如以下情况：
+
+- block 作为函数返回值时
+- 将 block 赋值给 __strong 指针时
+- block 作为 Cocoa API 中方法名含有 using Block 的方法参数时
+- Block 作为 GCD APIE 的方法参数时
+
+
+![https://github.com/ChenYilong](https://tva1.sinaimg.cn/large/007S8ZIlly1gfiwolczn7j30sa0xaq8k.jpg)
+
+更多细节可以查看：
+
+
+![https://github.com/ChenYilong](https://tva1.sinaimg.cn/large/007S8ZIlly1gfkx49l2xxj30u012bqfs.jpg)
+
+
+![https://github.com/ChenYilong](https://tva1.sinaimg.cn/large/007S8ZIlly1gfl31akk5hj30zg0lojz9.jpg)
+
+ 在 `block` 内为什么不能修改 `block` 外部变量
+-------------
+
+
+
+为了保证 block 内部能够正常访问外部的变量，block 有一个变量捕获机制。
+
+
+![https://github.com/ChenYilong](https://tva1.sinaimg.cn/large/007S8ZIlly1gfks99t8fej30u017uqf8.jpg)
+
+
+
+
+首先分析一下为什么不能修改：
+
+
+**Block不允许修改外部变量的值**。Apple这样设计，应该是考虑到了block的特殊性，block 本质上是一个对象，block 的花括号区域是对象内部的一个函数，变量进入 花括号，实际就是已经进入了另一个函数区域---改变了作用域。在几个作用域之间进行切换时，如果不加上这样的限制，变量的可维护性将大大降低。又比如我想在block内声明了一个与外部同名的变量，此时是允许呢还是不允许呢？只有加上了这样的限制，这样的情景才能实现。
+
+
+所以 Apple 在编译器层面做了限制，如果在 block 内部试图修改 auto 变量（无修饰符），那么直接编译报错。
+你可以把编译器的这种行为理解为：对 block 内部捕获到的 auto 变量设置为只读属性---不允许直接修改。
+
+从代码层面进行证明：
+
+写一段 block 代码：
+
+ ```Objective-C
+//
+//  main.m
+//  Demo_38_block_edit_var
+//
+//  Created by chenyilong on 2020/6/3.
+//  Copyright © 2020 ChenYilong. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "AppDelegate.h"
+typedef void (^CYLBlock)(void);
+int main(int argc, char * argv[]) {
+    NSString * appDelegateClassName;
+    @autoreleasepool {
+        appDelegateClassName = NSStringFromClass([AppDelegate class]);
+        int age = 10;
+        CYLBlock block = ^{
+            NSLog(@"age is %@", @(age));
+        };
+        block();
+    }
+    return UIApplicationMain(argc, argv, nil, appDelegateClassName);
+}
+
+ ```
+
+使用如下命令来查看对应的 C++ 代码：
+
+
+ ```shell
+ xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m
+ ```
+
+ 代码如下所示：
+ 
+![](https://tva1.sinaimg.cn/large/007S8ZIlly1gffg4w6nrmj30x10u04nr.jpg)
+
+
+
+ ```Java
+
+typedef void (*CYLBlock)(void);
+
+struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+  int age;
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _age, int flags=0) : age(_age) {
+    impl.isa = &_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+  int age = __cself->age; // bound by copy
+
+            NSLog((NSString *)&__NSConstantStringImpl__var_folders_2w_wgnctp1932z76770l8lrrrbm0000gn_T_main_0d7ffa_mi_0, ((NSNumber *(*)(Class, SEL, int))(void *)objc_msgSend)(objc_getClass("NSNumber"), sel_registerName("numberWithInt:"), (int)(age)));
+        }
+
+static struct __main_block_desc_0 {
+  size_t reserved;
+  size_t Block_size;
+} __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0)};
+int main(int argc, char * argv[]) {
+    NSString * appDelegateClassName;
+    /* @autoreleasepool */ { __AtAutoreleasePool __autoreleasepool; 
+        appDelegateClassName = NSStringFromClass(((Class (*)(id, SEL))(void *)objc_msgSend)((id)objc_getClass("AppDelegate"), sel_registerName("class")));
+        int age = 10;
+        CYLBlock block = ((void (*)())&__main_block_impl_0((void *)__main_block_func_0, &__main_block_desc_0_DATA, age));
+        ((void (*)(__block_impl *))((__block_impl *)block)->FuncPtr)((__block_impl *)block);
+    }
+    return UIApplicationMain(argc, argv, __null, appDelegateClassName);
+}
+static struct IMAGE_INFO { unsigned version; unsigned flag; } _OBJC_IMAGE_INFO = { 0, 2 };
+
+ ```
+
+
+最优解及原理解析
+-------------
+
+说最优解前，先来说一下
+
+其他几种解法
+-------------
+
+  - 加 static (放在静态存储区/全局初始化区 ) 缺点是会永久存储，内存开销大。
+  - 将变量设置为全局变量，缺点也是内存开销大。
+
+将变量设置为全局变量
+
+![将变量设置为全局变量](https://tva1.sinaimg.cn/large/007S8ZIlly1gfkzpoivkij31470u04qp.jpg)
+
+原理是 block 内外可直接访问全局变量
+
+![](https://tva1.sinaimg.cn/large/007S8ZIlly1gfkzqxd6vkj31460u07wh.jpg)
+
+加 static (放在静态存储区/全局初始化区)
+
+原理是 block 内部对外部auto变量进行指针捕获
+
+![加 static (放在静态存储区/全局初始化区)](https://tva1.sinaimg.cn/large/007S8ZIlly1gfkzqiy0myj314a0u0b29.jpg)
+
+下面介绍下最优解 
+
+ -  使用 `__block` 关键字
+
+![https://github.com/ChenYilong](https://tva1.sinaimg.cn/large/007S8ZIlly1gfks7378ktj30sk1auqby.jpg)
+
+
+改外部变量必要条件之"将 auto 从栈 copy 到堆"
+-------------
+
+之所以要放堆里，原因是栈中内存管理是由系统管理，出了作用域就会被回收， 堆中才是可以由我们程序员管理。
+
+这里先说结论：
+
+> 在 ARC 中无论是否添加 `__block` ，block 中的 auto 变量都会被从栈上 copy 到堆上。
+
+下面证明下该结论：
+
+先认识一下 `__block` 修饰符：
+
+ - `__block` 可以用于解决 block 内部无法修改 auto 变量值的问题
+ - `__block` 不能修饰全局变量、静态、变量（static)
+
+编译器会将 `__block`  变量包装成一个对象
+
+
+ ```Objective-C
+//
+//  main.m
+//  Demo_38_block_edit_var
+//
+//  Created by chenyilong on 2020/6/3.
+//  Copyright © 2020 ChenYilong. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "AppDelegate.h"
+typedef void (^CYLBlock)(void);
+int main(int argc, char * argv[]) {
+    NSString * appDelegateClassName;
+    @autoreleasepool {
+        appDelegateClassName = NSStringFromClass([AppDelegate class]);
+        __block int age = 10;//__block 可替换为 __block auto (auto 可省略)
+        CYLBlock block = ^{
+            age = 20;
+            NSLog(@"age is %@", @(age));
+        };
+        block();
+    }
+    return UIApplicationMain(argc, argv, nil, appDelegateClassName);
+}
+
+ ```
+
+![https://github.com/ChenYilong](https://tva1.sinaimg.cn/large/007S8ZIlly1gffiapgoefj31420u0b29.jpg)
+
+
+
+
+
+下面用代码证明下外部变量被 copy 到堆上：
+
+我们可以打印下内存地址来进行验证：
+
+ ```Objective-C
+    __block int a = 0;
+    NSLog(@"定义前：%p", &a);         //栈区
+    void (^foo)(void) = ^{
+        a = 1;
+        NSLog(@"block内部：%p", &a);    //堆区
+    };
+    NSLog(@"定义后：%p", &a);         //堆区
+    foo();
+ ```
+
+ ```Objective-C
+2016-05-17 02:03:33.559 LeanCloudChatKit-iOS[1505:713679] 定义前：0x16fda86f8
+2016-05-17 02:03:33.559 LeanCloudChatKit-iOS[1505:713679] 定义后：0x155b22fc8
+2016-05-17 02:03:33.559 LeanCloudChatKit-iOS[1505:713679] block内部： 0x155b22fc8
+ ```
+ 
+ 
+“定义后”和“block内部”两者的内存地址是一样的，我们都知道 block 内部的变量会被 copy 到堆区，“block内部”打印的是堆地址，因而也就可以知道，“定义后”打印的也是堆的地址。
+ 
+ 
+ 那么如何证明“block内部”打印的是堆地址？
+ 
+ 把三个16进制的内存地址转成10进制就是：
+ 
+ 1. 定义后前：6171559672
+ 2. block内部：5732708296
+ 3. 定义后：5732708296
+ 
+中间相差438851376个字节，也就是 418.5M 的空间，因为堆地址要小于栈地址，又因为 iOS 中主线程的栈区内存只有1M，Mac也只有8M，既然 iOS 中一条线程最大的栈空间是1M，显然a已经是在堆区了。
+
+这也证实了：a 在定义前是栈区，但只要进入了 block 区域，就变成了堆区。
+
+从代码角度讲：
+
+
+
+ ```Objective-C
+__block int a = 0; // 【a 会被编译成一个结构体，a struct 里会有一个 a 存储 0】
+NSLog(@"定义前：%p", &a); //栈区
+void (^foo)(void) = ^{
+a = 1;
+NSLog(@"block内部：%p", &a); //堆区
+};
+ ```
+
+
+这里会执行 copy 操作，下面是编译后的 copy 方法，a struct 会被拷贝到堆里，自然里面的 a struct->a 也会拷贝到堆里
+
+ ```Objective-C
+static void __main_block_copy_0(struct __main_block_impl_0*dst, struct __main_block_impl_0*src) {_Block_object_assign((void*)&dst->a, (void*)src->a, 8/*BLOCK_FIELD_IS_BYREF*/);}
+ ```
+
+
+同理可证：
+
+ > 在 ARC 中无论是否添加 `__block` ，block 中的 auto 变量都会被从栈上 copy 到堆上。
+ 
+ 
+ 证明代码如下：
+
+ ```Objective-C
+     __block int a = 0;
+    int b = 1;
+    NSLog(@"定义前外部：a：%p", &a);         //栈区
+    NSLog(@"定义前外部：b：%p", &b);         //栈区
+    void (^foo)(void) = ^{
+        a = 1;
+        NSLog(@"block内部：a：%p", &a);     //堆区
+        NSLog(@"block内部：b：%p", &b);     //堆区
+    };
+    NSLog(@"定义后外部：a：%p", &a);         //堆区
+    NSLog(@"定义后外部：b：%p", &b);         //栈区
+    foo();
+ ```
+
+打印是：
+
+
+ ```Objective-C
+2020-06-08 12:59:43.633180+0800 Demo_38_block_edit_var[35375:7813379] 定义前外部：a：0x7ffee3d81078
+2020-06-08 12:59:43.633328+0800 Demo_38_block_edit_var[35375:7813379] 定义前外部：b：0x7ffee3d8105c
+2020-06-08 12:59:43.633535+0800 Demo_38_block_edit_var[35375:7813379] 定义后外部：a：0x600003683578
+2020-06-08 12:59:43.633640+0800 Demo_38_block_edit_var[35375:7813379] 定义后外部：b：0x7ffee3d8105c
+2020-06-08 12:59:43.633754+0800 Demo_38_block_edit_var[35375:7813379] block内部：a：0x600003683578
+2020-06-08 12:59:43.633859+0800 Demo_38_block_edit_var[35375:7813379] block内部：b：0x6000038ff628
+
+ ```
+
+ `__block` 关键字修饰后，int类型也从4字节变成了32字节，这是 Foundation 框架 malloc 出来的。这也同样能证实上面的结论。（PS：居然比 NSObject alloc 出来的 16  字节要多一倍）。
+
+
+
+改外部变量必要条件之“将 auto 变量封装为结构体(对象)”
+-------------
+
+
+
+正如上文提到的：
+
+ > 我们都知道：**Block不允许修改外部变量的值**，这里所说的外部变量的值，指的是栈中 auto 变量。`__block` 作用是将 auto 变量封装为结构体(对象)，在结构体内部新建一个同名 auto 变量，block 内截获该结构体的指针，在 block 中使用自动变量时，使用指针指向的结构体中的自动变量。于是就可以达到修改外部变量的作用。
+ 
+如果把编译器的“不允许修改外部”这种行为理解为：对 block 内部捕获到的 auto 变量设置为只读属性---不允许直接修改。
+
+那么 `__block` 的作用就是创建了一个函数，允许你通过这个函数修改“对外只读”的属性。
+
+属性对外只读，但是对外提供专门的修改值的方法，在开发中这种做法非常常见。
+
+自动变量生成的结构体：
+
+
+ ```Objective-C
+struct __Block_byref_c_0 {
+  void *__isa;
+__Block_byref_c_0 *__forwarding;
+ int __flags;
+ int __size;
+//自动变量
+ int c;
+};
+ ```
+
+
+block:
+
+ ```Objective-C
+struct __main_block_impl_0 {
+  struct __block_impl impl;
+  struct __main_block_desc_0* Desc;
+//截获的结构体指针
+  __Block_byref_c_0 *c; // by ref
+  __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, __Block_byref_c_0 *_c, int flags=0) : c(_c->__forwarding) {
+    impl.isa = &_NSConcreteStackBlock;
+    impl.Flags = flags;
+    impl.FuncPtr = fp;
+    Desc = desc;
+  }
+};
+ ```
+
+block中使用自动变量：
+
+
+ ```Objective-C
+static int __main_block_func_0(struct __main_block_impl_0 *__cself, int a) {
+//指针
+  __Block_byref_c_0 *c = __cself->c; // bound by ref
+            (c->__forwarding->c) = 11;
+            a = a + (c->__forwarding->c);
+            return a;
+}
+ ```
+ 
+ 
+
+理解到这是因为添加了修改只读属性的方法，而非所谓的“写操作生效”，这一点至关重要，要不然你如何解释下面这个现象：
+
+以下代码编译可以通过，并且在 block 中成功将 a 的从 Tom 修改为 Jerry。
+      
+ ```Objective-C
+    NSMutableString *a = [NSMutableString stringWithString:@"Tom"];
+    void (^foo)(void) = ^{
+        a.string = @"Jerry";
+        //a = [NSMutableString stringWithString:@"William"]; //编译报错
+    };
+    foo();
+ ```
+
+
+ 
+ 同理如下操作也是允许的： 
+ 
+ 
+ ```Objective-C
+//
+//  main.m
+//  Demo_38_block_edit_var
+//
+//  Created by chenyilong on 2020/6/3.
+//  Copyright © 2020 ChenYilong. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "AppDelegate.h"
+typedef void (^CYLBlock)(void);
+int main(int argc, char * argv[]) {
+    NSString * appDelegateClassName;
+    @autoreleasepool {
+        appDelegateClassName = NSStringFromClass([AppDelegate class]);
+        NSMutableArray *array = [[NSMutableArray array] init];
+        CYLBlock block = ^{
+            [array addobject: 0"123"];
+            array = nil; //编译报错
+        };
+        block();
+    }
+    return UIApplicationMain(argc, argv, nil, appDelegateClassName);
+}
+
+ ```
+
+
+以上都是在使用变量而非修改变量，所以不会编译报错。
+
+![](https://tva1.sinaimg.cn/large/007S8ZIlly1gfl28fzqzhj31k40m2amd.jpg)
+
  
 ### 在 `block` 内为什么不能修改 `block` 外部变量
 为了保证 block 内部能够正常访问外部的变量，block 有一个变量捕获机制。
