@@ -3,7 +3,7 @@
 结论：受限于内存分配的机制，一个 NSObject对象都会分配 16Bit 的内存空间。但是实际上在64位下，只使用了 8bit，在32位下，只使用了 4bit。 首先NSObject对象的本质是一个NSObject_IMPL结构体。我们通过以下命令将 Objecttive-C 转化为 C\C++
 
 // 如果需要连接其他框架，可以使用 -framework 参数，例如 -framework UIKit xcrun -sdk iphoneos clang -arch arm64 -rewrite-objc main.m -o main.cpp 通过将main.m转化为main.cpp 文件可以看出它的结构包含一个isa指针：
-
+```Objective-C
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import <malloc/malloc.h>

@@ -1,3 +1,4 @@
+```Objective-C
 @interface MJPerson : NSObject
 {
     int _age;

@@ -1,5 +1,5 @@
 isa的结构
-
+```Objective-C
 struct mj_objc_class {
     Class isa;
     Class superclass;
@@ -72,7 +72,8 @@ int main(int argc, const char * argv[]) {
 }
 
 方法调用轨迹：
-https://camo.githubusercontent.com/30c9ea1511547007641ed3035e73636ecdd436a8def75489e5c7c8cdbeb18d74/68747470733a2f2f70312d6a75656a696e2e62797465696d672e636f6d2f746f732d636e2d692d6b3375316662706663702f62613863303635313135376634616464396133636364356230383030373561377e74706c762d6b3375316662706663702d77617465726d61726b2e696d6167653f
+![对象方法调用轨迹](objective-c/对象方法调用轨迹.png)
+
 
 类结构：
 #ifndef MJClassInfo_h
