@@ -10,28 +10,28 @@
 - Block
     - [Block的数据类型、内存布局、变量捕获、Block的种类、内存管理、Block的修饰符、循环引用](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Block的数据类型、内存布局、变量捕获、Block的种类、内存管理、Block的修饰符、循环引用.md) 
 - Runtime 
- - [isa详解、class的结构、方法缓存cache_t](isa详解、class的结构、方法缓存cache_t.md) 
- - [objc_msgSend的三个阶段(消息发送、动态解析方法、消息转发)、super的本质](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/objc_msgSend的三个阶段(消息发送、动态解析方法、消息转发)、super的本质.md) 
- - [Runtime的相关应用](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Runtime的相关应用.md) 
+  - [isa详解、class的结构、方法缓存cache_t](isa详解、class的结构、方法缓存cache_t.md) 
+  - [objc_msgSend的三个阶段(消息发送、动态解析方法、消息转发)、super的本质](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/objc_msgSend的三个阶段(消息发送、动态解析方法、消息转发)、super的本质.md) 
+  - [Runtime的相关应用](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Runtime的相关应用.md) 
 - Runloop 
- - [两种RunloopMode、RunLoopMode中的Source0、Source1、Timer、Observer](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/两种RunloopMode、RunLoopMode中的Source0、Source1、Timer、Observer.md) 
- - [Runloop的应用](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Runloop的应用.md) 
+  - [两种RunloopMode、RunLoopMode中的Source0、Source1、Timer、Observer](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/两种RunloopMode、RunLoopMode中的Source0、Source1、Timer、Observer.md) 
+  - [Runloop的应用](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Runloop的应用.md) 
 - 多线程 
- - [主队列、串行队列、并行队列、全局并发队列](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/主队列、串行队列、并行队列、全局并发队列.md) 
- - [dispatch_get_global_queue与dispatch_(a)sync、单例、线程死锁](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/dispatch_get_global_queue与dispatch_async、单例、线程死锁.md) 
- - [栅栏函数dispatch_barrier_async、信号量dispatch_semaphore](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/栅栏函数dispatch_barrier_async、信号量dispatch_semaphore.md) 
- - [线程调度组dispatch_group、事件源dispatch Source](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/线程调度组dispatch_group、事件源dispatchSource.md) 
- - [了解iOS中的10个线程锁,与线程锁类型：自旋锁、互斥锁、递归锁](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/了解iOS中的10个线程锁,与线程锁类型：自旋锁、互斥锁、递归锁.md) 
+  - [主队列、串行队列、并行队列、全局并发队列](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/主队列、串行队列、并行队列、全局并发队列.md) 
+  - [dispatch_get_global_queue与dispatch_(a)sync、单例、线程死锁](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/dispatch_get_global_queue与dispatch_async、单例、线程死锁.md) 
+  - [栅栏函数dispatch_barrier_async、信号量dispatch_semaphore](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/栅栏函数dispatch_barrier_async、信号量dispatch_semaphore.md) 
+  - [线程调度组dispatch_group、事件源dispatch Source](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/线程调度组dispatch_group、事件源dispatchSource.md) 
+  - [了解iOS中的10个线程锁,与线程锁类型：自旋锁、互斥锁、递归锁](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/了解iOS中的10个线程锁,与线程锁类型：自旋锁、互斥锁、递归锁.md) 
 - 内存管理 
- - [原子锁atomic、gcdTimer、NSTimer、CADisplayLink](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/原子锁atomic、gcdTimer、NSTimer、CADisplayLink.md) 
- - [Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease.md) 
+  - [原子锁atomic、gcdTimer、NSTimer、CADisplayLink](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/原子锁atomic、gcdTimer、NSTimer、CADisplayLink.md) 
+  - [Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease.md) 
 
 ## Swift
- * [Swift5常用核心语法1-基础语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法1-基础语法.md)  
- * [Swift5常用核心语法2-面向对象语法1](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法2-面向对象语法1.md) 
- * [Swift5常用核心语法2-面向对象语法2](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法2-面向对象语法2.md) 
- * [Swift5常用核心语法3-其他常用语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法3-其他常用语法.md) 
- * [Swift5应用实践常用技术点](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5应用实践常用技术点.md) 
+ - [Swift5常用核心语法1-基础语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法1-基础语法.md)  
+ - [Swift5常用核心语法2-面向对象语法1](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法2-面向对象语法1.md) 
+ - [Swift5常用核心语法2-面向对象语法2](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法2-面向对象语法2.md) 
+ - [Swift5常用核心语法3-其他常用语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法3-其他常用语法.md) 
+ - [Swift5应用实践常用技术点](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5应用实践常用技术点.md) 
 
 
 ## iOS自己总结（找时间和上面合并下）
