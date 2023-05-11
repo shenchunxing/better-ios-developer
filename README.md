@@ -1,6 +1,9 @@
 主要用于学习和理解ios的知识，
 
 ## iOS知识总结
+ ### OC基础
+ * [OC对象的本质【底层实现、内存布局、继承关系](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/OC对象的本质【底层实现、内存布局、继承关系】.md)
+
 | Project | Article |
 |:-------:|:------|
 | iOS底层原理 | [OC对象的本质【底层实现、内存布局、继承关系】](iOS底层原理/OC对象的本质【底层实现、内存布局、继承关系】.md) <br> [几种OC对象【实例对象、类对象、元类】、对象的isa指针、superclass、对象的方法调用、Class的底层本质](iOS底层原理/几种OC对象【实例对象、类对象、元类】、对象的isa指针、superclass、对象的方法调用、Class的底层本质.md) <br> [Category底层结构、App启动时Class与Category装载过程、load、initialize执行、关联对象](iOS底层原理/Category底层结构、App启动时Class与Category装载过程、load、initialize执行、关联对象.md) <br> [KVC](iOS底层原理/KVC.md) <br> [KVO](iOS底层原理/KVO.md) <br> [Block的数据类型、内存布局、变量捕获、Block的种类、内存管理、Block的修饰符、循环引用](iOS底层原理/Block的数据类型、内存布局、变量捕获、Block的种类、内存管理、Block的修饰符、循环引用.md) <br> [isa详解、class的结构、方法缓存cache_t](isa详解、class的结构、方法缓存cache_t.md) <br> [objc_msgSend的三个阶段(消息发送、动态解析方法、消息转发)、super的本质](iOS底层原理/objc_msgSend的三个阶段(消息发送、动态解析方法、消息转发)、super的本质.md) <br> [Runtime的相关应用](iOS底层原理/Runtime的相关应用.md) <br> [两种RunloopMode、RunLoopMode中的Source0、Source1、Timer、Observer](iOS底层原理/两种RunloopMode、RunLoopMode中的Source0、Source1、Timer、Observer.md) <br> [Runloop的应用](iOS底层原理/Runloop的应用.md) <br> [主队列、串行队列、并行队列、全局并发队列](iOS底层原理/主队列、串行队列、并行队列、全局并发队列.md) <br> [dispatch_get_global_queue与dispatch_(a)sync、单例、线程死锁](iOS底层原理/dispatch_get_global_queue与dispatch_async、单例、线程死锁.md) <br> [栅栏函数dispatch_barrier_async、信号量dispatch_semaphore](iOS底层原理/栅栏函数dispatch_barrier_async、信号量dispatch_semaphore.md) <br> [线程调度组dispatch_group、事件源dispatch Source](iOS底层原理/线程调度组dispatch_group、事件源dispatchSource.md) <br> [了解iOS中的10个线程锁,与线程锁类型：自旋锁、互斥锁、递归锁](iOS底层原理/了解iOS中的10个线程锁,与线程锁类型：自旋锁、互斥锁、递归锁.md) <br> [原子锁atomic、gcdTimer、NSTimer、CADisplayLink](iOS底层原理/原子锁atomic、gcdTimer、NSTimer、CADisplayLink.md) <br> [Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease](iOS底层原理/Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease.md) |
