@@ -15,7 +15,17 @@
 | 代码技巧和规范 | [Swift提高代码质量的一些Tips](代码技巧和规范/Swift提高代码质量的一些Tips.md) <br> [《Effective Objective-C》干货三部曲（一）：概念篇](代码技巧和规范/《EffectiveObjective-C》干货三部曲（一）：概念篇.md) <br> [《Effective Objective-C 》干货三部曲（二）：规范篇](代码技巧和规范/《EffectiveObjective-C》干货三部曲（二）：规范篇.md) <br> [《Effective Objective-C 》干货三部曲（三）：技巧篇](代码技巧和规范/《EffectiveObjective-C》干货三部曲（三）：技巧篇.md)|
 
 
+## 操作系统系列👍
 
+* [操作系统入门](https://github.com/shenchunxing/better-ios-developer/operating-system/os-overview.md)
+* [操作系统之进程和线程](https://github.com/shenchunxing/better-ios-developer/operating-system/os-processandthread.md)
+* [操作系统之内存管理](https://github.com/shenchunxing/better-ios-developer/operating-system/os-rammanage.md)
+* [操作系统之文件系统](https://github.com/shenchunxing/better-ios-developer/operating-system/os-filesystem.md)
+* [操作系统之输入输出](https://github.com/shenchunxing/better-ios-developer/operating-system/os-inputoutput.md)
+* [操作系统之死锁](https://github.com/shenchunxing/better-ios-developer/operating-system/os-deadlock.md)
+* [操作系统核心概念](https://github.com/shenchunxing/better-ios-developer/operating-system/os-importantconcept.md)
+* [操作系统网站推荐](https://github.com/shenchunxing/better-ios-developer/operating-system/os-recommand.md)
+* [操作系统超全面试题](https://github.com/shenchunxing/better-ios-developer/operating-system/os-interview-second.md)
 
 
 
