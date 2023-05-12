@@ -36,6 +36,9 @@
 
 ## iOS面试题
  - [出一套iOS高级面试题](https://github.com/shenchunxing/better-ios-developer/blob/master/ios-interview-questions/出一套iOS高级面试题.md) 
+ - [《招聘一个靠谱的iOS》面试题参考答案（上）](https://github.com/shenchunxing/better-ios-developer/blob/master/ios-interview-questions/《招聘一个靠谱的iOS》面试题参考答案（上）.md) 
+ - [《招聘一个靠谱的iOS》面试题参考答案（下）](https://github.com/shenchunxing/better-ios-developer/blob/master/ios-interview-questions/《招聘一个靠谱的iOS》面试题参考答案（下）.md) 
+ 
 
 ## iOS自己总结（找时间和上面合并下）
  * [OC语法之OC对象本质](https://github.com/shenchunxing/better-ios-developer/blob/master/objective-c/OC对象本质.md) 
