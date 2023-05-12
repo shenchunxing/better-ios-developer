@@ -34,6 +34,9 @@
  - [Swift5应用实践常用技术点](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5应用实践常用技术点.md) 
 
 
+## iOS面试题
+ - [出一套iOS高级面试题](https://github.com/shenchunxing/better-ios-developer/blob/master/ios-interview-questions/出一套iOS高级面试题.md) 
+
 ## iOS自己总结（找时间和上面合并下）
  * [OC语法之OC对象本质](https://github.com/shenchunxing/better-ios-developer/blob/master/objective-c/OC对象本质.md) 
  * [OC语法之Notification](https://github.com/shenchunxing/better-ios-developer/blob/master/objective-c/Notification.md) 
