@@ -26,10 +26,10 @@
   - [原子锁atomic、gcdTimer、NSTimer、CADisplayLink](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/原子锁atomic、gcdTimer、NSTimer、CADisplayLink.md) 
   - [Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease.md) 
 - UI
-  - [UI](ttps://github.com/shenchunxing/better-ios-developer/blob/master/ui/ui.md)
+  - [UI](https://github.com/shenchunxing/better-ios-developer/blob/master/ui/ui.md)
 
 ## C++
-  - [C++](ttps://github.com/shenchunxing/better-ios-developer/blob/master/c++/c++.md)  
+  - [C++](https://github.com/shenchunxing/better-ios-developer/blob/master/c++/c++.md)  
 
 ## Swift
  - [Swift5常用核心语法1-基础语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法1-基础语法.md)  
@@ -81,7 +81,7 @@
 ## 书籍和代码规范
  - [Swift提高代码质量的一些Tips](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/Swift提高代码质量的一些Tips.md) 
  - [《Effective Objective-C》干货三部曲（一）：概念篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（一）：概念篇.md) 
- -[《Effective Objective-C 》干货三部曲（二）：规范篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（二）：规范篇.md) 
+ - [《Effective Objective-C 》干货三部曲（二）：规范篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（二）：规范篇.md) 
  - [《Effective Objective-C 》干货三部曲（三）：技巧篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（三）：技巧篇.md) 
  - [《Objective-C 高级编程》干货三部曲（一）：引用计数篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（一）：引用计数篇.md) 
  - [《Objective-C 高级编程》干货三部曲（二）：Blocks篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（二）：Blocks篇.md) 
