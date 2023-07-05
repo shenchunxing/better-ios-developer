@@ -801,7 +801,7 @@ union isa_t
     Class cls;
     uintptr_t bits;   //存储下面结构体每一位的值
     struct {
-        uintptr_t nonpointer        : 1;  // 0:普通指针，存储Class、Meta-Class；1:存储更多信息
+        uintptr_t nonpointer        : 1;  // 0:普通指针，存储Class、Meta-Class；1:存储更多信息(TaggedPointer指针)
         uintptr_t has_assoc         : 1;  // 有没有关联对象
         uintptr_t has_cxx_dtor      : 1;  // 有没有C++的析构函数（.cxx_destruct）
         uintptr_t shiftcls          : 33; // 存储Class、Meta-Class的内存地址
@@ -831,7 +831,7 @@ struct objc_method {
 struct method_t {
     SEL name; //函数名
     const char *types; //编码（返回值类型、参数类型）
-    IMP imp;//指向函数的指针（函数地址）
+    IMP imp;//指向函数的指针（函数地址），IMP本身地址是在栈/堆上，指向的地址就是函数实现，一般在代码区/数据段
 };
 
 int main(int argc, const char * argv[]) {
@@ -941,7 +941,8 @@ struct protocol_list_t {
     protocol_ref_t list[0];
 };
 
-struct class_ro_t { //只读
+
+struct class_ro_t { //只读。这部分信息在类加载时就被确定，并且在运行时不会发生改变。
     uint32_t flags;
     uint32_t instanceStart;
     uint32_t instanceSize;  // instance对象占用的内存空间
@@ -1091,7 +1092,37 @@ int main(int argc, const char * argv[]) {
 ```
 
 
+### class结构中为什么要区分class_ro_t和class_rw_t开来？
+在Objective-C的类结构中，分为class_ro_t（只读）和class_rw_t（可读写）这两个部分的目的是为了在运行时实现类的信息共享和写时复制。
+
+class_ro_t是只读的部分，其中包含了类的静态信息，例如类的名称、父类、成员变量、属性、方法列表等。这部分信息在类加载时就被确定，并且在运行时不会发生改变。因此，将这部分信息定义为只读的可以确保类的静态信息不被修改。
+
+class_rw_t是可读写的部分，其中包含了类的动态信息，例如方法缓存、协议列表等。这部分信息在类运行时可以进行修改和更新，例如添加新的方法、替换现有的方法实现等。通过将这部分信息定义为可读写的，可以在运行时动态地修改类的行为和功能。
+
+此外，将类的信息分为只读和可读写两个部分还有助于实现类的写时复制（copy-on-write）机制。当一个类被复制（例如通过class_copyClassList函数或者使用objc_duplicateClass函数显式复制类时），只会复制class_ro_t部分的信息，而不会复制class_rw_t部分。这样，多个类对象可以共享相同的只读信息，而每个类对象都拥有自己的可读写信息，从而实现了内存的节省和高效的类复制操作。
+
+总结起来，通过将类的信息分为只读和可读写两个部分，可以确保类的静态信息在运行时不被修改，同时允许类的动态信息在运行时进行修改。这种设计还有助于实现类的信息共享和写时复制机制，提供了更高效和灵活的类操作方式。
+
+### 为什么在OC类中这两种写法都可以？使用C函数的场景有哪些？
+
+```
+- (NSString *)powerTipsImageName {
+return @"devicemanager_adddevice_power_supply_n_gateway";
+}
+
+NSString * powerTipsImageName() {
+return @"";
+}
+
+```
+Objective-C的编译器在处理Objective-C类的实现时，会同时处理Objective-C方法和C函数的定义。因此，在Objective-C类的实现中，既可以定义Objective-C方法，也可以定义C函数，两者是并存的。 
+使用C语言场景：
+1.独立性和复用性：如果某个功能或操作不依赖于任何特定的类或对象，且可以在多个地方被复用，那么将其实现为C函数是更合适的选择。C函数可以在不同的上下文中被调用，而不需要与特定的类或对象绑定。
+
+2.性能考虑：C语言是一种较为底层的语言，直接操作内存和执行指针操作，因此在对性能要求较高的场景下，使用C函数可以获得更好的执行效率。相比之下，Objective-C方法涉及到Objective-C运行时的消息传递和动态派发等机制，可能会引入一定的性能开销
 
 
+### 为什么__bridge可以桥接OC对象和C的结构体。内部做了什么？
+__bridge关键字本身并不会进行任何数据的拷贝或转换，而是提供了一个安全的类型转换标记，用于告诉编译器如何对待对象和结构体之间的转换时，不需要进行额外的内存管理或数据拷贝操作。这意味着桥接的操作非常轻量，不会对对象的引用计数或结构体的数据进行修改。并假定开发人员已经正确处理了类型的兼容性和生命周期管理。
 
 
