@@ -1,12 +1,3 @@
-### Category加载顺序
-
-![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1d21d940887e4d38a1658aa4ab374477~tplv-k3u1fbpfcp-watermark.image?)
-
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f0b1b82283334fb198d96b3d61bc657c~tplv-k3u1fbpfcp-watermark.image?)
-解释：`[Student load];`，即走`objc_msgSend`消息机制，先通过`isa`指针找到其类，发现类中没有实现该方法，然后通过`superclass`找到其父类，发现父类有实现，但是分类方法在前面，后面参与编译的在前面，所以最终调用的是分类`Person(Eat)`方法。
-
-compile source按照编译顺序，后编译的会执行，并且分类的优先级比本类高。分类创建的属性，没有成员变量，无法保存住属性值。通过runtime动态将分类的方法合并到类对象、元类对象的方法列表中。class extension (匿名分类\类扩展)在编译期就加入到方法列表中了。Category是运行时加入的
-
 ### Category 的实现原理，如何被加载的?
 ```
 struct _category_t {
@@ -200,3 +191,58 @@ int main(int argc, const char * argv[]) {
  通过objc_removeAssociatedObjects移除某对象的关联值 
 
 ![图片](/图片/关联对象结构.png)
+
+
+### 给关联对象设置key的时候有哪几种方式？
+使用静态变量或全局变量作为关联的key：
+static char associatedObjectKey; //这里没有给associatedObjectKey赋初值，并不是0或者nil，而是操作系统随机分配的内存，不会冲突。
+objc_setAssociatedObject(object, &associatedObjectKey, associatedObject, OBJC_ASSOCIATION_RETAIN);
+
+使用指向静态变量的指针作为关联的key：
+static char associatedObjectKey;
+static char *associatedObjectKeyPtr = &associatedObjectKey;
+objc_setAssociatedObject(object, associatedObjectKeyPtr, associatedObject, OBJC_ASSOCIATION_RETAIN);
+
+
+使用静态的dispatch_once_t变量作为关联的key：
+static dispatch_once_t onceToken;
+dispatch_once(&onceToken, ^{
+    objc_setAssociatedObject(object, &onceToken, associatedObject, OBJC_ASSOCIATION_RETAIN);
+});
+
+使用自定义的字符串作为关联的key：
+static NSString * const associatedObjectKey = @"AssociatedObjectKey";
+objc_setAssociatedObject(object, associatedObjectKey, associatedObject, OBJC_ASSOCIATION_RETAIN);
+需要注意的是，关联的key应该具有全局唯一性，以避免不同的关联冲突。在使用字符串作为关联的key时，最好使用全局唯一的字符串，比如使用类名加上一个特定的后缀。
+
+
+还可以使用@selector，因为可以确保唯一性，且全局存在不会销毁
+
+关联对象的相关方法有objc_setAssociatedObject用于关联对象的设置，objc_getAssociatedObject用于关联对象的获取，objc_removeAssociatedObjects用于移除关联的对象等。这些方法可以在<objc/runtime.h>头文件中找到。
+
+
+### 如何销毁关联对象？销毁的时候key也会销毁吗？
+在 Objective-C 中，可以使用 objc_setAssociatedObject 方法将关联对象与某个对象进行关联，并可以使用 objc_removeAssociatedObjects 方法来移除该对象的所有关联对象。
+
+当调用 objc_removeAssociatedObjects 方法移除关联对象时，只会移除该对象的关联对象值，而不会销毁关联对象的 key。关联对象的 key 仍然存在，可以再次使用。
+
+例如，下面是一个示例：
+```
+// 关联对象的 key
+static char associatedObjectKey;
+// 设置关联对象
+objc_setAssociatedObject(object, &associatedObjectKey, associatedObject, OBJC_ASSOCIATION_RETAIN);
+
+// 移除关联对象
+objc_removeAssociatedObjects(object);
+```
+在上述示例中，关联对象的 key 是 associatedObjectKey，我们使用 objc_setAssociatedObject 将 associatedObject 关联到 object 上。然后，我们调用 objc_removeAssociatedObjects 移除 object 的所有关联对象。这将移除关联对象的值，但不会销毁关联对象的 key。
+
+如果您希望完全移除关联对象，并且不再使用相同的 key 进行关联，您可以选择在不需要关联对象时，手动调用 objc_setAssociatedObject 方法，并将关联对象的值设置为 nil，或者使用 objc_setAssociatedObject 方法将 nil 关联到对象上，以覆盖旧的关联对象。
+```
+objc_setAssociatedObject(object, &associatedObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
+```
+这样做会将关联对象的值设置为 nil，并且与该对象关联的 key 仍然存在，可以再次使用。
+也就是说key还是一直存在，并不会随关联对象的销毁而销毁，除非退出程序。
+
+

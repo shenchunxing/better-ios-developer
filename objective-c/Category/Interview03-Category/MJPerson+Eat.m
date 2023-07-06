@@ -11,6 +11,7 @@
 @implementation MJPerson (Eat)
 @dynamic weight,height;
 
+
 - (void)run
 {
     NSLog(@"MJPerson (Eat) - run");

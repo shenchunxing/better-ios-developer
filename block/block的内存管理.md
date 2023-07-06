@@ -7,15 +7,56 @@ Block是封装了函数调用和函数调用环境的OC对象
  通过__block的修饰，这时候Block在编译的过程中就会获取外部变量的指针，通过指针来修改变量。
 
 ### 函数指针和block的区别？
-函数指针是对一个函数地址的引用，内部只能访问全局变量。这个函数在编译的时候就已经确定了。而block是一个函数对象，是在程序运行过程中产生的。
- 函数指针是Block的一部分。为什么这样说，如果你用Block，就有一个变量的使用，循环引用等等部分。
+
+函数指针和 Block 是两种不同的概念，它们在语法和使用方式上有一些区别。
+函数指针是指向函数的指针变量。它允许您将函数作为参数传递给其他函数或将函数赋值给指针变量，以便稍后调用该函数。函数指针的类型与所指向函数的返回类型和参数类型相匹配。
+
+以下是一个函数指针的示例：
+```
+int add(int a, int b) {
+    return a + b;
+}
+
+int (*funcPtr)(int, int); // 声明一个函数指针
+funcPtr = add; // 将函数赋值给函数指针
+int result = funcPtr(3, 5); // 通过函数指针调用函数
+
+NSLog(@"Result: %d", result); // 输出：Result: 8
+```
+Block 是一种特殊的语法，它允许您创建匿名函数或闭包。它捕获了其定义范围内的变量，并可以在稍后的时间点执行其中的代码。Block 通常用于异步操作、回调函数、事件处理等场景。
+
+以下是一个 Block 的示例：
+```
+int (^block)(int, int) = ^(int a, int b) {
+    return a + b;
+};
+
+int result = block(3, 5); // 调用 Block
+
+NSLog(@"Result: %d", result); // 输出：Result: 8
+```
+可以看到，Block 使用了 ^ 符号来定义一个匿名函数，可以像函数一样使用，但它的语法更紧凑。Block 也可以捕获外部变量，使其在 Block 内部可见。
+
+关于函数指针和 Block 的区别：
+
+语法：函数指针使用 (*funcPtr)(...) 的形式来声明和使用，而 Block 使用 ^ 符号来定义和使用。
+
+上下文：函数指针是对函数的引用，而 Block 是一个封装了代码块和上下文的对象。
+可见性：函数指针只能访问其所指向的函数，而 Block 可以捕获并访问其定义范围内的变量。
+匿名性：函数指针需要定义一个具名函数或引用现有的函数，而 Block 可以在代码中直接定义匿名函数。
+内存管理：函数指针不需要特殊的内存管理，而 Block 在捕获外部变量时会自动进行内存管理，当 Block 被复制到堆上时，会自动处理变量的引用计数。
+总结来说，函数指针适用于简单的函数引用和调用，而 Block 更适用于需要捕获上下文和变量的情况，以及需要定义匿名函数的场景
 
 ### 什么时候栈上的Block会复制到堆上呢?
- 1.调用Block的copy实例方法
- 2.Block作为函数返回值返回时
- 3.将Block赋值给附有__strong修饰符id类型的类或Block类型成员变量时
- 4.在方法名中含有usingBlock的Cocoa框架方法或Grand Central Dispatch的API中传递Block时
- 注意：多次对同一个Block进行copy操作，只是会增加引用计数
+栈上的 Block 会在以下情况下复制到堆上：
+
+Block 在定义时捕获了外部的对象（包括局部变量）：如果 Block 在定义时捕获了外部的对象（使用了这些对象的变量），并且该 Block 在定义后在作用域外被使用（例如，被赋值给其他变量、作为参数传递、存储在全局容器中等），那么该 Block 将被复制到堆上。这样做是为了确保在 Block 在堆上执行时，仍然能够访问到正确的捕获对象。
+
+Block 被作为参数传递给带有复制语义的方法或函数：如果将 Block 作为参数传递给具有复制语义的方法或函数（例如 GCD 的 API 中的一些函数），那么该 Block 将被复制到堆上，以便能够在其他线程或作用域中正确地使用。
+
+在上述情况下，编译器会将栈上的 Block 复制到堆上，并在堆上分配内存来存储 Block 对象及其相关的数据。复制后的 Block 在堆上进行内存管理，即使定义它的作用域结束，也能够继续使用。
+
+需要注意的是，对于不捕获任何外部对象的 Block（也称为纯粹的 Block），它们通常在栈上分配，并在定义的作用域结束后被销毁。这是因为纯粹的 Block 不需要访问外部对象的内存。
 
 ### Block访问对象类型的auto变量时，在ARC和MRC下有什么区别?
  在ARC下，栈区创建的block会自动copy到堆区；而MRC下，就不会自动拷贝了，需要我们手动调用copy函数。
@@ -32,6 +73,19 @@ Block是封装了函数调用和函数调用环境的OC对象
  简单说就是：
  
  ARC下会对这个对象强引用，MRC下不会。 
+ ```
+[self addSubview:self.button];
+[self.button mas_makeConstraints:^(MASConstraintMaker *make) {
+    make.top.equalTo(self).mas_offset(50);
+    make.right.equalTo(self).mas_offset(-30);
+    make.width.mas_offset(60);
+    make.height.mas_offset(30);
+}];
+在这段代码中，self 并不直接持有 block。Block 是在 -mas_makeConstraints: 方法内部创建的，并且 block 内部访问了 self。
+
+尽管 block 内部访问了 self，但是在这种情况下，self 并不会持有这个 block。Block 是在局部作用域内创建的，它的生命周期受限于该方法的执行过程。一旦方法执行完毕，block 将被释放，而不会被 self 持有。
+
+```
 
 ### Block捕获机制
 
@@ -323,7 +377,7 @@ void test__strong() {
         block = ^(){ //全局的block变量，被栈上的代码块赋值，会执行copy操作，从栈指向了堆
             NSLog(@"obj对象地址:%@",obj);
         };
-        NSLog(@"after block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //3   由于代码块创建的时候在栈上，内部对obj有强引用,而在赋值给全局变量block的时候,被拷贝到了堆上（对obj又引用了一次）,所以加了2次引用计数.
+        NSLog(@"after block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //3   由于代码块创建的时候在栈上，内部对obj有强引用,引用计数+1，而在赋值给全局变量block的时候,被拷贝到了堆上（对obj又引用了一次）,引用计数+1.
         //当前block
         NSLog(@"堆 - %@",[block class]);//从栈拷贝到了堆
         //obj无法被释放，因为block对obj还是有强引用
@@ -336,7 +390,7 @@ void test__weak() {
         TestObject *obj = [[TestObject alloc] init];
         NSLog(@"before block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //1
         __weak NSObject *weak_obj = obj;
-        block = ^(){ //block对weak_obj是有强引用， 但是weak_obj是一个弱指针不会增加引用计数
+        block = ^(){ //block对weak_obj是有强引用， 但是weak_obj是一个弱指针不会增加引用计数，即使赋值给block 内部对 weak_obj 进行了强引用，也不会增加引用计数
             NSLog(@"obj对象地址:%@",weak_obj);
         };
         NSLog(@"after block retainCount:%zd",CFGetRetainCount((__bridge CFTypeRef)obj)); //1 ,weak不新增引用计数
@@ -413,19 +467,15 @@ int main(int argc, const char * argv[]) {
 ![截屏2023-03-16 08.52.20.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0831e21b6027457e91f02a7fc80b8628~tplv-k3u1fbpfcp-watermark.image?)
 
 #### block的强弱引用导致对象释放时机不同
+其实就是判断强引用到底什么时候释放
 ```
 #import "ViewController.h"
 #import "MJPerson.h"
 @interface ViewController ()
 @end
 @implementation ViewController
-- (void)viewDidLoad {
-    [super viewDidLoad];
-//    [self test1];//先strong后weak,1秒后就释放
-//    [self test2];//先weak后strong，3秒后释放
-    [self test3];//先strong后weak,但是因为weak指针又被strong强引用，3秒后释放
-}
 
+1秒后释放
 - (void)test1 {
     MJPerson *p = [[MJPerson alloc] init];
     __weak MJPerson *weakP = p;
@@ -438,6 +488,8 @@ int main(int argc, const char * argv[]) {
     NSLog(@"p即将释放");
 }
 
+
+3秒后释放
 - (void)test2 {
     MJPerson *p = [[MJPerson alloc] init];
     __weak MJPerson *weakP = p;
