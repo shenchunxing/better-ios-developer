@@ -11,10 +11,11 @@ void c_other(id self, SEL _cmd)
     NSLog(@"c_other - %@ - %@", self, NSStringFromSelector(_cmd));
 }
 
+/*动态给类添加类方法*/
 + (BOOL)resolveClassMethod:(SEL)sel
 {
     if (sel == @selector(test)) {
-        // 第一个参数是object_getClass(self)
+        // 第一个参数是object_getClass(self)，因为类方法是保存在元类中的
         class_addMethod(object_getClass(self), sel, (IMP)c_other, "v16@0:8");
         return YES;
     }

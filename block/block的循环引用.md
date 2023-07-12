@@ -690,3 +690,7 @@ addObserverForName:object:queue:usingBlock:]( https://developer.apple.com/docume
 - 也可以使用可以使用 Xcode 的 Debug 工具--内存图查看，使用方法
 - ![https://github.com/ChenYilong](https://i.loli.net/2020/06/02/pDLde8Hgkt4X69u.gif)
 - 使用 Facebook 开源的一个检测工具  [***FBRetainCycleDetector***](https://github.com/facebook/FBRetainCycleDetector) 。
+
+
+### [[NSNotificationCenter defaultCenter] addObserver 这个方法中NSNotificationCenter是否持有观察者对象？如果该观察者对象是self，因为NSNotificationCenter是全局单例。是否会导致self无法被释放吗？
+在调用[[NSNotificationCenter defaultCenter] addObserver:selector:name:object:]方法时，NSNotificationCenter并不会持有观察者对象（通常是一个对象实例）。观察者对象会被保存在一个内部的观察者列表中，但NSNotificationCenter不会保留对观察者对象的强引用。同时NSNotificationCenter 并不会直接持有观察者列表。它使用一个内部的字典来管理观察者对象及其对应的通知信息。

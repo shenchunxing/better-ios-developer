@@ -349,6 +349,16 @@
 
 每个子类的全能初始化方法都应该调用其超类的对应方法，并逐层向上。在调用了超类的初始化方法后，再执行与本类相关的方法。
 
+
+###  initWithCoder方法在什么情况下 会执行？
+在iOS开发中，initWithCoder方法是NSCoding协议的一部分，用于从归档数据（archive）中初始化对象。当你将一个对象归档到文件系统或通过网络传输时，可以使用NSKeyedArchiver类将对象转换为NSData格式，并将其写入文件或传输。然后，可以使用NSKeyedUnarchiver类从NSData中读取对象并还原为原始对象。在这个过程中，initWithCoder方法会被调用来初始化对象。
+
+具体来说，当你使用NSKeyedUnarchiver的unarchiveObject(with:)方法解码归档数据时，系统会查找对象的initWithCoder方法来完成对象的初始化。这个方法在以下情况下会被执行：
+
+从文件中解档对象：当你使用NSKeyedUnarchiver解码从文件读取的归档数据时，会调用initWithCoder方法来初始化对象。
+通过网络传输解档对象：当你通过网络传输归档数据，并使用NSKeyedUnarchiver解码接收到的数据时，会调用initWithCoder方法来初始化对象。
+总之，initWithCoder方法在使用NSKeyedUnarchiver解码归档数据时被调用，用于初始化对象。
+
 第17条：实现description方法
 ====================
 

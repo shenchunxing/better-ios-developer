@@ -31,13 +31,28 @@
             [self read];
             [self read];
             [self read];
+            //注意：栅栏函数只是隔离的作用，并不是让3个read函数执行完再执行。和dispatch_group_notify是有区别的
             [self write];
+            [self read1];
+            [self read1];
+            //注意：栅栏函数只是隔离的作用，并不是让3个read函数执行完再执行。和dispatch_group_notify是有区别的
+            [self write1];
+            
         }
 }
 
 - (void)read {
     dispatch_async(self.queue, ^{ //读取也要加锁，因为可能在读的时候，刚好在写。不允许同时读和写
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            NSLog(@"read");
+//        });
         NSLog(@"read");
+    });
+}
+
+- (void)read1 {
+    dispatch_async(self.queue, ^{
+        NSLog(@"read1");
     });
 }
 
@@ -50,7 +65,12 @@
     });
 }
 
-
+- (void)write1
+{
+    dispatch_barrier_async(self.queue, ^{
+        NSLog(@"write1");
+    });
+}
 
 
 - (void)pthread_rwlock_rdlockTest {

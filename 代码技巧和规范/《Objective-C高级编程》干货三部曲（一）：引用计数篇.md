@@ -1,3 +1,5 @@
+总结了[Effective Objective-C](https://link.juejin.cn?target=http%3A%2F%2Fwww.jianshu.com%2Fnb%2F6074358 "http://www.jianshu.com/nb/6074358")之后，还想读一本进阶的iOS书，毫不犹豫选中了《Objective-C 高级编程》。
+
 这本书有三个章节，我针对每一章节进行总结并加上适当的扩展分享给大家。可以从下面这张图来看一下这三篇的整体结构：
 
 ![《Objective-C高级编程》 干货三部曲](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2017/4/10/ffb9eea7bede3ed73d0c5a3bde8aab85~tplv-t2oaga2asx-zoom-in-crop-mark:4536:0:0:0.image)
@@ -1088,3 +1090,7 @@ weak
 2.  [蚊香酱:可能是史上最全面的内存管理文章](https://link.juejin.cn?target=http%3A%2F%2Fwww.jianshu.com%2Fp%2F6cf682f90fa2 "http://www.jianshu.com/p/6cf682f90fa2")
 3.  [微笑和飞飞:可能碰到的iOS笔试面试题（6）--内存管理](https://link.juejin.cn?target=http%3A%2F%2Fwww.jianshu.com%2Fp%2F0ad9957e3716 "http://www.jianshu.com/p/0ad9957e3716")
 4.  [《iOS编程(第4版)》](https://link.juejin.cn?target=https%3A%2F%2Fwww.amazon.cn%2F%25E5%259B%25BE%25E4%25B9%25A6%2Fdp%2FB00RWORA1O%2Fref%3Dsr_1_1%3Fie%3DUTF8%26qid%3D1491531635%26sr%3D8-1%26keywords%3Dios%25E7%25BC%2596%25E7%25A8%258B "https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B00RWORA1O/ref=sr_1_1?ie=UTF8&qid=1491531635&sr=8-1&keywords=ios%E7%BC%96%E7%A8%8B")
+
+* * *
+
+本文已经同步到个人博客：[传送门](https://link.juejin.cn?target=https%3A%2F%2Fknightsj.github.io%2F2017%2F04%2F10%2F%25E3%2580%258AOC%25E9%25AB%2598%25E7%25BA%25A7%25E7%25BC%2596%25E7%25A8%258B%25E3%2580%258B%25E5%25B9%25B2%25E8%25B4%25A7%25E4%25B8%2589%25E9%2583%25A8%25E6%259B%25B2%25EF%25BC%2588%25E4%25B8%2580%25EF%25BC%2589%25EF%25BC%259A%25E5%25BC%2595%25E7%2594%25A8%25E8%25AE%25A1%25E6%2595%25B0%25E7%25AF%2587%2F "https://knightsj.github.io/2017/04/10/%E3%80%8AOC%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B%E3%80%8B%E5%B9%B2%E8%B4%A7%E4%B8%89%E9%83%A8%E6%9B%B2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%AF%87/")

@@ -36,7 +36,7 @@ int age(id self, SEL _cmd)
 //    return 100;
 //}
 
-//动态方法解析:没有实现OC的setter和getter,则去实现C的setter和getter.如果没实现oc的,默认并不会直接就去执行C语言的方法,还是需要动态方法解析的
+//动态方法解析:没有实现OC的setter和getter,则去实现C的setter和getter.如果没实现oc的,默认并不会直接就去执行C语言的方法（会直接崩溃）,还是需要动态方法解析的
 + (BOOL)resolveInstanceMethod:(SEL)sel
 {
     if (sel == @selector(setAge:)) {
@@ -50,13 +50,13 @@ int age(id self, SEL _cmd)
 }
 
 //@synthesize 帮我们生成实例变量和getter、setter的实现，现在编译器已经做了这个，不需要写了
-@synthesize height = _height;
-- (void)setHeight:(double)height {
-    _height = height;
-}
-
-- (double)height {
-    return _height;
-}
+//@synthesize height = _height;
+//- (void)setHeight:(double)height {
+//    _height = height;
+//}
+//
+//- (double)height {
+//    return _height;
+//}
 
 @end

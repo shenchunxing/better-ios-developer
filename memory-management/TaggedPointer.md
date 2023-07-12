@@ -10,9 +10,10 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
 //        NSNumber *number = [NSNumber numberWithInt:10];
 //        NSNumber *number = @(10);
-        NSNumber *number1 = @4;//直接存储在栈区指针当中
+//TaggedPointer指的是将值直接存储在栈区指针当中，而不是开辟堆空间存储，提高性能，节省内存开销
+        NSNumber *number1 = @4;
         NSNumber *number2 = @5;
-        NSNumber *number3 = @(0xFFFFFFFFFFFFFFF);
+        NSNumber *number3 = @(0xFFFFFFFFFFFFFFF); //存储在堆空间
         number1.intValue; //这种还是会执行objc_msgSend，内部做了优化，没有堆空间，没有对象。直接从直接里面读取
 
         NSLog(@"%d %d %d", isTaggedPointer(number1), isTaggedPointer(number2), isTaggedPointer(number3)); //1 1 0
@@ -43,7 +44,7 @@ int main(int argc, const char * argv[]) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.lock = [[NSLock alloc] init];
-
+//dispatch_async和dispatch_get_global_queue队列会创建多个子线程并发执行
     dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
     for (int i = 0; i < 1000; i++) {
         dispatch_async(queue, ^{

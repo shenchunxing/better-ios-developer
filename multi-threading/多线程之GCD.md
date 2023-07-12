@@ -177,6 +177,12 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         // 合并图片
 });
 ```
+
+### dispatch_get_global_queue全局并发队列为什么只有1个，是怎么做到的?
+实际上，dispatch_get_global_queue并不是只有一个全局并发队列，而是返回一个全局共享的并发队列的引用。GCD为了提高性能和避免资源浪费，使用了池化（pooling）技术来管理全局队列。
+
+GCD内部会根据需要和系统资源情况，动态地创建和管理全局队列。在创建时，GCD会初始化一定数量的全局并发队列，具体数量取决于系统配置和硬件资源。这些全局队列是预先创建好的，并且是共享的，可以供多个任务同时使用。
+
 ### `dispatch_barrier_async`的作用是什么？
  在并发队列中，为了保持某些任务的顺序，需要等待一些任务完成后才能继续进行，使用 barrier 来等待之前任务完成，避免数据竞争等问题。 
  `dispatch_barrier_async` 函数会等待追加到Concurrent Dispatch Queue并发队列中的操作全部执行完之后，然后再执行 `dispatch_barrier_async` 函数追加的处理，等 `dispatch_barrier_async` 追加的处理执行结束之后，Concurrent Dispatch Queue才恢复之前的动作继续执行。
@@ -212,12 +218,13 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
 //    [self dispatch_once_1];
 }
 
+///在内部的dispatch_sync块中使用的是内部块中的新串行队列，而不是外部的串行队列。由于这两个串行队列是不同的对象，因此打印地址时会得到不同的结果。然而，由于内部的dispatch_sync块是在外部的dispatch_async块中执行的，两者在时间上是连续的，所以在打印地址时可能会出现相同的结果。
 - (void)serialQueue2 {
     dispatch_queue_t my_serial_queue = dispatch_queue_create("my_serial_queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(my_serial_queue, ^{
        NSLog(@"%@", [NSThread currentThread]);
        dispatch_queue_t my_serial_queue = dispatch_queue_create("my_serial_queue_2", DISPATCH_QUEUE_SERIAL);
-       dispatch_sync(my_serial_queue, ^{ //使用外部的串行队列
+       dispatch_sync(my_serial_queue, ^{ //使用内部的串行队列
             NSLog(@"%@", [NSThread currentThread]);
         });
     });

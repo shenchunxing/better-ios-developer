@@ -16,7 +16,7 @@
 ### `class_copyIvarList` & `class_copyPropertyList`区别
 `property` 正常使用会生成对应的实例变量，所以 `Ivar` 可以查到。
 
-`class_copyIvarList` 获取类对象中的所有实例变量信息，从 `class_ro_t` 中获取：
+`class_copyIvarList` 获取类对象中的所有实例变量信息，因为成员变量只存在于类和类扩展，这些都是类的基本信息。都存在class_ro_t中，所以从 `class_ro_t` 中获取：
 
 ```
 Ivar *
@@ -50,7 +50,7 @@ class_copyIvarList(Class cls, unsigned int *outCount)
 }
 ```
 
-`class_copyPropertyList` 获取类对象中的属性信息， `class_rw_t` 的 `properties`，先后输出了 category / extension/ baseClass 的属性，而且仅输出当前的类的属性信息，而不会向上去找 superClass 中定义的属性。
+`class_copyPropertyList` 获取类对象中的属性信息， `class_rw_t` 的 `properties`，先后输出了 category / extension/ baseClass （因为还涉及到caregory的属性，所有要保存在class_rw_t中）的属性，而且仅输出当前的类的属性信息，而不会向上去找 superClass 中定义的属性。
 
 ```
 objc_property_t *
@@ -84,6 +84,7 @@ class_copyPropertyList(Class cls, unsigned int *outCount)
     return (objc_property_t *)result;
 }
 ```
+
 
 ### 模拟Class的结构
 ```
@@ -194,32 +195,32 @@ struct protocol_list_t {
 };
 
 struct class_ro_t {//只读，包含了类的初始内容，（这也是分类不能添加属性的根本原因）`
-    uint32_t flags;
-    uint32_t instanceStart;
+    uint32_t flags;//用于存储类的标志，如是否是元类、是否为元类的根元类等信息
+    uint32_t instanceStart;//实例对象开始地址的偏移量，用于计算实例对象的实际地址
     uint32_t instanceSize;  // instance对象占用的内存空间
 
 #ifdef __LP64__
-    uint32_t reserved;
+    uint32_t reserved;//在 64 位架构下的保留字段。
 #endif
-    const uint8_t * ivarLayout;
-    const char * name;  // 类名
-    method_list_t * baseMethodList;//方法列表
-    protocol_list_t * baseProtocols;//协议列表
-    const ivar_list_t * ivars;  // 成员变量列表
-    const uint8_t * weakIvarLayout;
-    property_list_t *baseProperties;//属性列表
+    const uint8_t * ivarLayout;//弱引用实例变量的布局信息
+    const char * name;  // 类的名称，以 C 字符串的形式存储。
+    method_list_t * baseMethodList;//指向类的基础方法列表（包括类和分类中的方法）的指针。
+    protocol_list_t * baseProtocols;//指向类遵循的协议列表的指针
+    const ivar_list_t * ivars;  // 指向类的实例变量列表的指针。
+    const uint8_t * weakIvarLayout;//弱引用实例变量的布局信息
+    property_list_t *baseProperties;//指向类的属性列表的指针
 };
 
 struct class_rw_t { //可读可写，分类会合入这里
-    uint32_t flags;
-    uint32_t version;
-    const class_ro_t *ro;//只读
-    method_list_t * methods;    // 方法列表
+    uint32_t flags;//用于存储类的标志，描述类的特性，比如是否是元类、是否是元类的根元类等信息
+    uint32_t version;//用于标识类的版本号，当类的实现发生变化时，版本号会递增，用于类的加载和运行时判断。
+    const class_ro_t *ro;//指向 class_ro_t 结构体的指针，用于引用类的只读信息，包括类名、实例变量、方法、协议等。
+    method_list_t * methods;    // 指向方法列表（method_list_t）的指针，用于存储类的方法信息。
     property_list_t *properties;    // 属性列表
     const protocol_list_t * protocols;  // 协议列表
-    Class firstSubclass;
-    Class nextSiblingClass;
-    char *demangledName;
+    Class firstSubclass;//指向第一个子类的 Class 对象的指针
+    Class nextSiblingClass;//指向下一个兄弟类的 Class 对象的指针。
+    char *demangledName;//存储类名的 C 字符串，如果类名被符号解析过，则存储解析后的类名
 };
 
 #define FAST_DATA_MASK          0x00007ffffffffff8UL

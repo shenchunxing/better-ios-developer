@@ -18,8 +18,9 @@
     [super viewDidLoad];
     
     static int count = 0;
+    //timerWithTimeInterval并不会自动执行定时器，需要手动添加到runloop才会开启
     NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
-        NSLog(@"%d", ++count);
+        NSLog(@"count = %d", ++count);
     }];
 //    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
 //    [[NSRunLoop currentRunLoop] addTimer:timer forMode:UITrackingRunLoopMode];
@@ -33,7 +34,7 @@
     //定制的定时器，运行在NSDefaultRunLoopMode模式下，滚动的时候，定时器会暂停
     static int value = 100;
     [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
-        NSLog(@"%d", ++value);
+        NSLog(@"value = %d", ++value);
     }];
 }
 

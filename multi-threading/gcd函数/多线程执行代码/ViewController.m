@@ -20,12 +20,15 @@
 //    [self serialQueue];
 //    [self concurrentQueue];
 //    [self multiSerialQueue_1];
+//    [self multiSerialQueue];
+//    [self setTargetQueue_1];
+//    [self setTargetQueue_2];
 //    [self setTargetQueue_3];
 //    [self dispatch_after];
 //    [self dispatch_group];
 //    [self dispatch_wait_3];
 //    [self dispatch_wait_2];
-//    [self dispatch_barrier];
+    [self dispatch_barrier];
 //    [self dispatch_sync_1];
 //    [self dispatch_sync_2];
 //    [self dispatch_sync_4];
@@ -33,12 +36,14 @@
 //    [self dispatch_once_1];
 }
 
+
+///在内部的dispatch_sync块中使用的是内部块中的新串行队列，而不是外部的串行队列。由于这两个串行队列是不同的对象，因此打印地址时会得到不同的结果。然而，由于内部的dispatch_sync块是在外部的dispatch_async块中执行的，两者在时间上是连续的，所以在打印地址时可能会出现相同的结果。
 - (void)serialQueue2 {
     dispatch_queue_t my_serial_queue = dispatch_queue_create("my_serial_queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(my_serial_queue, ^{
        NSLog(@"%@", [NSThread currentThread]);
-       dispatch_queue_t my_serial_queue = dispatch_queue_create("my_serial_queue_2", DISPATCH_QUEUE_SERIAL);
-       dispatch_sync(my_serial_queue, ^{ //使用外部的串行队列
+       dispatch_queue_t my_serial_queue1 = dispatch_queue_create("my_serial_queue_2", DISPATCH_QUEUE_SERIAL);
+       dispatch_sync(my_serial_queue1, ^{ //使用外部的串行队列
             NSLog(@"%@", [NSThread currentThread]);
         });
     });
@@ -179,6 +184,7 @@
 - (void)dispatch_barrier
 {
     dispatch_queue_t meetingQueue = dispatch_queue_create("com.meeting.queue", DISPATCH_QUEUE_CONCURRENT);
+    /**注意：dispatch_get_global_queue是一个特殊的并发队列，不能直接用于dispatch_barrier_async，会导致dispatch_barrier_async不生效**/
 //    dispatch_queue_t meetingQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     
     dispatch_async(meetingQueue, ^{
@@ -201,6 +207,7 @@
     dispatch_barrier_async(meetingQueue, ^{
         NSLog(@"总裁签字");
     });
+    
     
     dispatch_async(meetingQueue, ^{
         NSLog(@"总裁审核合同");
@@ -286,24 +293,22 @@
             for (NSInteger i = 0; i< 1000000000; i ++) {
                 
             }
-            NSLog(@"任务%ld",index);
+            NSLog(@"任务%ld - 线程%@",index,[NSThread currentThread]);
         });
     }
     
     //超时时间一到或者任务完成，立即返回结果
-    long result = dispatch_group_wait(group, DISPATCH_TIME_NOW);
+    long result = dispatch_group_wait(group, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
     if (result == 0) {
-        
         NSLog(@"group内部的任务全部结束");
-        
     }else{
-        
         NSLog(@"虽然过了超时时间，group还有任务没有完成");
     }
     
 }
 
-//group
+//dispatch_group_async和dispatch_get_global_queue配合异步执行，开启多个子线程。
+//dispatch_group_notify会在dispatch_group_t执行完后，执行内部代码
 - (void)dispatch_group
 {
     dispatch_group_t group = dispatch_group_create();
@@ -311,7 +316,7 @@
     
     for (NSInteger index = 0; index < 5; index ++) {
         dispatch_group_async(group, queue, ^{
-            NSLog(@"任务%ld",index);
+            NSLog(@"任务%ld - 线程%@",index,[NSThread currentThread]);
         });
     }
     
@@ -342,25 +347,24 @@
 }
 
 
+//没有设置target，dispatch_async下会创建多个子线程，每个子线程执行1个或多个任务，是依次执行的
 - (void)setTargetQueue_2
 {
-    //多个串行队列，没有设置target queue
     NSMutableArray *array = [NSMutableArray array];
     for (NSInteger index = 0; index < 5; index ++) {
-        
         dispatch_queue_t serial_queue = dispatch_queue_create("serial_queue", NULL);
         [array addObject:serial_queue];
     }
     
     [array enumerateObjectsUsingBlock:^(dispatch_queue_t queue, NSUInteger idx, BOOL * _Nonnull stop) {
-        
         dispatch_async(queue, ^{
-            NSLog(@"任务%ld",idx);
+            NSLog(@"任务%ld - 线程%@",idx,[NSThread currentThread]);
         });
     }];
     
 }
 
+//dispatch_set_target_queue：防止多个串行队列的并发执行
 - (void)setTargetQueue_3
 {
     //多个串行队列，设置了target queue,只会开辟一条子线程
@@ -384,7 +388,7 @@
     
 }
 
-//多个串行队列队列，多个线程
+//dispatch_async允许开启多个线程，但因为是串行队列，同一时间只能执行一个任务
 - (void)multiSerialQueue
 {
     for (NSInteger index = 0; index < 10; index ++) {
@@ -400,25 +404,23 @@
 - (void)multiSerialQueue_1
 {
     for (NSInteger index = 0; index < 20; index ++) {
-        
         dispatch_queue_t queue = dispatch_queue_create("different serial queue", NULL);
-
         if (index%2 == 0) {
-            dispatch_sync(queue, ^{ //dispatch_sync不开启子线程，还是运行在主线程
-                NSLog(@"serial queue index : %@",[NSThread currentThread]);
+            //因为是dispatch_sync，没有开启子线程的能力，代码还是运行在主线程，且按顺序0 2 4 6 8偶数打印
+            dispatch_sync(queue, ^{
+                NSLog(@"queue1  : %@ index = %d",[NSThread currentThread],index);
             });
         }else{
+            //因为是dispatch_async，开启了多个子线程，但是因为是串行队列，每次只打印一个，随机打印
             dispatch_async(queue, ^{//dispatch_async开启多条子线程
-
-                NSLog(@"serial queue index : %@",[NSThread currentThread]);
+                NSLog(@"queue2  : %@ index = %d",[NSThread currentThread],index);
             });
         }
-        
     }
 }
 
 
-//并行
+//会创建多个线程，每个线程会执行1个或多个任务，且顺序是随机的
 - (void)concurrentQueue
 {
     dispatch_queue_t queue = dispatch_queue_create("concurrent queue", DISPATCH_QUEUE_CONCURRENT);
@@ -429,7 +431,7 @@
     }
 }
 
-//串行
+//只会创建一个线程，在同一个串行队列中线程会依次执行10个任务
 - (void)serialQueue
 {
     dispatch_queue_t queue = dispatch_queue_create("serial queue", DISPATCH_QUEUE_SERIAL);

@@ -522,20 +522,20 @@ int main(int argc, const char * argv[]) {
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6781d510d76f472596aed1bc6607b74a~tplv-k3u1fbpfcp-watermark.image?)
 ```
 struct __main_block_desc_0 {
-    size_t reserved;//保留字段，暂时无用
-    size_t Block_size;//block大小
+    size_t reserved;//保留字段，未使用
+    size_t Block_size;//Block 对象的大小，即所占内存空间的大小
 };
 struct __block_impl {
-    void *isa;//isa指针，Block是一个OC对象
-    int Flags;
-    int Reserved;
-    void *FuncPtr;//函数指针
+    void *isa;//指向 Block 对象所属的类的指针。在底层，Block 是一个 Objective-C 对象，因此需要isa 指针来指向其类。
+    int Flags; //标志位，用于描述 Block 对象的属性和状态。
+    int Reserved; //保留字段，未使用
+    void *FuncPtr;//函数指针，指向 Block 的实际执行代码
 };
 // block底层结构体
 struct __main_block_impl_0 {
-    struct __block_impl impl;//实现
-    struct __main_block_desc_0* Desc;//描述
-    int age; //内部有一个age变量
+    struct __block_impl impl;//__block_impl 结构体，用于存储 Block 的底层实现
+    struct __main_block_desc_0* Desc;//指向一个描述符结构体的指针，描述 Block 的详细信息
+    int age; //捕获后，内部有一个age变量
 };
 // 1.block结构体
 void test1() {
@@ -563,17 +563,19 @@ int main(int argc, const char * argv[]) {
 生成的数据结构如下：
 ```
 struct __Block_byref_age_0 {
-    void *__isa;
+    void *__isa;//指向 __Block_byref_age_0 结构体所属类的指针。在底层，该结构体是一个 Objective-C 对象，因此需要 __isa 指针来指向其类。
+    <!-- __forwarding 指针的主要作用是在多个 Block 对象之间共享该变量的管理信息。当多个 Block 对象捕获同一个被 __block 修饰的变量时，它们会共享同一个 __forwarding 指针，以保证它们对变量进行引用计数管理和内存回收时的一致性。具体而言，__forwarding 指针指向了一个共享结构体实例，该结构体存储了被 __block 修饰变量的引用计数信息。这样，当 Block 对象需要对该变量进行引用计数增加或减少时，可以通过 __forwarding 指针访问到共享的引用计数信息，以确保多个 Block 对象之间的引用计数一致。同时，__forwarding 指针还在内存回收时发挥作用。当所有捕获了同一个变量的 Block 对象都被释放时，通过 __forwarding 指针可以将被修饰的变量的内存正确地释放 -->
     struct __Block_byref_age_0 *__forwarding;
-    int __flags;
-    int __size;
-    int age;
+    int __flags;//标志位，用于描述 __Block_byref_age_0 结构体的属性和状态。
+    int __size;//__Block_byref_age_0 结构体的大小，即所占内存空间的大小
+    int age;//被 __block 修饰的字段。
 };
 struct __main_block_desc_0 {
-    size_t reserved;
-    size_t Block_size;
-    void (*copy)(void); //blockv被拷贝到堆，会生成这两个函数（因为需要内存管理）
-    void (*dispose)(void);
+    size_t reserved;//保留字段，未使用
+    size_t Block_size;//Block 对象的大小，即所占内存空间的大小。
+    <!-- Block被拷贝到堆，会生成copy和disponse。需要对其进行内存管理 -->
+    void (*copy)(void); //指向复制函数的指针。用于在 Block 复制时执行相应的操作
+    void (*dispose)(void);//向释放函数的指针。用于在 Block 释放时执行相应的操作。
 };
 struct __block_impl {
     void *isa;
@@ -584,7 +586,7 @@ struct __block_impl {
 struct __main_block_impl_0 {
     struct __block_impl impl;
     struct __main_block_desc_0* Desc;
-    struct __Block_byref_age_0 *age;
+    struct __Block_byref_age_0 *age;//被__block修饰的age字段，被block捕获后，block内部生成__Block_byref_age_0结构体
 };
 ```
 测试代码：
@@ -605,7 +607,10 @@ void __block1Test() {
 }
 
 ```
-### __block 、__weak同时修饰基本数据类型
+
+### __block 、__weak同时修饰基本数据类型，
+
+__weak不起作用，C++生成的代码和__block int age = 10;的情况一致
 
 ```
 void __block2Test() {
@@ -645,16 +650,20 @@ void __block3Test () {
     struct __main_block_impl_0* blockImpl = (__bridge struct __main_block_impl_0*)block;
     block();
     
-    //这种情况的block内部结构
-    struct __main_block_impl_0 {
-       struct __block_impl impl;
-       struct __main_block_desc_0* Desc;
-       __Block_byref_age_0 *age; //这里永远是强引用
-       NSObject *__weak weakObject; //弱引用
-    };
 }
 
 ```
+//这种情况的block内部结构
+```
+struct __main_block_impl_0 {
+   struct __block_impl impl;
+   struct __main_block_desc_0* Desc;
+   int no;
+   __Block_byref_age_0 *age; //这里永远是强引用
+   NSObject *__weak weakObject; //因为weakObject本身就是对象，这里直接弱引用即可
+};
+```
+
 ### __block、__weak同时修饰对象类型
 ```
 void __block4Test () {
@@ -684,26 +693,31 @@ void __block4Test () {
     };
     struct __main_block_impl_0* blockImpl = (__bridge struct __main_block_impl_0*)block;
     block();
+
+
+ struct ____block4Test_block_impl_0 {
+       struct __block_impl impl;
+       struct ____block4Test_block_desc_0* Desc;
+       int no; //基本数据类型
+       NSObject *__weak weakObject1; // 弱引用
+       __Block_byref_age_3 *age; // 强引用
+      __Block_byref_weakObject2_4 *weakObject2; //  强引用
+    };
+
     
-    //这种情况的block内部结构
+    //weakObject2变量被捕获后，在block内部结构生成__Block_byref_weakObject2_4
     struct __Block_byref_weakObject2_4 {
       void *__isa;
       __Block_byref_weakObject2_4 *__forwarding;
       int __flags;
       int __size;
-      void (*__Block_byref_id_object_copy)(void*, void*);//对象类型才会生成这2个函数
+      <!-- 这两个函数只有在对象类型才会生成 -->
+      void (*__Block_byref_id_object_copy)(void*, void*);
       void (*__Block_byref_id_object_dispose)(void*);
-      NSObject *__weak weakObject2; //这里是弱引用
+      <!-- 这里的强弱引用关系来自外部修饰符 -->
+      NSObject *__weak weakObject2; 
    };
 
-    struct ____block4Test_block_impl_0 {
-       struct __block_impl impl;
-       struct ____block4Test_block_desc_0* Desc;
-       int no;
-       NSObject *__weak weakObject1;
-       __Block_byref_age_3 *age; // 强引用
-      __Block_byref_weakObject2_4 *weakObject2; //  强引用
-    };
 }
 
 int main(int argc, const char * argv[]) {
@@ -717,6 +731,7 @@ int main(int argc, const char * argv[]) {
         __block4Test();//block内部使用weak对象和__block对象
         
         
+        <!--  三种变量类型的释放情况。注意：因为都涉及到对象的释放，必定会有内存管理函数dispose -->
          //__block普通变量从堆中移除的时候，调用dispose函数，内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放__block变量。这里的_Block_object_dispose函数最后一个参数是8
         //auto对象变量从堆中移除的时候，调用dispose函数，内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放__block变量。这里的_Block_object_dispose函数最后一个参数是3
         //__block对象变量从堆中移除的时候，调用dispose函数，内部会调用_Block_object_dispose函数，_Block_object_dispose函数会自动释放__block变量。这里的_Block_object_dispose函数最后一个参数是8
@@ -728,8 +743,8 @@ int main(int argc, const char * argv[]) {
 ![截屏2023-03-16 09.28.05.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/133732df83954626b7cfd84ed56d43f7~tplv-k3u1fbpfcp-watermark.image?)
 
 ### __block的内存管理
--   1.当block在栈上时，并不会对__block变量产生强引用
--   2.当block被copy到堆时
+-   1.当block在栈上时，并不会对__block变量产生强引用（block在栈上会随时销毁，必然不会强引用）
+-   2.当block被copy到堆时（不管修饰的是基本数据类型还是对象类型，都会生成新的对象，需要内存管理）
     -   会调用block内部的copy函数
     -   copy函数内部会调用_Block_object_assign函数
     -   _Block_object_assign函数会对__block变量形成强引用（retain）
