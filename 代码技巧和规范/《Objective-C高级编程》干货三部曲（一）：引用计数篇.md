@@ -99,6 +99,7 @@ dealloc方法
 
     id obj1 = [obj0 allocObject];//符合上述命名规则，生成并持有对象
     
+注意：尽管在allocObject方法的大括号结束后，obj的生命周期已经结束，但由于该对象已经被返回，因此它的所有权已经转移给了调用者obj1。调用者可以选择保留该对象（增加其引用计数）以延长其生命周期，或者在不需要使用该对象时释放它。  
 
 它的内部实现：
 
@@ -107,7 +108,7 @@ dealloc方法
         id obj = [[NSObject alloc] init];//持有新生成的对象
         return obj;
     }
-    
+  
 
 反过来，如果不符合上述的命名规则，那么就不会持有生成的对象，  
 看一个不符合上述命名规则的返回对象的createObject方法的内部实现🌰：
@@ -221,15 +222,23 @@ alloc/retain/release/dealloc的实现
 
     //GNUstep/modules/core/base/Source/NSObject.m NSAllocateObject:
     
+    //obj_layout在对象内存中处于头部位置（也就是为了记录对象的引用计数），他后面的才是对象本身的大小
     struct obj_layout {
         NSUInteger retained;
     };
      
     NSAllocateObject(Class aClass, NSUInteger extraBytes, NSZone *zone)
     {
-        int size = 计算容纳对象所需内存大小;
-        id new = NSZoneMalloc(zone, 1, size);//返回新的实例
+        int size = 计算容纳对象所需内存大小，这个大小包括对象本身的大小以及引用计数结构体obj_layout。
+        //返回一个指向新分配内存的指针,此时还不是指向obj对象类型
+        id new = NSZoneMalloc(zone, 1, size);
+        //使用 memset 函数将新分配的内存区域全部置为零，以初始化对象的内存。
         memset (new, 0, size);
+
+        //1.首先将 new 强制转换为 obj 类型的指针，这是为了让编译器知道该指针是指向一个结构体类型的内存
+        //2.使用下标运算符 [1]，将指针向后偏移一个单位。这里[1]就是跳过obj_layout，直接指向对象本身的内存地址
+        //3.使用取地址运算符 &，获取偏移后的内存区域的起始地址，得到一个指向实际对象的指针。
+        //4.将该指针强制转换为 id 类型，即 (id)&((obj)new)[1]，将其赋值给 new 变量。这样，new 变量就成为了一个指向新分配内存的对象的指针。
         new = (id)&((obj)new)[1];
     }
     
@@ -242,13 +251,15 @@ alloc/retain/release/dealloc的实现
     GNUstep/modules/core/base/Source/NSObject.m retainCount:
     
     - (NSUInteger) retainCount
-    {
+    {   
+        //注意，这里的+1是因为对象在调用 retainCount 方法时会增加一个临时的引用计数，以确保即使在获取计数期间对象被释放，仍然能够正确返回当前的引用计数值（不是很懂，是否可以理解为存储的大小本身是 -1的，加1后可以得到正确的引用计数）
         return NSExtraRefCount(self) + 1;
     }
      
     inline NSUInteger
     NSExtraRefCount(id anObject)
-    {
+    {   
+        //[-1]表示访问obj_layout的最后一个元素，也就是retained
         return ((obj_layout)anObject)[-1].retained;
     }
     
@@ -787,11 +798,17 @@ ARC和非ARC机制下的内存管理思想是一致的：
 
 编译器的模拟代码：
 
+     //声明变量obj1
     id obj1;
-    objc_initWeak(&obj1,obj);//初始化附有__weak的变量
-    id tmp = objc_loadWeakRetained(&obj1);//取出附有__weak修饰符变量所引用的对象并retain
-    objc_autorelease(tmp);//将对象注册到autoreleasepool中
-    objc_destroyWeak(&obj1);//释放附有__weak的变量
+    //使用 objc_initWeak 函数将 obj 对象设置为 obj1 的弱引用。它会在内部创建一个弱引用指针，并将其绑定到 obj 对象上
+    objc_initWeak(&obj1,obj);
+    //取出附有__weak修饰符变量所引用的对象并retain，这个tmp实际上就是obj指向的对象。
+    //objc_loadWeakRetained会在加载弱引用时将对象的引用计数加一，以确保对象在使用期间不被提前释放。
+    id tmp = objc_loadWeakRetained(&obj1);
+    //将对象注册到autoreleasepool中，autoreleasepool释放的时候会执行release，上面的retain和这里的release后，obj1并没有让对象的引用计数发生变化
+    objc_autorelease(tmp);
+    //释放附有__weak的变量。会解除 obj1 与原始对象之间的绑定关系，并将 obj1 设置为 nil。
+    objc_destroyWeak(&obj1);
     
 
 > 这确认了\_\_weak的一个功能：使用附有\_\_weak修饰符的变量，即是使用注册到autoreleasepool中的对象。
@@ -815,6 +832,9 @@ ARC和非ARC机制下的内存管理思想是一致的：
     *   将包含在记录中的所有附有\_\_weak修饰符变量的地址赋值为nil
     *   从weak表中删除该记录
     *   从引用计数表中删除废弃对象的地址
+
+weak 表和引用计数表是由运行时系统在维护的。
+
 
 ### \_\_autoreleasing修饰符
 
@@ -855,6 +875,7 @@ ARC下，可以用@autoreleasepool来替代NSAutoreleasePool类对象，用\_\_a
     id pool = objc_autoreleasePoolPush();//pool入栈
     id obj = objc_msgSend(NSObject, @selector(alloc));
     objc_msgSend(obj, @selector(init));
+    //将先前分配的对象添加到最近的自动释放池中。通过调用objc_autorelease函数，对象的所有权会被转移给自动释放池，而不是当前作用域
     objc_autorelease(obj);
     objc_autoreleasePoolPop(pool);//pool出栈
     
