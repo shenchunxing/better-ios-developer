@@ -48,27 +48,9 @@
 
 [21\. 你知道有哪些情况会导致app卡顿，分别可以用什么方法来避免？（知道多少说多少）](#21 "#21")
 
-#### 网络题
-
-[22\. App 网络层有哪些优化策略？](#22 "#22")
-
-[23\. TCP为什么要三次握手，四次挥手？](#23 "#23")
-
-[24\. 对称加密和非对称加密的区别？分别有哪些算法的实现？](#24 "#24")
-
-[25\. HTTPS的握手流程？为什么密钥的传递需要使用非对称加密？双向认证了解么？](#25 "#25")
-
-[26\. HTTPS是如何实现验证身份和验证完整性的？](#26 "#26")
-
-[27\. 如何用Charles抓HTTPS的包？其中原理和流程是什么？](#27 "#27")
-
-[28\. 什么是中间人攻击？如何避免？](#28 "#28")
-
 #### 计算机系统题
 
 [29\. 了解编译的过程么？分为哪几个步骤？](#29 "#29")
-
-[30\. 静态链接了解么？静态库和动态库的区别？](#30 "#30")
 
 [31\. 内存的几大区域，各自的职能分别是什么？](#31 "#31")
 
@@ -88,17 +70,7 @@
 
 #### 数据结构&算法题
 
-[38\. 链表和数组的区别是什么？插入和查询的时间复杂度分别是多少？](#38 "#38")
-
 [39\. 哈希表是如何实现的？如何解决地址冲突？](#39 "#39")
-
-[40\. 排序题：冒泡排序，选择排序，插入排序，快速排序（二路，三路）能写出那些？](#40 "#40")
-
-[41\. 链表题：如何检测链表中是否有环？如何删除链表中等于某个值的所有节点？](#41 "#41")
-
-[42\. 数组题：如何在有序数组中找出和等于给定值的两个元素？如何合并两个有序的数组之后保持有序？](#42 "#42")
-
-[43\. 二叉树题：如何反转二叉树？如何验证两个二叉树是完全相等的？](#43 "#43")
 
 ### 1.分类和扩展有什么区别？可以分别用来做什么？分类有哪些局限性？分类的结构体里面有哪些成员？
 
@@ -110,7 +82,7 @@
 1.  分类是在运行时把分类信息合并到类信息中，而扩展是在编译时，就把信息合并到类中的
 2.  分类声明的属性，只会生成getter/setter方法的声明，不会自动生成成员变量和getter/setter方法的实现，而扩展会
 3.  分类不可用为类添加实例变量，而扩展可以
-4.  分类可以为类添加方法的实现，而扩展只能声明方法，而不能实现
+4.  分类可以为类添加方法的实现，而扩展只能声明方法，而不能实现(扩展里面是声明，一般没什么意义，内部不是可以实现的吗？)
 
 分类的局限性：
 
@@ -158,12 +130,13 @@ struct category_t {
 arduino
 
 复制代码
-
-`struct SideTable {
+```
+struct SideTable {
  spinlock_t slock;//操作SideTable时用到的锁
  RefcountMap refcnts;//引用计数器的值
  weak_table_t weak_table;//存放weak指针的哈希表
-};` 
+};
+```
 
 ### 4\. 关联对象有什么应用，系统如何管理关联对象？其被释放的时候需要手动将所有的关联对象的指针置空么？
 
@@ -193,13 +166,15 @@ arduino
 ini
 
 复制代码
-
-`+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
+```
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
  if ([key isEqualToString:@"age"]) {
  return NO;
  }
  return [super automaticallyNotifiesObserversForKey:key];
 }
+```
+```
 - (void)setAge:(NSInteger)age {
  if (age > 18 ) {
  [self willChangeValueForKey:@"age"];
@@ -208,17 +183,16 @@ ini
  }else {
  _age = age;
  }
-}` 
+}
+```
 
 ### 6\. Autoreleasepool所使用的数据结构是什么？AutoreleasePoolPage结构体了解么？
 
 Autoreleasepool是由多个AutoreleasePoolPage以双向链表的形式连接起来的， Autoreleasepool的基本原理：在每个自动释放池创建的时候，会在当前的AutoreleasePoolPage中设置一个标记位，在此期间，当有对象调用autorelsease时，会把对象添加到AutoreleasePoolPage中，若当前页添加满了，会初始化一个新页，然后用双向量表链接起来，并把新初始化的这一页设置为hotPage,当自动释放池pop时，从最下面依次往上pop，调用每个对象的release方法，直到遇到标志位。 AutoreleasePoolPage结构如下
 
-arduino
-
 复制代码
-
-`class AutoreleasePoolPage {
+```
+class AutoreleasePoolPage {
  magic_t const magic;
  id *next;//下一个存放autorelease对象的地址
  pthread_t const thread; //AutoreleasePoolPage 所在的线程
@@ -226,7 +200,8 @@ arduino
  AutoreleasePoolPage *child;//子节点
  uint32_t const depth;//深度,也可以理解为当前page在链表中的位置
  uint32_t hiwat;
-}` 
+}
+```
 
 ### 7\. 讲一下对象，类对象，元类，跟元类结构体的组成以及他们是如何相关联的？为什么对象方法没有保存的对象结构体里，而是保存在类对象的结构体里？
 
@@ -267,8 +242,8 @@ class\_rw\_t提供了运行时对类拓展的能力，而class\_ro\_t存储的�
 scss
 
 复制代码
-
-`Class objc_allocateClassPair(Class superclass, const char *name, 
+```
+Class objc_allocateClassPair(Class superclass, const char *name, 
  size_t extraBytes){
  ...省略了部分代码
  //生成一个类对象
@@ -277,7 +252,8 @@ scss
  meta = alloc_class_for_subclass(superclass, extraBytes);
  objc_initializeClassPair_internal(superclass, name, cls, meta);
  return cls;
-}` 
+}
+```
 
 ### 11\. 一个int变量被\_\_block修饰与否的区别？
 
@@ -286,8 +262,8 @@ int变量被\_\_block修饰之后会被包装成一个对象,如`__block int age
 ini
 
 复制代码
-
-`struct __Block_byref_age_0 {
+```
+struct __Block_byref_age_0 {
  void *__isa;
 __Block_byref_age_0 *__forwarding; //指向自己
  int __flags;
@@ -295,7 +271,8 @@ __Block_byref_age_0 *__forwarding; //指向自己
  int age;//包装的具体的值
 };
 // age = 20;会被编译成下面这样
-(age.__forwarding->age) = 20;` 
+(age.__forwarding->age) = 20;
+```
 
 ### 12\. 为什么在block外部使用\_\_weak修饰的同时需要在内部使用\_\_strong修饰？
 
@@ -337,8 +314,8 @@ __Block_byref_age_0 *__forwarding; //指向自己
 swift
 
 复制代码
-
-`protocol Command {
+```
+protocol Command {
  func execute()
 }
 struct InitializeThirdPartiesCommand: Command {
@@ -357,7 +334,8 @@ struct RegisterToRemoteNotificationsCommand: Command {
  func execute() {
  // 注册远程推送
  }
-}` 
+}
+```
 
 然后我们定义`StartupCommandsBuilder`来封装如何创建命令的详细信息。APPdelegate调用这个builder去初始化命令并执行这些命令
 
@@ -365,7 +343,8 @@ swift
 
 复制代码
 
-`// MARK: - Builder
+```
+// MARK: - Builder
 final class StartupCommandsBuilder {
  private var window: UIWindow!
  func setKeyWindow(_ window: UIWindow) -> StartupCommandsBuilder {
@@ -391,7 +370,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
  .forEach { $0.execute() }
  return true
  }
-}` 
+}
+``` 
 
 如果APPdelegate需要添加新的职责，则可以创建新的命令，然后把命令添加到builder里去而无需去改变APPdelegate。而且使用命令模式有以下好处
 
@@ -479,99 +459,6 @@ App无痕埋点的思路是利用AOP来拦截用户的操作并进行标记记�
 4.  大量图像的绘制，解决：在子线程中对图片进行解码之后再展示
 5.  高清图片的展示，解法：可在子线程中进行下采样处理之后再展示
 
-### 22\. App网络层有哪些优化策略？
-
-1.  优化DNS解析和缓存
-2.  对传输的数据进行压缩，减少传输的数据
-3.  使用缓存手段减少请求的发起次数
-4.  使用策略来减少请求的发起次数，比如在上一个请求未着地之前，不进行新的请求
-5.  避免网络抖动，提供重发机制
-
-### 23\. TCP为什么要三次握手，四次挥手？
-
-三次握手：
-
-1.  客户端向服务端发起请求链接，首先发送SYN报文，SYN=1，seq=x,并且客户端进入SYN\_SENT状态
-2.  服务端收到请求链接，服务端向客户端进行回复，并发送响应报文，SYN=1，seq=y,ACK=1,ack=x+1,并且服务端进入到SYN\_RCVD状态
-3.  客户端收到确认报文后，向服务端发送确认报文，ACK=1，ack=y+1，此时客户端进入到ESTABLISHED，服务端收到用户端发送过来的确认报文后，也进入到ESTABLISHED状态，此时链接创建成功
-
-四次挥手：
-
-1.  客户端向服务端发起关闭链接，并停止发送数据
-2.  服务端收到关闭链接的请求时，向客户端发送回应，我知道了，然后停止接收数据
-3.  当服务端发送数据结束之后，向客户端发起关闭链接，并停止发送数据
-4.  客户端收到关闭链接的请求时，向服务端发送回应，我知道了，然后停止接收数据
-
-为什么需要三次握手： 为了防止已失效的连接请求报文段突然又传送到了服务端，因而产生错误，假设这是一个早已失效的报文段。但server收到此失效的连接请求报文段后，就误认为是client再次发出的一个新的连接请求。于是就向client发出确认报文段，同意建立连接。假设不采用“三次握手”，那么只要server发出确认，新的连接就建立了。由于现在client并没有发出建立连接的请求，因此不会理睬server的确认，也不会向server发送数据。但server却以为新的运输连接已经建立，并一直等待client发来数据。这样，server的很多资源就白白浪费掉了。
-
-为什么需要四次挥手： 因为TCP是全双工通信的，在接收到客户端的关闭请求时，还可能在向客户端发送着数据，因此不能再回应关闭链接的请求时，同时发送关闭链接的请求
-
-### 24\. 对称加密和非对称加密的区别？分别有哪些算法的实现？
-
-对称加密，加密的加密和解密使用同一密钥。
-
-非对称加密，使用一对密钥用于加密和解密，分别为公开密钥和私有密钥。公开密钥所有人都可以获得，通信发送方获得接收方的公开密钥之后，就可以使用公开密钥进行加密，接收方收到通信内容后使用私有密钥解密。
-
-对称加密常用的算法实现有AES,ChaCha20,DES,不过DES被认为是不安全的;非对称加密用的算法实现有RSA，ECC
-
-### 25\. HTTPS的握手流程？为什么密钥的传递需要使用非对称加密？双向认证了解么？
-
-HTTPS的握手流程，如下图，摘自图解HTTP
-
-![](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/12/26/16f41a3d3747ff31~tplv-t2oaga2asx-zoom-in-crop-mark:4536:0:0:0.image)
-
-1.  客户端发送Client Hello 报文开始SSL通信。报文中包含客户端支持的SSL的版本，加密组件列表。
-2.  服务器收到之后，会以Server Hello 报文作为应答。和客户端一样，报文中包含客户端支持的SSL的版本，加密组件列表。服务器的加密组件内容是从接收到的客户端加密组件内筛选出来的
-3.  服务器发送Certificate报文。报文中包含公开密钥证书。
-4.  然后服务器发送Server Hello Done报文通知客户端，最初阶段的SSL握手协商部分结束
-5.  SSL第一次握手结束之后，客户端以Client Key Exchange报文作为会议。报文中包含通信加密中使用的一种被称为Pre-master secret的随机密码串
-6.  接着客户端发送Change Cipher Space报文。该报文会提示服务器，在次报文之后的通信会采用Pre-master secret密钥加密
-7.  客户端发送Finished 报文。该报文包含链接至今全部报文的整体校验值。这次握手协商是否能够成功，要以服务器是否能够正确揭秘该报文作为判定标准
-8.  服务器同样发送Change Cipher Space报文。
-9.  服务器同样发送Finished报文。
-10.  服务器和客户端的Finished报文交换完毕之后，SSL连接建立完成，从此开始HTTP通信，通信的内容都使用Pre-master secret加密。然后开始发送HTTP请求
-11.  应用层收到HTTP请求之后，发送HTTP响应
-12.  最后有客户端断开连接
-
-#### 为什么密钥的传递需要使用非对称加密？
-
-答：使用非对称加密是为了后面客户端生成的Pre-master secret密钥的安全，通过上面的步骤能得知，服务器向客户端发送公钥证书这一步是有可能被别人拦截的，如果使用对称加密的话，在客户端向服务端发送Pre-master secret密钥的时候，被黑客拦截的话，就能够使用公钥进行解码，就无法保证Pre-master secret密钥的安全了
-
-#### 双向认证了解么？（这里我真想说一句不了解）
-
-答：上面的HTTPS的通信流程只验证了服务端的身份，而服务端没有验证客户端的身份，双向认证是服务端也要确保客户端的身份，大概流程是客户端在校验完服务器的证书之后，会向服务器发送自己的公钥，然后服务端用公钥加密产生一个新的密钥，传给客户端，客户端再用私钥解密，以后就用此密钥进行对称加密的通信
-
-### 26\. HTTPS是如何实现验证身份和验证完整性的？
-
-使用数字证书和CA来验证身份,首先服务端先向CA机构去申请证书，CA审核之后会给一个数字证书，里面包裹公钥、签名、有效期，用户信息等各种信息，在客户端发送请求时，服务端会把数字证书发给客户端，然后客户端会通过信任链来验证数字证书是否是有效的，来验证服务端的身份。
-
-使用摘要算法来验证完整性，也就是说在发送消息时，会对消息的内容通过摘要算法生成一段摘要，在收到收到消息时也使用同样的算法生成摘要，来判断摘要是否一致。
-
-### 27\. 如何用Charles抓HTTPS的包？其中原理和流程是什么？
-
-流程：
-
-1.  首先在手机上安装Charles证书
-2.  在代理设置中开启Enable SSL Proxying
-3.  之后添加需要抓取服务端的地址
-
-原理：
-
-Charles作为中间人，对客户端伪装成服务端，对服务端伪装成客户端。简单来说：
-
-*   截获客户端的HTTPS请求，伪装成中间人客户端去向服务端发送HTTPS请求
-*   接受服务端返回，用自己的证书伪装成中间人服务端向客户端发送数据内容。
-
-具体流程如下图,图片来自[扯一扯HTTPS单向认证、双向认证、抓包原理、反抓包策略](https://juejin.cn/post/6844903809068564493#heading-3 "https://juejin.cn/post/6844903809068564493#heading-3")
-
-![](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/12/26/16f41a2f14a97620~tplv-t2oaga2asx-zoom-in-crop-mark:4536:0:0:0.image)
-
-### 28\. 什么是中间人攻击？如何避免？
-
-中间人攻击就是截获到客户端的请求以及服务器的响应，比如Charles抓取HTTPS的包就属于中间人攻击。
-
-避免的方式：客户端可以预埋证书在本地，然后进行证书的比较是否是匹配的
-
 ### 29\. 了解编译的过程么？分为哪几个步骤？
 
 1.  预编译：主要处理以“#”开始的预编译指令。
@@ -639,339 +526,11 @@ const是指声明一个常量 static修饰全局变量时，表示此全局变�
 4.  条件锁：在满足某个条件的时候进行加锁或者解锁，iOS中可使用NSConditionLock来实现
 5.  递归锁：可以被一个线程多次获得，而不会引起死锁。它记录了成功获得锁的次数，每一次成功的获得锁，必须有一个配套的释放锁和其对应，这样才不会引起死锁。只有当所有的锁被释放之后，其他线程才可以获得锁，iOS可使用NSRecursiveLock来实现
 
-### 38\. 链表和数组的区别是什么？插入和查询的时间复杂度分别是多少？
-
-链表和数组都是一个有序的集合，数组需要连续的内存空间，而链表不需要，链表的插入删除的时间复杂度是O(1)，数组是O(n)，根据下标查询的时间复杂度数组是O(1)，链表是O(n),根据值查询的时间复杂度，链表和数组都是O(n)
 
 ### 39\. 哈希表是如何实现的？如何解决地址冲突？
 
 哈希表是也是通过数组来实现的，首先对key值进行哈希化得到一个整数，然后对整数进行计算，得到一个数组中的下标，然后进行存取，解决地址冲突常用方法有开放定址法和链表法。runtime源码的存放weak指针哈希表使用的就是开放定址法，Java里的HashMap使用的是链表法。
 
-### 40\. 排序题：冒泡排序，选择排序，插入排序，快速排序（二路，三路）能写出那些？
-
-这里简单的说下几种快速排序的不同之处，随机快排，是为了解决在近似有序的情况下，时间复杂度会退化为O(n^2),双路快排是为了解决快速排序在大量数据重复的情况下，时间复杂度会退化为O(n^2)，三路快排是在大量数据重复的情况下，对双路快排的一种优化。
-
-1.  冒泡排序
-
-swift
-
-复制代码
-
-`extension Array where Element : Comparable{
- public mutating func bubbleSort() {
- let count = self.count
- for i in 0..<count {
- for j in 0..<(count - 1 - i) {
- if self[j] > self[j + 1] {
- (self[j], self[j + 1]) = (self[j + 1], self[j])
- }
- }
- }
- }
-}` 
-
-2.  选择排序
-
-swift
-
-复制代码
-
-`extension Array where Element : Comparable{
- public mutating func selectionSort() {
- let count = self.count
- for i in 0..<count {
- var minIndex = i
- for j in (i+1)..<count {
- if self[j] < self[minIndex] {
- minIndex = j
- }
- }
- (self[i], self[minIndex]) = (self[minIndex], self[i])
- }
- }
-}` 
-
-3.  插入排序
-
-swift
-
-复制代码
-
-`extension Array where Element : Comparable{
- public mutating func insertionSort() {
- let count = self.count
- guard count > 1 else { return }
- for i in 1..<count {
- var preIndex = i - 1
- let currentValue = self[i]
- while preIndex >= 0 && currentValue < self[preIndex] {
- self[preIndex + 1] = self[preIndex]
- preIndex -= 1
- }
- self[preIndex + 1] = currentValue
- }
- }
-}` 
-
-4.  快速排序
-
-css
-
-复制代码
-
-`extension Array where Element : Comparable{
- public mutating func quickSort() {
- func quickSort(left:Int, right:Int) {
- guard left < right else { return }
- var i = left + 1,j = left
- let key = self[left]
- while i <= right {
- if self[i] < key {
- j += 1
- (self[i], self[j]) = (self[j], self[i])
- }
- i += 1
- }
- (self[left], self[j]) = (self[j], self[left])
- quickSort(left: j + 1, right: right)
- quickSort(left: left, right: j - 1)
- }
- quickSort(left: 0, right: self.count - 1)
- }
-}` 
-
-5.  随机快排
-
-swift
-
-复制代码
-
-`extension Array where Element : Comparable{
- public mutating func quickSort1() {
- func quickSort(left:Int, right:Int) {
- guard left < right else { return }
- let randomIndex = Int.random(in: left...right)
- (self[left], self[randomIndex]) = (self[randomIndex], self[left])
- var i = left + 1,j = left
- let key = self[left]
- while i <= right {
- if self[i] < key {
- j += 1
- (self[i], self[j]) = (self[j], self[i])
- }
- i += 1
- }
- (self[left], self[j]) = (self[j], self[left])
- quickSort(left: j + 1, right: right)
- quickSort(left: left, right: j - 1)
- }
- quickSort(left: 0, right: self.count - 1)
- }
-}` 
-
-6.  双路快排
-
-swift
-
-复制代码
-
-`extension Array where Element : Comparable{
- public mutating func quickSort2() {
- func quickSort(left:Int, right:Int) {
- guard left < right else { return }
- let randomIndex = Int.random(in: left...right)
- (self[left], self[randomIndex]) = (self[randomIndex], self[left])
- var l = left + 1, r = right
- let key = self[left]
- while true {
- while l <= r && self[l] < key {
- l += 1
- }
- while l < r && key < self[r]{
- r -= 1
- }
- if l > r { break }
- (self[l], self[r]) = (self[r], self[l])
- l += 1
- r -= 1
- }
- (self[r], self[left]) = (self[left], self[r])
- quickSort(left: r + 1, right: right)
- quickSort(left: left, right: r - 1)
- }
- quickSort(left: 0, right: self.count - 1)
- }
-}` 
-
-7.  三路快排
-
-swift
-
-复制代码
-
-`// 三路快排
-extension Array where Element : Comparable{
- public mutating func quickSort3() {
- func quickSort(left:Int, right:Int) {
- guard left < right else { return }
- let randomIndex = Int.random(in: left...right)
- (self[left], self[randomIndex]) = (self[randomIndex], self[left])
- var lt = left, gt = right
- var i = left + 1
- let key = self[left]
- while i <= gt {
- if self[i] == key {
- i += 1
- }else if self[i] < key{
- (self[i], self[lt + 1]) = (self[lt + 1], self[i])
- lt += 1
- i += 1
- }else {
- (self[i], self[gt]) = (self[gt], self[i])
- gt -= 1
- }
-  
- }
- (self[left], self[lt]) = (self[lt], self[left])
- quickSort(left: gt + 1, right: right)
- quickSort(left: left, right: lt - 1)
- }
- quickSort(left: 0, right: self.count - 1)
- }
-}` 
-
-### 41\. 链表题：如何检测链表中是否有环？如何删除链表中等于某个值的所有节点？
-
-1.  如何检测链表中是否有环？
-
-swift
-
-复制代码
-
-`public class ListNode {
- public var val: Int
- public var next: ListNode?
- public init(_ val: Int) {
- self.val = val
- self.next = nil
- }
-}
-extension ListNode {
- var hasCycle: Bool {
- var slow:ListNode? = self
- var fast = self.next
- while fast != nil {
- if slow! === fast! {
- return true
- }
- slow = slow?.next
- fast = fast?.next?.next
- }
- return false
- }
-}` 
-
-2.  如何删除链表中等于某个值的所有节点？
-
-ini
-
-复制代码
-
-`func remove(with value:Int, from listNode:ListNode?) -> ListNode? {
- let tmpNode = ListNode(0)
- tmpNode.next = listNode
- var currentNode = tmpNode.next
- var persiousNode:ListNode? = tmpNode
- while currentNode != nil {
- if let nodeValue = currentNode?.val, nodeValue == value {
- persiousNode?.next = currentNode?.next
- }else {
- persiousNode = currentNode
- }
- currentNode = currentNode?.next
- }
- return tmpNode.next
-}` 
-
-### 42\. 数组题：如何在有序数组中找出和等于给定值的两个元素？如何合并两个有序的数组之后保持有序？
-
-1.  如何在有序数组中找出和等于给定值的两个元素？LeetCode第167题
-
-swift
-
-复制代码
-
-`func twoSum(_ numbers: [Int], _ target: Int) -> [Int] {
- var i = 0, j = numbers.count - 1
- while i < j {
- let sum = numbers[i] + numbers[j]
- if sum == target {
- return [i + 1, j + 1]
- }else if sum > target {
- j -= 1
- }else {
- i += 1
- }
- }
- return []
-}` 
-
-2.  如何合并两个有序的数组之后保持有？LeetCode第88题
-
-less
-
-复制代码
-
-`func merge(_ nums1: inout [Int], _ m: Int, _ nums2: [Int], _ n: Int) {
- for i in stride(from: n + m - 1, to: n - 1, by: -1) {
- nums1[i] = nums1[i - n]
- }
- var i = 0, j = 0
- while i < m && j < n {
- if nums1[n + i] > nums2[j] {
- nums1[i + j] = nums2[j]
- j += 1
- }else {
- nums1[i + j] = nums1[n + i]
- i += 1
- }
- }
- while i < m {
- nums1[i + j] = nums1[n + i]
- i += 1
- }
- while j < n {
- nums1[i + j] = nums2[j]
- j += 1
- }
-}` 
-
-### 43\. 二叉树题：如何反转二叉树？如何验证两个二叉树是完全相等的？
-
-1.  如何翻转二叉树？LeetCode第226题
-
-swift
-
-复制代码
-
-`func invertTree(_ root: TreeNode?) -> TreeNode? {
- guard let root = root else { return nil }
- (root.left, root.right) = (root.right, root.left)
- invertTree(root.left)
- invertTree(root.right)
- return root
-}` 
-
-2.  如何验证两个二叉树是完全相等的？
-
-swift
-
-复制代码
-
-`func isSameTree(_ p: TreeNode?, _ q: TreeNode?) -> Bool {
- guard let pNode = p ,let qNode = q else { return q == nil && p == nil }
- return pNode.val == qNode.val && isSameTree(pNode.left, qNode.left) && isSameTree(pNode.right, qNode.right)
-}` 
 
 ### 参考
 
