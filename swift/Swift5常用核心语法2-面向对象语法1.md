@@ -1,2896 +1,144 @@
-# Swift5常用核心语法2-面向对象语法1
 
-一、概述
-====
+* **[05-📝Swift5常用核心语法|高级语法【可选链、协议、错误处理、泛型、String与Array、高级运算符、扩展、访问控制、内存管理、字面量、模式匹配】](https://juejin.cn/spost/7119722433589805064 "https://juejin.cn/spost/7119722433589805064")**
 
-最近刚好有空,趁这段时间,复习一下`Swift5`核心语法,进行知识储备,以供日后温习 和 进一步探索`Swift`语言的底层原理做铺垫。
-
-本文继上一篇文章[Swift5核心语法1-基础语法](https://juejin.cn/post/7119020967430455327 "https://juejin.cn/post/7119020967430455327")之后,继续复习`面向对象语法`
-
-![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a03e517565e54fa6895098e060598486~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-二、结构体
-=====
-
-1\. 基本概念
---------
-
-*   在Swift**标准库中，绝大多数的公开类型都是结构体**，而**枚举和类只占很小一部分**
-    *   比如`Bool、Int、String、Double、Array、Dictionary`等常见类型都是结构体
-        
-                struct Date {
-                    var year: Int
-                    var month: Int
-                    var day: Int
-                }
-                var date = Date(year: 2019, month: 6, day: 23)
-            复制代码
-        
-*   所有的结构体**都有一个编译器自动生成的初始化器**（`initializer`，初始化方法、构造器、构造方法）
-    *   通过默认生成的初始化器初始化:传入所有成员值，用以初始化所有成员（`存储属性`，`Stored Property`）
-        
-               var date = Date(year: 2019, month: 6, day: 23)
-            复制代码
-        
-
-2\. 结构体的初始化器
-------------
-
-*   编译器会根据情况，可能会为结构体生成多个初始化器，宗旨是：`保证所有成员都有初始值`
-*   如果结构体的成员定义的时候都有默认值了，那么生成的初始化器不会报错 ![-w569](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c7f34e0c903b4112a1a603c46665c4ae~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-    *   如果是下面这几种情况就会报错 ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e364616dd6c944f28d5ab613284d4403~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/189bf09fbbf248df8396eaa8a9b74c33~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de06012b6cec46dabe604d027cd1654a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-    *   如果是可选类型的初始化器也不会报错，因为可选类型默认的值就是`nil` ![-w457](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1a73b4ae9ef8415ab4c5b3de861cd5fa~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-3\. 自定义初始化器
------------
-
-我们也可以自定义初始化器
-
-    struct Point {
-        var x: Int = 0
-        var y: Int = 0
-        
-        init(x: Int, y: Int) {
-            self.x = x
-            self.y = y
-        }
-    } 
-    var p1 = Point(x: 10, y: 10)
-    复制代码
-
-下面对变量`p2`、`p3`、`p4`初始化报错的原因是 因为我们 **`已经自定义初始化器了，编译器就不会再帮我们生成默认的初始化器了`** ![-w643](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/da74440857c645b6990bc678cf0ab2f2~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-4\. 初始化器的本质
------------
-
-下面这两种写法是完全等效的
-
-    struct Point {
-        var x: Int = 0
-        var y: Int = 0
-    } 
-    等效于 
-    struct Point {
-        var x: Int
-        var y: Int
-        
-        init() {
-            x = 0
-            y = 0
-        }
-    } 
-    var p4 = Point()
-    复制代码
-
-*   我们通过反汇编分别对比一下两种写法的实现，发现也是一样的:
-*   因此,我们不难得出结论:  
-    默认初始化器的本质,就是给存储属性做了默认赋值工作(比如这里给Int类型的两个属性默认赋值为`0`) ![-w713](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bde85343b7e74b75a53d605462260979~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w715](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a431a9e76973412dbfe8e6014d9bc01a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-5.结构体的内存结构
-----------
-
-1.  **我们通过打印,了解下结构体占用的内存大小 和 其 内存布局**
-
-    struct Point {
-        var x: Int = 10
-        var y: Int = 20
-    } 
-    var p4 = Point() 
-    print(MemoryLayout<Point>.stride) // 16
-    print(MemoryLayout<Point>.size) // 16
-    print(MemoryLayout<Point>.alignment) // 8
-    
-    print(Mems.memStr(ofVal: &p4)) // 0x000000000000000a 0x0000000000000014
-    复制代码
-
-通过控制台,我们可以看到:
-
-*   系统一共分配了`16`个字节的内存空间
-*   前8个字节存储的是10，后8个字节存储的是20
-
-2.  我们再看下面这个结构体
-
-    struct Point {
-        var x: Int = 10
-        var y: Int = 20
-        var origin: Bool = false
-    }
-    
-    var p4 = Point()
-    
-    print(MemoryLayout<Point>.stride) // 24
-    print(MemoryLayout<Point>.size) // 17
-    print(MemoryLayout<Point>.alignment) // 8
-    
-    print(Mems.memStr(ofVal: &p4)) // 0x000000000000000a 0x0000000000000014 0x0000000000000000
-    复制代码
-
-可以看到:
-
-*   结构体实际只用了17个字节，而因为系统分配有内存对齐的概念,所以分配了24个字节
-*   前8个字节存储的是10，中间8个字节存储的是20，最后1个字节存储的是false，也就是0
-
-三、类
-===
-
-*   类的定义和结构体类似，但编译器并没有为类自动生成可以传入成员值的初始化器 ![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/48faa928fa484b87a2ae3996bbcabac8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   如果成员没有初始值，所有的初始化器都会报错 ![-w648](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5699df524e743128207ac9c2edbd947~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-1.类的初始化器
---------
-
-*   如果类的所有成员都在定义的时候指定了初始值，编译器会为类生成 **`无参的初始化器`**
-*   成员的初始化是在这个初始化器中完成的
-    
-        class Point {
-            var x: Int = 0
-            var y: Int = 0
-        }
-        
-        let p1 = Point()
-        复制代码
-    
-    *   下面这两种写法是完全等效的
-        
-            class Point {
-                var x: Int = 0
-                var y: Int = 0
-            }
-            
-            等效于
-            
-            class Point {
-                var x: Int
-                var y: Int
-            
-                init() {
-                    x = 0
-                    y = 0
-                }
-            }
-            
-            let p1 = Point()
-            复制代码
-        
-
-2\. 结构体与类的本质区别
---------------
-
-*   结构体是`值类型`（枚举也是值类型），类是`引用类型`（指针类型）  
-    下面我们分析函数内的局部变量分别都在内存的什么位置
-
-    class Size {
-        var width = 1
-        var height = 2
-    } 
-    struct Point {
-        var x: Int = 3
-        var y: Int = 4
-    }
-    
-    func test() {
-        var size = Size()
-        var point = Point()
-    } 
-    复制代码
-
-*   `变量`size和point都是在栈空间
-*   不同的是`局部变量point`是一个结构体类型。结构体是值类型，结构体变量会在栈空间中分配内存,它里面的两个成员x、y按顺序的排布
-*   而`局部指针变量size`是一个类的实例，类是引用类型，所以`size指针`指向的已初始化的变量的存储空间,是在堆中分配的，size指针内部存储的是Size类的实例内存地址 ![-w1020](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/70ea6076fb1548509687cab9ebead2cd~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-3\. 分析类的内存布局
-------------
-
-*   1.  我们先来看一下类的占用内存大小是多少
-    
-            class Size {
-                var width = 1
-                var height = 2
-            }
-            print(MemoryLayout<Size>.stride) // 8
-        复制代码
-    
-    通过打印我们可以发现`MemoryLayout`获取的8个字节实际上是指针变量占用多少存储空间，并不是对象在堆中的占用大小
-    
-*   2.  然后我们再看类的内存布局是怎样的
-    
-            var size = Size()
-        
-            print(Mems.ptr(ofVal: &size)) // 0x000000010000c388
-            print(Mems.memStr(ofVal: &size)) // 0x000000010072dba0
-        复制代码
-    
-    通过打印我们可以看到变量里面存储的值也是一个地址
-    
-*   3.  我们再打印该变量所指向的对象的内存布局是什么
-    
-            print(Mems.size(ofRef: size)) // 32
-            print(Mems.ptr(ofRef: size)) // 0x000000010072dba0
-            print(Mems.memStr(ofRef: size)) // 0x000000010000c278 0x0000000200000003 0x0000000000000001 0x0000000000000002
-        复制代码
-    
-    通过打印可以看到在`堆中存储的对象的地址`和上面的`指针变量里存储的值`是一样的
-    
-    内存布局里一共占用32个字节:
-    
-    *   前16个字节分别用来存储一些`类信息`和`引用计数`
-    *   后面16个字节存储着类的成员变量的值
-
-> **下面我们再从反汇编的角度来分析**
-
-*   我们要想确定类是否在堆空间中分配空间，通过反汇编来查看是否有调用`malloc函数` ![-w708](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7ff9723d317849f1a11137973bd89be3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4a45d9d80a3d43efb61a81f9e475e045~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   然后就一直跟进直到这里最好调用了`swift_slowAlloc` ![-w714](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/65b01d1dd467407f8ebc07a08d1c7d15~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   发现函数内部调用了系统的`malloc`在堆空间分配内存 ![-w709](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6a9514ee0c924446a07710bd1ca2f405~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-**注意:**
-
-*   结构体和枚举存储在哪里`取决于它们是在哪里分配`的
-    *   如果是在函数中分配的那就是在栈里
-    *   如果是在全局中分配的那就是在数据段
-*   而类无论是在哪里分配的，对象都是在堆空间中
-    *   指向对象内存的指针的存储位置是不确定的，可能在栈中也可能在数据段
-
-> **我们再看下面的`类型`占用内存大小是多少**
-
-    class Size {
-        var width: Int = 0
-        var height: Int = 0
-        var test = true
-    }
-    
-    let s = Size()
-    
-    print(Mems.size(ofRef: s)) // 48
-    复制代码
-
-*   在`Mac、iOS`中的`malloc函数`分配的内存大小总是`16的倍数`
-*   类最前面会有`16个字节`用来存储`类的信息`和`引用计数`，所以实际占用内存是`33个字节`，但由于`malloc函数`分配的内存都是刚好大于或等于其所需内存的16最小倍数，所以分配`48个字节`
-*   我们还可以通过`class_getInstanceSize`函数来获取类对象的内存大小
-
-    // 获取的是经过内存对齐后的内存大小，不是malloc函数分配的内存大小
-    print(class_getInstanceSize(type(of: s))) // 40
-    print(class_getInstanceSize(Size.self)) // 40
-    复制代码
-
-四、值类型和引用类型
-==========
-
-1\. 值类型
--------
-
-*   值类型赋值给`var、let或者给函数`传参，是直接将所有内容`拷贝一份`
-*   类似于对文件进行`copy、paste`操作，产生了全新的文件副本，**属于深拷贝（deep copy）**
-
-值类型进行拷贝的内存布局如下所示
-
-    struct Point {
-        var x: Int = 3
-        var y: Int = 4
-    }
-    
-    func test() {
-        var p1 = Point(x: 10, y: 20)
-        var p2 = p1
-    
-        p2.x = 4
-        p2.y = 5
-    
-        print(p1.x, p1.y)
-    }
-    
-    test()
-    复制代码
-
-![-w536](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7980c7fea817418aacefb9d17bcf5dba~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-**我们通过反汇编来进行分析**
-
-![-w712](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/92f3f7c5f9484dc9933d89ee94a26c59~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w947](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/602bd28e6ec6486c9096ab346f49e45e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w713](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9e673c56b74b4d768ebb91a504013d50~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1048](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/238779d785e24cc48720c582d965b587~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-通过上述分析可以发现，值类型的赋值内部会先将p1的成员值保存起来，再给p2进行赋值，所以不会影响到p1
-
-2\. 值类型的赋值操作
-------------
-
-*   在Swift标准库中，为了提升性能，`Array、String、Dictionary、Set`采用了`Copy On Write`的技术
-*   如果`只是将赋值操作`，那么只会进行`浅拷贝`，两个变量使用的还是同一块存储空间
-*   只有当`进行了”写“的操作`时，`才会进行深拷贝`操作
-*   对于标准库值类型的赋值操作，Swift能确保最佳性能，所以没必要为了保证最佳性能来避免赋值
-*   建议：**不需要修改值的，尽量定义成`let`**
-
-    var s1 = "Jack"
-    var s2 = s1
-    s2.append("_Rose")
-    
-    print(s1) // Jack
-    print(s2) // Jack_Rose
-    复制代码
-
-    var a1 = [1, 2, 3]
-    var a2 = a1
-    a2.append(4)
-    a1[0] = 2
-    
-    print(a1) // [2, 2, 3]
-    print(a2) // [1, 2, 3, 4]
-    复制代码
-
-    var d1 = ["max" : 10, "min" : 2]
-    var d2 = d1
-    d1["other"] = 7
-    d2["max"] = 12
-    
-    print(d1) // ["other" : 7, "max" : 10, "min" : 2]
-    print(d2) // ["max" : 12, "min" : 2]
-    复制代码
-
-**我们再看下面这段代码**  
-对于p1来说，再次赋值也只是覆盖了成员`x、y`的值而已，都是同一个结构体变量
-
-    struct Point {
-        var x: Int
-        var y: Int
-    }
-    var p1 = Point(x: 10, y: 20)
-    p1 = Point(x: 11, y: 22)
-    复制代码
-
-**用let定义的赋值操作**
-
-*   如果用`let`定义的常量赋值结构体类型会报错，并且修改结构体里的成员值也会报错
-*   用`let`定义就意味着常量里存储的值不可更改，而结构体是由x和y这16个字节组成的，所以更改x和y就意味着结构体的值要被覆盖，所以报错
-
-![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/02bc9cd358654834ae915998e2e45480~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-3\. 引用类型
---------
-
-*   引用赋值给`var、let或者给函数`传参，是将`内存地址拷贝一份`
-*   类似于制作一个文件的替身（快捷方式、链接），指向的是同一个文件，属于 **`浅拷贝（shallow copy）`**
-    
-        class Size {
-            var width = 0
-            var height = 0
-        
-            init(width: Int, height: Int) {
-                self.width = width
-                self.height = height
-            }
-        }
-        
-        func test() {
-            var s1 = Size(width: 10, height: 20)
-            var s2 = s1
-        
-            s2.width = 11
-            s2.height = 22
-        
-            print(s1.height, s1.width)
-        }
-        
-        test() 
-        复制代码
-    
-
-由于s1和s2都指向的同一块存储空间，所以s2修改了成员变量，s1再调用成员变量也已经是改变后的了 ![-w1124](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3356c841c72c4fac841aa1dbf256f8cf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-> **我们通过反汇编来进行分析** ![-w1049](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b45ca53a5f0d46eb8eb3a28d3621a036~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1052](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/945d409630314dbcad7255cb126579f1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1052](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5d1e1886aa3e48c590dcf63cf5882594~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-*   堆空间分配完内存之后，我们拿到`rax`的值查看内存布局
-*   发现`rax`里和对象的结构一样，证明`rax`里存储的就是对象的地址 ![-w1051](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/704284210812484c9c6486811ee37673~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1187](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5e9317bf166a4951a7755e6c8919506c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   将新的值11和22分别覆盖掉堆空间对象的成员值 ![-w1223](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/02b760674c0b45d38d11a9a86e1e8c40~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1224](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0643e6cb5cec4763aef3a0fa65a57c04~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1220](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/af6b9af0b43c4511887caf319cde7327~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1225](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31c388e409914d1f8e4e2a526833b208~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-通过上面的分析可以发现，修改的成员值都是改的同一个地址的对象，所以修改了p2的成员值，会影响到p1
-
-4\. 对象的堆空间申请过程
---------------
-
-*   **在Swift中，创建类的实例对象，要向堆空间申请内存，大概流程如下**
-    *   `Class.__allocating_init()`
-    *   libswiftCore.dylib:`_swift_allocObject_`
-    *   libswiftCore.dylib:`swift_slowAlloc`
-    *   libsystem\_malloc.dylib:`malloc`
-*   在Mac、iOS中的`malloc`函数分配的内存大小总是16的倍数
-*   通过`class_getInstanceSize`可以得知：类的对象至少需要占用多少内存
-    
-        class Point{
-            var x = 11
-            var test = true
-            var y = 22
-        } 
-        var p = Point() 
-        class_getInstanceSize(type(of: p)) // 40 
-        class_getInstanceSize(Point.self) // 40
-        复制代码
-    
-
-5\. 引用类型的赋值操作
--------------
-
-*   1.  将引用类型初始化对象赋值给同一个指针变量，指针变量会指向另一块存储空间
-    
-        class Size {
-            var width: Int
-            var height: Int
-        
-            init(width: Int, height: Int) {
-                self.width = width
-                self.height = height
-            }
-        }
-        
-        var s1 = Size(width: 10, height: 20)
-        s1 = Size(width: 11, height: 22)
-        复制代码
-    
-
-> **用let定义的赋值操作**
-
-*   2.  如果用`let`定义的常量赋值引用类型会报错，因为会改变指针常量里存储的8个字节的地址值
-*   3.  但修改类里的属性值不会报错，因为修改属性值并不是修改的指针常量的内存，只是通过指针常量找到类所存储的堆空间的内存地址去修改类的属性 ![-w643](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/83dccdb5d2be4945807070fcac919b0c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-6\. 嵌套类型
---------
-
-    struct Poker {
-        enum Suit: Character {
-            case spades = "♠️",
-                 hearts = "♥️",
-                 diamonds = "♦️",
-                 clubs = "♣️"
-        }
-        
-        enum Rank: Int {
-            case two = 2, three, four, five, six, seven, eight, nine, ten
-            case jack, queen, king, ace
-        }
-    }
-    
-    print(Poker.Suit.hearts.rawValue)
-    
-    var suit = Poker.Suit.spades
-    suit = .diamonds
-    
-    var rank = Poker.Rank.five
-    rank = .king 
-    复制代码
-
-7\. 枚举、结构体、类都可以定义方法
--------------------
-
-*   1.  一般把定义在枚举、结构体、类内部的函数，叫做方法
-    
-        struct Point {
-            var x: Int = 10
-            var y: Int = 10
-        
-            func show() {
-                print("show")
-            }
-        }
-        
-        let p = Point()
-        p.show()
-        
-        复制代码
-    
-        class Size {
-            var width: Int = 10
-            var height: Int = 10
-        
-            func show() {
-                print("show")
-            }
-        }
-        
-        let s = Size()
-        s.show()
-        
-        复制代码
-    
-        enum PokerFace: Character {
-            case spades = "♠️",
-                 hearts = "♥️",
-                 diamonds = "♦️",
-                 clubs = "♣️"
-        
-            func show() {
-                print("show")
-            }
-        }
-        
-        let pf = PokerFace.hearts
-        pf.show()
-        
-        复制代码
-    
-*   2.  方法不管放在哪里，其内存都是放在代码段中
-*   3.  枚举、结构体、类里的方法其实会有隐式参数
-    
-        class Size {
-            var width: Int = 10
-            var height: Int = 10
-        
-            // 默认会有隐式参数，该参数类型为当前枚举、结构体、类
-            func show(self: Size) {
-                print(self.width, self.height)
-            }
-        }
-        复制代码
-    
-
-六、属性
-====
-
-1\. 属性的基本概念
------------
-
-Swift中跟实例相关的属性可以分为2大类:
-
-*   **`存储属性`**（Stored Property）
-    *   类似于成员变量的概念
-    *   存储在实例的内存中
-    *   结构体、类可以定义存储属性
-    *   枚举`不可以`定义存储属性
-*   **`计算属性`**（Computed Property）
-    *   本质就是方法（函数）
-    *   不占用实例的内存
-    *   枚举、结构体、类都可以定义计算属性
-
-### 1.1 存储属性
-
-关于存储属性，Swift有个明确的规定:
-
-*   在创建类或结构体的实例时，**必须为所有的存储属性设置一个合适的初始值**
-    *   可以在初始化器里为存储属性设置一个初始值
-        
-            struct Point {
-                // 存储属性
-                var x: Int
-                var y: Int
-            } 
-            let p = Point(x: 10, y: 10) 
-            复制代码
-        
-    *   可以分配一个默认的属性值作为属性定义的一部分
-        
-            struct Point {
-                // 存储属性
-                var x: Int = 10
-                var y: Int = 10
-            } 
-            let p = Point() 
-            复制代码
-        
-
-### 1.2 计算属性
-
-定义计算属性只能用`var`，不能用`let`
-
-*   `let`代表常量，值是一直不变的
-*   计算属性的值是可能发生变化的（即使是只读计算属性）
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double 
-            // 计算属性
-            var diameter: Double {
-                set {
-                    radius = newValue / 2
-                } 
-                get {
-                    radius * 2
-                }
-            }
-        }
-        
-        var circle = Circle(radius: 5)
-        print(circle.radius) // 5.0
-        print(circle.diameter) // 10.0
-        
-        circle.diameter = 12
-        print(circle.radius) // 6.0
-        print(circle.diameter) // 12.0
-        复制代码
-    
-*   set传入的新值默认叫做`newValue`，也可以自定义
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double 
-            // 计算属性
-            var diameter: Double {
-                set(newDiameter) {
-                    radius = newDiameter / 2
-                } 
-                get {
-                    radius * 2
-                }
-            }
-        } 
-        var circle = Circle(radius: 5)
-        circle.diameter = 12
-        print(circle.diameter) 
-        复制代码
-    
-*   只读计算属性，只有`get`，没有`set`
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double 
-            // 计算属性
-            var diameter: Double {
-                get {
-                    radius * 2
-                }
-            }
-        } 
-        复制代码
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double 
-            // 计算属性
-            var diameter: Double { radius * 2 }
-            }
-        } 
-        复制代码
-    
-*   打印`Circle结构体`的内存大小，其占用才`8个字节`，其本质是因为计算属性相当于函数
-    
-        var circle = Circle(radius: 5)
-        print(Mems.size(ofVal: &circle)) // 8
-        复制代码
-    
-
-> **我们可以通过反汇编来查看其内部做了什么**
-
-*   可以看到内部会调用`set方法`去计算 ![-w723](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7cff94714670464aaf1eef4af8da8e12~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   然后我们在往下执行，还会看到`get方法`的调用 ![-w722](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3a9c5db06a704c67bc497a8ca021731e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   所以可以用此证明:计算属性只会生成`getter`和`setter`,不会开辟内存空间
-
-**注意：**
-
-*   一旦将存储属性变为计算属性，初始化构造器就会报错，只允许传入存储属性的值
-*   因为存储属性是直接存储在结构体内存中的，如果改成计算属性则不会分配内存空间来存储 ![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0e864fd3b6104be586e659d1e1f1b02b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w525](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc57b13c70a0424ebbf7f6df42150499~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   如果只有`setter`也会报错 ![-w651](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/510b7dcc067d4d73a7ecc95efd8c7992~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   只读计算属性：只有`get`，没有`set`
-    
-        struct Circle {
-            var radius: Double 
-            var diameter: Double { 
-                get { 
-                    radius * 2 
-                }
-            } 
-        }
-        //可以简写成
-        struct Circle {
-            var radius: Double 
-            var diameter: Double { radius * 2  } 
-        }
-        复制代码
-    
-
-2\. 枚举rawValue原理(计算属性)
-----------------------
-
-*   1.  枚举原始值`rawValue`的本质也是计算属性，而且是只读的计算属性
-    
-        enum TestEnum: Int {
-            case test1, test2, test3
-        
-            var rawValue: Int {
-                switch self {
-                case .test1:
-                    return 10
-                case .test2:
-                    return 20
-                case .test3:
-                    return 30
-                }
-            }
-        } 
-        print(TestEnum.test1.rawValue)//10
-        复制代码
-    
-*   2.  下面我们去掉自己写的`rawValue`，然后转汇编看下本质是什么样的
-    
-    *   可以看到底层确实是调用了`getter`
-    
-            enum TestEnum: Int {
-                case test1, test2, test3
-            }
-        
-            print(TestEnum.test1.rawValue)
-        复制代码
-    
-    ![-w717](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ba17ae69a634b95941c98bd85d2785e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-3\. 延迟存储属性（Lazy Stored Property）
---------------------------------
-
-*   1.  使用`lazy`可以定义一个延迟存储属性，在`第一次用到属性的时候才会进行初始化`
-    
-    *   看下面的示例代码，如果不加`lazy`，那么Person初始化之后就会进行Car的初始化
-    *   加上`lazy`，只有调用到属性的时候才会进行Car的初始化
-    
-        class Car {
-            init() {
-                print("Car init!")
-            }
-        
-            func run() {
-                print("Car is running!")
-            }
-        }
-        
-        class Person {
-            lazy var car = Car()
-        
-            init() {
-                print("Person init!")
-            }
-        
-            func goOut() {
-                car.run()
-            }
-        }
-        
-        let p = Person()
-        print("----")
-        p.goOut()
-        
-        // 打印：
-        // Person init!
-        // ----
-        // Car init!
-        // Car is running!
-        复制代码
-    
-*   2.  `lazy`属性必须是`var`，不能是`let`  
-        `let`必须在实例的初始化方法完成之前就拥有值
-    
-        class PhotoView {
-            lazy var image: UIImage = {
-                let url = "http://www.***.com/logo.png"
-                let data = Data(url: url)
-                return UIImage(data: data)
-            }()
-        } 
-        复制代码
-    
-*   3.  **注意：** `lazy`属性和普通的存储属性内存布局是一样的，不同的只是什么分配内存的时机,而且lazy属性可以通过闭包进行初始化
-*   4.  **延迟存储属性的注意点**
-    
-    *   1.如果多条线程同时第一次访问`lazy`属性，**无法保证属性只被初始化一次**
-    *   2.当结构体包含一个延迟存储属性时，只有`var`才能访问延迟存储属性  
-        因为延迟存储属性初始化时需要改变结构体的内存 ![-w652](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7d9eacdd4db540e7ab7cc23398bdb62c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-4.属性观察器（Property Observer）
---------------------------
-
-*   1.  可以为非`lazy`的`var存储属性`设置属性观察器
-    
-    *   只有存储属性可以设置属性观察器
-    *   `willSet`会传递新值，默认叫`newValue`
-    *   `didSet`会传递旧值，默认叫`oldValue`
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double {
-                willSet {
-                    print("willSet", newValue)
-                }
-        
-                didSet {
-                    print("didSet", oldValue, radius)
-                }
-            }
-        
-            init() {
-                radius = 1.0
-                print("Circle init!")
-            }
-        }
-        
-        var circle = Circle()
-        circle.radius = 10.5
-        
-        // 打印
-        // willSet 10.5
-        // didSet 1.0 10.5 
-        复制代码
-    
-*   2.  在初始化器中设置属性值不会触发`willSet`和`didSet`
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double {
-                willSet {
-                    print("willSet", newValue)
-                }
-        
-                didSet {
-                    print("didSet", oldValue, radius)
-                }
-            }
-        
-            init() {
-                radius = 1.0
-                print("Circle init!")
-            }
-        }
-        
-        var circle = Circle() 
-        复制代码
-    
-*   3.  在属性定义时设置初始值也不会触发`willSet`和`didSet`
-    
-        struct Circle {
-            // 存储属性
-            var radius: Double = 1.0 {
-                willSet {
-                    print("willSet", newValue)
-                }
-        
-                didSet {
-                    print("didSet", oldValue, radius)
-                }
-            }
-        }
-        
-        var circle = Circle()
-        复制代码
-    
-*   4.  计算属性设置属性观察器会报错 ![-w657](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f0cb0a9d0e0e45858fa53006840c92ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-5\. 全局变量和局部变量
--------------
-
-*   1.  属性观察器、计算属性的功能，同样可以应用在全局变量和局部变量身上
-
-### 5.1 全局变量
-
-    var num: Int {
-        get {
-            return 10
-        }
-        
-        set {
-            print("setNum", newValue)
-        }
-    }
-    
-    num = 11 // setNum 11
-    print(num) // 10 
-    复制代码
-
-### 5.2 局部变量
-
-    func test() {
-        var age = 10 {
-            willSet {
-                print("willSet", newValue)
-            }
-            
-            didSet {
-                print("didSet", oldValue, age)
-            }
-        }
-            
-        age = 11
-        // willSet 11
-        // didSet 10 11
-    }
-    
-    test() 
-    复制代码
-
-6\. inout对属性的影响
----------------
-
-看下面的示例代码，分别输出什么，为什么？
-
-    struct Shape { 
-        var width: Int   
-        var side: Int { 
-            willSet { 
-                print("willSet", newValue) 
-            }
-      
-            didSet { 
-                print("didSet", oldValue, side) 
-            } 
-        }
-    
-        
-    
-        var girth: Int { 
-            set { 
-                width = newValue / side 
-                print("setGirth", newValue) 
-            }  
-    
-            get { 
-                print("getGirth") 
-                return width * side 
-            } 
-        }
-    
-        
-    
-        func show() { 
-            print("width=\(width), side=\(side), girth=\(girth)") 
-        } 
-    } 
-    
-    func test(_ num: inout Int) { 
-        num = 20 
-    }
-     
-    
-    var s = Shape(width: 10, side: 4) 
-    test(&s.width) 
-    s.show()
-     
-    print("--------------------")   
-    test(&s.side)
-    
-    s.show() 
-    print("--------------------") 
-    test(&s.girth) 
-    s.show()
-     
-    
-    // 打印: 
-    //getGirth 
-    //width=20, side=4, girth=80 
-    //-------------------- 
-    //willSet 20 
-    //didSet 4 20 
-    //getGirth 
-    //width=20, side=20, girth=400 
-    //-------------------- 
-    //getGirth 
-    //setGirth 20 
-    //getGirth 
-    //width=1, side=20, girth=20 
-    复制代码
-
-**第一段打印**  
-初始化的时候会给width赋值为10，side赋值为4，并且不会调用side的属性观察器  
-然后调用`test方法`，并传入width的地址值，width变成20  
-然后调用`show方法`，会调用girth的getter，然后先执行打印，再计算，girth为80
-
-**下面我们通过反汇编来进行分析** ![-w963](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b5fc1d06411345e48b5298b546fc5eb5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w963](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4b1df2fda6114e7797c514b125c72220~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w965](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8030cdce64e4915a42fe6e740e88470~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w807](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/77f27418b516496fae9563a089f7c8ba~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-**第二段打印**  
-现在width的值是20，side的值是4，girth的值是80  
-然后调用`test方法`，并传入side的地址值，side变成20，并且触发属性观察器，执行打印  
-然后调用`show方法`，会调用girth的getter，然后先执行打印，再计算，girth为400
-
-**下面我们通过反汇编来进行分析**
-
-![-w960](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2308139e5ef84fdfbe0529d07bbb728e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w351](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4016c951c10349d9b321482156ed3e06~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-将地址值存储到`rdi`中，并带入到`test`函数中进行计算
-
-![-w959](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dc6c66b5d9d94477b8f3ec45a7fd7163~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w960](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18619de80d5e4433bff1110585cbc391~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w870](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fef68a991f484726b25c6404faa16aea~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-*   `setter`中才会真正的调用`willSet`和`didSet`方法
-*   `willSet`和`didSet`之间的计算才是真正的将改变了的值覆盖了全局变量里的side
-*   真正改变了side的值的时候是调用完`test函数`之后，在内部的`setter`里进行的
-
-**第三段打印**  
-现在width的值是20，side的值是20，girth的值是400  
-然后调用`test方法`，并传入girth的getter的返回值为400，然后将20赋值给girth的setter计算，width变为1  
-然后调用`show方法`，，会调用girth的getter，然后先执行打印，再计算，girth为20
-
-**下面我们通过反汇编来进行分析**
-
-![-w962](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fe71f0becd65491781c3db4c04ae8f24~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w371](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f44242dece54d9b8d0fddefdffd28c1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w961](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b9cc4aea2fd4feb863dbc9aedbf2f6f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w963](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/230104d8a6ad497e84dca4ed40986ccd~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w425](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4403db87443f44809960b4682a8f0491~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w958](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31f115cc2baa4beebaa466923e5d557b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w399](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e096666a8f494dbc9ee87abcc9bef9bf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w961](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/10c3f0965b924847bce7b803acedfb15~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w675](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/64be28706705430a92d02e3e1b215f6f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w963](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/624c73ef789a4b5da1b726eba248ce35~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w614](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/15246ce5ef6449e58c2566ba6fe15274~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w960](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/84cee3a22fcf45549921a6f894884adc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w822](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/de8c1f3d95d84590a6ac010cb595160d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w961](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6fa014e3ab3844b0bc76d2151fb12b55~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w958](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9efe2dbf0df44b579ebb387633cce472~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w837](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8ac8d16badd5455fbea46d694f74f6ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-再后面都是计算的过程了，这里就不详细跟进了
-
-我们主要了解`inout`是怎么给计算属性进行关联调用的，从上面分析可以看出:
-
-*   从调用girth的`getter`开始，都会将计算的结果放入一个寄存器中
-*   然后通过这个寄存器的地址再进行传递
-*   `inout`影响的也是修改这个寄存器中存储的值，然后再进一步传递到`setter`里进行计算
-
-> **`inout的本质总结`**
-
-![-w947](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c080e2c15d74ed0b322d1d646e43026~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-**对于没有属性观察器的`存储属性`来说:**
-
-*   `inout`的本质就是传进来一个`地址值`，然后将值存储到这个地址对应的存储空间内
-
-**对于设置了属性观察器和`计算属性`来说:**
-
-*   `inout`会先将传进来的地址值放到一个局部变量中，然后改变局部变量地址值对应的存储空间
-    
-*   再将改变了的局部变量值覆盖最初传进来的参数的值
-    
-    *   这时会对应触发属性观察器`willSet、didSet`和计算属性的`setter、getter`的调用
-*   如果不这么做，直接就改变了传进来的地址值的存储空间的话，就不会调用属性观察器了，而计算属性因为没有分配内存来存储值，也就没办法更改了
-    
-*   **总结:`inout`的本质就是引用传递（地址传递）**
-    
-
-7\. 类型属性（Type Property）
------------------------
-
-*   1.  严格来说，属性可以分为两大类:
-    
-    *   实例属性(Instance Property):只能通过实例去访问
-        *   存储实例属性(Stored Instance Property):存储在实例的内存中，每个实例都有一份
-        *   计算实例属性(Computed Instance Property)
-    *   类型属性(Type Property):只能通过类去访问
-        *   存储类型属性(Stored Type Property):整个程序运行过程中，就只有一份内存（类似于全局变量）
-        *   计算类型属性(Computed Type Property)
-*   2.  可以通过`static`定义类型属性
-    
-        struct Car {
-            static var count: Int = 0
-            init() {
-                Car.count += 1
-            }
-        } 
-        复制代码
-    
-*   3.  如果是类，也可以用关键字`class`修饰`计算属性类型`
-    
-        class Car {
-            class var count: Int {
-                return 10
-            }
-        } 
-        print(Car.count) 
-        复制代码
-    
-*   4.  类里面不能用`class`修饰`存储属性类型` ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e4adf6e0bd24884ba8f7449bb50ea73~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-> 类型属性细节
-
-*   不同于`存储实例属性`，`存储类型属性`**必须设定初始值**，不然会报错
-*   因为类型没有像实例那样的`init初始化器`来初始化存储属性 ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fa55c7ff16054344b1687daea819fbd9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   `存储类型属性`可以用`let`
-    
-        struct Car {
-            static let count: Int = 0 
-        } 
-        print(Car.count) 
-        复制代码
-    
-*   枚举类型也可以定义类型属性（`存储类型属性`、`计算类型属性`）
-    
-        enum Shape {
-            static var width: Int = 0
-            case s1, s2, s3, s4
-        } 
-        var s = Shape.s1
-        Shape.width = 5 
-        复制代码
-    
-*   `存储类型属性`默认就是`lazy`，会在第一次使用的时候进行初始化
-    *   就算被多个线程同时访问，保证只会初始化一次
-
-> **通过反汇编来分析类型属性的底层实现**
-
-我们先通过打印下面两组代码来做对比，发现存储类型属性的内存地址和前后两个全局变量正好相差8个字节，所以可以证明存储类型属性的本质就是类似于全局变量，只是放在了结构体或者类里面控制了访问权限:
-
-    var num1 = 5
-    var num2 = 6
-    var num3 = 7
-    
-    print(Mems.ptr(ofVal: &num1)) // 0x000000010000c1c0
-    print(Mems.ptr(ofVal: &num2)) // 0x000000010000c1c8
-    print(Mems.ptr(ofVal: &num3)) // 0x000000010000c1d0
-    复制代码
-
-    var num1 = 5
-    
-    class Car {
-        static var count = 1
-    }
-    
-    Car.count = 6
-    
-    var num3 = 7
-    
-    print(Mems.ptr(ofVal: &num1)) // 0x000000010000c2f8
-    print(Mems.ptr(ofVal: &Car.count)) // 0x000000010000c300
-    print(Mems.ptr(ofVal: &num3)) // 0x000000010000c308
-    复制代码
-
-然后我们通过反汇编来观察: ![-w1086](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/29f41f886ace4c11b2ec6996ace3668a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1086](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3fb52597aea24166872d4a77051d4100~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1085](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e597aad70a124c28b7ecd3eb2d735f2c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-![-w508](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95036cbba74246ba85a028c66ffba1c7~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1086](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5ab7bdb03dcf49f3907b2ee304181df8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-通过调用我们可以发现最后会调用到`GCD`的`dispatch_once`，所以存储类型属性才会说是线程安全的，并且只执行一次
-
-并且`dispatch_once`里面执行的代码就是`static var count = 1`
-
-8.单例模式
-------
-
-    public class FileManager {
-        public static let shared = FileManager()
-        private init() { }
-        
-        public func openFile() {
-            
-        }
-    }
-    
-    FileManager.shared.openFile()
-    复制代码
-
-* * *
-
-七、方法（Method）
-============
-
-1\. 基本概念
---------
-
-枚举、结构体、类都可以定义`实例方法`、`类型方法`
-
-*   实例方法（`Instance Method`）: 通过实例对象调用
-*   类型方法（`Type Method`）: 通过类型调用
-    *   实例方法调用
-        
-            class Car {
-                var count = 0
-            
-                func getCount() -> Int {
-                    count
-                }
-            }
-            
-            let car = Car()
-            car.getCo 
-            复制代码
-        
-    *   类型方法用`static`或者`class`关键字定义
-        
-            class Car {
-                static var count = 0
-            
-                static func getCount() -> Int {
-                    count
-                }
-            }
-            
-            Car.getCount() 
-            复制代码
-        
-    *   类型方法中不能调用实例属性，反之实例方法中也不能调用类型属性 ![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/821ce590fc79410586ee545f4fb7a6e7~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/34b3768d7ca04c149eab2017d5cffe29~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   不管是类型方法还是实例方法，都会传入隐藏参数`self`
-*   `self`在实例方法中代表实例对象
-*   `self`在类型方法中代表类型
-    
-        // count等于self.count、Car.self.count、Car.count
-        static func getCount() -> Int {
-            self.count
-        } 
-        复制代码
-    
-
-2\. mutating
-------------
-
-*   `结构体`和`枚举`是`值类型`,默认情况下,值类型的属性不能被自身的实例方法修改
-*   在`func`关键字前面加上`mutating`可以允许这种修改行为
-    
-        struct Point {
-            var x = 0.0, y = 0.0
-        
-            mutating func moveBy(deltaX: Double, deltaY: Double) {
-                x += deltaX
-                y += deltaY
-            }
-        } 
-        复制代码
-    
-        enum StateSwitch {
-            case low, middle, high
-        
-            mutating func next() {
-                switch self {
-                case .low:
-                    self = .middle
-                case .middle:
-                    self = .high
-                case .high:
-                    self = .low
-                }
-            }
-        } 
-        复制代码
-    
-
-3\. @discardableResult
-----------------------
-
-*   在`func`前面加上`@discardableResult`，可以消除函数调用后`返回值未被使用的警告`
-    
-        struct Point {
-            var x = 0.0, y = 0.0
-        
-            @discardableResult mutating func moveX(deltaX: Double) -> Double {
-                x += deltaX
-                return x
-            }
-        }
-        
-        var p = Point()
-        p.moveX(deltaX: 10) 
-        复制代码
-    
-
-八、下标（subscript）
-===============
-
-1\. 基本概念
---------
-
-*   1.  使用`subscript`可以给任意类型（`枚举`、`结构体`、`类`）增加下标功能  
-        有些地方也翻译成：下标脚本
-*   2.  `subscript`的语法类似于实例方法、计算属性，本质就是方法（函数）
-
-    class Point {
-        var x = 0.0, y = 0.0
-        
-        subscript(index: Int) -> Double {
-            set {
-                if index == 0 {
-                    x = newValue
-                } else if index == 1 {
-                    y = newValue
-                }
-            }
-            
-            get {
-                if index == 0 {
-                    return x
-                } else if index == 1 {
-                    return y
-                } 
-                return 0
-            }
-        }
-    }
-    
-    var p = Point()
-    p[0] = 11.1
-    p[1] = 22.2
-    print(p.x) // 11.1
-    print(p.y) // 22.2
-    print(p[0]) // 11.1
-    print(p[1]) // 22.2 
-    复制代码
-
-*   3.  `subscript`中定义的返回值类型决定了`getter`中返回值类型和`setter`中`newValue`的类型
-*   4.  `subscript`可以接收多个参数，并且类型任意
-    
-        class Grid {
-            var data = [
-                [0, 1 ,2],
-                [3, 4, 5],
-                [6, 7, 8]
-            ]
-        
-            subscript(row: Int, column: Int) -> Int {
-                set {
-                    guard row >= 0 && row < 3 && column >= 0 && column < 3 else { return }
-                    data[row][column] = newValue
-                }
-        
-                get {
-                    guard row >= 0 && row < 3 && column >= 0 && column < 3 else { return 0 }
-                    return data[row][column]
-                }
-            }
-        } 
-        var grid = Grid()
-        grid[0, 1] = 77
-        grid[1, 2] = 88
-        grid[2, 0] = 99 
-        复制代码
-    
-*   5.  `subscript`可以没有`setter`，但必须要有`getter`，同计算属性
-    
-        class Point {
-            var x = 0.0, y = 0.0 
-            subscript(index: Int) -> Double {
-                get {
-                    if index == 0 {
-                        return x
-                    } else if index == 1 {
-                        return y
-                    } 
-                    return 0
-                }
-            }
-        } 
-        复制代码
-    
-*   6.  `subscript`如果只有`getter`，可以省略`getter`
-    
-        class Point {
-            var x = 0.0, y = 0.0 
-            subscript(index: Int) -> Double {
-                if index == 0 {
-                    return x
-                } else if index == 1 {
-                    return y
-                } 
-                return 0
-            }
-        } 
-        复制代码
-    
-*   7.  `subscript`可以设置参数标签  
-        只有设置了自定义标签的调用才需要写上参数标签
-        
-            class Point {
-                var x = 0.0, y = 0.0 
-                subscript(index i: Int) -> Double {
-                    if i == 0 {
-                        return x
-                    } else if i == 1 {
-                        return y
-                    }
-            
-                    return 0
-                }
-            }
-            
-            var p = Point()
-            p.y = 22.2
-            print(p[index: 1]) // 22.2 
-            复制代码
-        
-*   8.`subscript`可以是类型方法
-    
-        class Sum {
-            static subscript(v1: Int, v2: Int) -> Int {
-                v1 + v2
-            }
-        } 
-        print(Sum[10, 20]) // 30 
-        复制代码
-    
-
-> **通过反汇编来分析**
-
-看下面的示例代码，我们将断点打到图上的位置，然后观察反汇编
-
-![-w710](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eee7f7f5299245879b4ee35b6898cf44~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-看到其内部是会调用`setter`来进行计算
-
-![-w708](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5c779a1690154074ad390a09275cecff~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w714](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dcc337e8548b429fa24e06e8b36202f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-然后再将断点打到这里来看
-
-![-w552](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/61185b4065e54f1db581d1517112cacf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-看到其内部是会调用`getter`来进行计算 ![-w712](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/29c9cb259eec4610936b97a9ab5fac3f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/dad3b8fab86e43da91b7d7d8135a9f98~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-经上述分析就可以证明`subscript`本质就是方法调用
-
-2\. 结构体和类作为返回值对比
-----------------
-
-看下面的示例代码
-
-    struct Point {
-        var x = 0, y = 0
-    }
-    
-    class PointManager {
-        var point = Point()
-        subscript(index: Int) -> Point {
-            set { point = newValue }
-            get { point }
-        }
-    }
-    
-    var pm = PointManager()
-    pm[0].x = 11 // 等价于pm[0] = Point(x: 11, y: pm[0].y)
-    pm[0].y = 22 // 等价于pm[0] = Point(x: pm[0].x, y: 22) 
-    复制代码
-
-如果我们注释掉`setter`，那么调用会报错 ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a6291e522984427cab617ad5bc7b2d25~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) 但是我们将结构体换成类，就不会报错了 ![-w624](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc397b02db4e4a8ba2bbf2502633b205~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-*   原因还是在于结构体是`值类型`，通过`getter`得到的`Point`结构体只是`临时的值`（可以想成计算属性），并不是真正的存储属性point，所以会报错
-    *   通过打印也可以看出来要修改的并不是同一个地址值的point ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e035ac4da994f1ea8beb96d272fadc3~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   但换成了类，那么通过`getter`得到的`Point`类是一个指针变量，而修改的是指向堆空间中的`Point`的属性，所以不会报错
-
-3.接收多个参数的下标
------------
-
-    class Grid {
-        var data = [
-            [0, 1, 2], 
-            [3, 4, 5], 
-            [6, 7, 8] 
-        ] 
-        
-        subscript(row: Int, column: Int) -> Int { 
-            set { 
-                guard row >= 0 && row < 3 && column >= 0 && column < 3 else {
-                    return 
-                }
-                data[row][column] = newValue 
-            } 
-        
-            get { 
-                guard row >= 0 && row < 3 && column >= 0 && column < 3 else { 
-                    return 0 
-                } 
-                return data[row][column] 
-            }
-    
-        } 
-    }
-    
-    var grid = Grid() 
-    grid[0,1] = 77 
-    grid[1,2] = 88 
-    grid[2,0] = 99 
-    print(grid.data)
-    复制代码
-
-九、继承（Inheritance）
-=================
-
-1\. 基本概念
---------
-
-*   `继承:` 值类型（结构体、枚举）不支持继承，只有引用类型的类支持继承
-*   `基类:` 没有父类的类，叫做基类
-*   `Swift`并没有像`OC、Java`那样的规定，任何类最终都要继承自某个基类 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ccf8006df0db467080740e343e7b7a54~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-*   `子类`可以重写从`父类`继承过来的`下标`、`方法`、`属性`。重写必须加上`override`
-    
-        class Car {
-            func run() {
-                print("run")
-            }
-        }
-        
-        
-        class Truck: Car {
-            override func run() {
-        
-            }
-        } 
-        复制代码
-    
-
-2.内存结构
-------
-
-看下面几个类的内存占用是多少
-
-    class Animal {
-        var age = 0
-    }
-    
-    class Dog: Animal {
-        var weight = 0
-    }
-    
-    class ErHa: Dog {
-        var iq = 0
-    }
-    
-    let a = Animal()
-    a.age = 10
-    print(Mems.size(ofRef: a)) // 32
-    print(Mems.memStr(ofRef: a))
-    
-    //0x000000010000c3c8
-    //0x0000000000000003
-    //0x000000000000000a
-    //0x000000000000005f
-    
-    let d = Dog()
-    d.age = 10
-    d.weight = 20
-    print(Mems.size(ofRef: d)) // 32
-    print(Mems.memStr(ofRef: d))
-    
-    //0x000000010000c478
-    //0x0000000000000003
-    //0x000000000000000a
-    //0x0000000000000014
-    
-    let e = ErHa()
-    e.age = 10
-    e.weight = 20
-    e.iq = 30
-    print(Mems.size(ofRef: e)) // 48
-    print(Mems.memStr(ofRef: e))
-    
-    //0x000000010000c548
-    //0x0000000000000003
-    //0x000000000000000a
-    //0x0000000000000014
-    //0x000000000000001e
-    //0x0000000000000000 
-    复制代码
-
-*   1.  首先类内部会有16个字节:存储`类信息`和`引用计数`
-*   2.  然后才是成员变量/常量的内存(`存储属性`)
-*   3.  又由于堆空间分配内存,存在内存对齐的概念,其原则分配的内存大小为16的倍数且刚好大于或等于初始化一个该数据类型变量所需的字节数
-*   4.  基于前面的规则,最终得出结论:所分配的内存空间分别占用为`32`、`32`、`48`
-*   5.  Tips:子类会继承自父类的属性，所以内存会算上父类的属性存储空间
-
-3\. 重写实例方法、下标
--------------
-
-    class Animal {
-        func speak() {
-            print("Animal speak")
-        }
-        
-        subscript(index: Int) -> Int {
-            index
-        }
-    }
-    
-    var ani: Animal
-    ani = Animal()
-    ani.speak()
-    print(ani[6])
-    
-    class Cat: Animal {
-        override func speak() {
-            super.speak()
-            
-            print("Cat speak")
-        }
-        
-        override subscript(index: Int) -> Int {
-            super[index] + 1
-        }
-    }
-    
-    ani = Cat()
-    ani.speak()
-    print(ani[7]) 
-    复制代码
-
-*   1.  被`class`修饰的类型`方法`、`下标`，允许被子类重写
-    
-        class Animal {
-            class func speak() {
-                print("Animal speak")
-            }
-        
-            class subscript(index: Int) -> Int {
-                index
-            }
-        }
-        
-        
-        Animal.speak()
-        print(Animal[6])
-        
-        class Cat: Animal {
-            override class func speak() {
-                super.speak()
-        
-                print("Cat speak")
-            }
-        
-            override class subscript(index: Int) -> Int {
-                super[index] + 1
-            }
-        }
-        
-        Cat.speak()
-        print(Cat[7]) 
-        复制代码
-    
-*   2.  被`static`修饰的类型方法、下标，不允许被子类重写 ![-w571](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/615e2193e883491fbc45c9c531860185~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4afd111508704971875cca945f656fd0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   3.  但是被`class`修饰的类型方法、下标，子类重写时允许使用`static`修饰  
-        但再后面的子类就不被允许了
-    
-        class Animal {
-            class func speak() {
-                print("Animal speak")
-            }
-        
-            class subscript(index: Int) -> Int {
-                index
-            }
-        }
-        
-        
-        Animal.speak()
-        print(Animal[6])
-        
-        class Cat: Animal {
-            override static func speak() {
-                super.speak()
-        
-                print("Cat speak")
-            }
-        
-            override static subscript(index: Int) -> Int {
-                super[index] + 1
-            }
-        }
-        
-        Cat.speak()
-        print(Cat[7]) 
-        复制代码
-    
-    ![-w634](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/87766e3668e340fd912a5b87363b8f7b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-4\. 重写属性
---------
-
-*   1.  子类可以将父类的属性（存储、计算）重写为计算属性
-    
-        class Animal {
-            var age = 0
-        }
-        
-        class Dog: Animal {
-            override var age: Int {
-                set {
-        
-                }
-        
-                get {
-                    10
-                }
-            }
-            var weight = 0
-        } 
-        复制代码
-    
-*   2.  但子类`不可以`将父类的属性重写为`存储属性` ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d2d1a89318a143bebbb37a77ec8e93b2~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w638](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3506b968c7454367be459f52b85160b9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   3.  只能重写`var`属性，不能重新`let`属性 ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0ead7d3af36a4d0a8dd92e28121ee6cf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   4.  重写时，属性名、类型要一致 ![-w639](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/87ab8d0c201f424f988161c658f01b2f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   5.  子类重写后的属性权限不能小于父类的属性权限
-    
-    *   如果父类属性是`只读的`，那么子类重写后的属性`可以是只读的`，`也可以是可读可写的`
-    *   如果父类属性是`可读可写的`，那么子类重写后的属性也`必须是可读可写的`
-
-### 4.1 重写实例属性
-
-    class Circle {
-        // 存储属性
-        var radius: Int = 0
-    
-        // 计算属性
-        var diameter: Int {
-            set(newDiameter) {
-                print("Circle setDiameter")
-                radius = newDiameter / 2
-            }
-    
-            get {
-                print("Circle getDiameter")
-                return radius * 2
-            }
-        }
-    }
-    
-    class SubCircle: Circle {
-        override var radius: Int {
-            set {
-                print("SubCircle setRadius")
-                super.radius = newValue > 0 ? newValue : 0
-            }
-    
-            get {
-                print("SubCircle getRadius")
-                return super.radius
-            }
-        }
-        
-        override var diameter: Int {
-            set {
-                print("SubCircle setDiameter")
-                super.diameter = newValue > 0 ? newValue : 0
-            }
-    
-            get {
-                print("SubCircle getDiameter")
-                return super.diameter
-            }
-        }
-    }
-    
-    var c = SubCircle()
-    c.radius = 6
-    print(c.diameter)
-    
-    c.diameter = 20
-    print(c.radius)
-    
-    //SubCircle setRadius
-    
-    //SubCircle getDiameter
-    //Circle getDiameter
-    //SubCircle getRadius
-    //12
-    
-    //SubCircle setDiameter
-    //Circle setDiameter
-    //SubCircle setRadius
-    
-    //SubCircle getRadius
-    //10 
-    复制代码
-
-*   6.  从父类继承过来的`存储属性`，**都会分配内存空间**，**`不管`** 之后会不会被重写为计算属性
-*   7.  如果重写的方法里的`setter`和`getter`不写`super`，那么就会死循环
-    
-        class SubCircle: Circle {
-            override var radius: Int {
-                set {
-                    print("SubCircle setRadius")
-                    radius = newValue > 0 ? newValue : 0
-                }
-        
-                get {
-                    print("SubCircle getRadius")
-                    return radius
-                }
-            }    
-        } 
-        复制代码
-    
-
-### 4.2 重写类型属性
-
-*   1.  被`class`修饰的计算类型属性，`可以`被子类重写
-
-    class Circle {
-        // 存储属性
-        static var radius: Int = 0 
-        // 计算属性
-        class var diameter: Int {
-            set(newDiameter) {
-                print("Circle setDiameter")
-                radius = newDiameter / 2
-            } 
-            get {
-                print("Circle getDiameter")
-                return radius * 2
-            }
-        }
-    } 
-    class SubCircle: Circle { 
-        override static var diameter: Int {
-            set {
-                print("SubCircle setDiameter")
-                super.diameter = newValue > 0 ? newValue : 0
-            } 
-            get {
-                print("SubCircle getDiameter")
-                return super.diameter
-            }
-        }
-    }
-    
-    Circle.radius = 6
-    print(Circle.diameter)
-    
-    Circle.diameter = 20
-    print(Circle.radius)
-    
-    SubCircle.radius = 6
-    print(SubCircle.diameter)
-    
-    SubCircle.diameter = 20
-    print(SubCircle.radius)
-    
-    //Circle getDiameter
-    //12
-    
-    //Circle setDiameter
-    //10
-    
-    //SubCircle getDiameter
-    //Circle getDiameter
-    //12
-    
-    //SubCircle setDiameter
-    //Circle setDiameter
-    //10 
-    复制代码
-
-*   2.  被`static`修饰的类型属性(计算、存储）,`不可以`被子类重写 ![-w861](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18f27d1f7ebf4f45bb65dbaa2063f0cf~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-5\. 属性观察器
----------
-
-*   1.  可以在子类中为父类属性（除了只读计算属性、`let`属性）增加属性观察器  
-        重写后还是存储属性，不是变成了计算属性
-    
-        class Circle {
-            var radius: Int = 1
-        }
-        
-        class SubCircle: Circle {
-            override var radius: Int {
-                willSet {
-                    print("SubCircle willSetRadius", newValue)
-                }
-        
-                didSet {
-                    print("SubCircle didSetRadius", oldValue, radius)
-                }
-            }
-        }
-        
-        var circle = SubCircle()
-        circle.radius = 10
-        
-        //SubCircle willSetRadius 10
-        //SubCircle didSetRadius 1 10 
-        复制代码
-    
-*   2.  如果父类里也有属性观察器:
-    
-    *   那么子类赋值时，会先调用自己的属性观察器`willSet`,然后调用父类的属性观察器`willSet`；
-    *   并且在父类里面才是真正的进行赋值
-    *   然后先父类的`didSet`，最后再调用自己的`didSet`
-        
-            class Circle {
-                var radius: Int = 1 {
-                    willSet {
-                        print("Circle willSetRadius", newValue)
-                    }
-            
-                    didSet {
-                        print("Circle didSetRadius", oldValue, radius)
-                    }
-                }
-            }
-            
-            class SubCircle: Circle {
-                override var radius: Int {
-                    willSet {
-                        print("SubCircle willSetRadius", newValue)
-                    }
-            
-                    didSet {
-                        print("SubCircle didSetRadius", oldValue, radius)
-                    }
-                }
-            }
-            
-            var circle = SubCircle()
-            circle.radius = 10
-            
-            //SubCircle willSetRadius 10
-            //Circle willSetRadius 10
-            //Circle didSetRadius 1 10
-            //SubCircle didSetRadius 1 10 
-            复制代码
-        
-*   3.  可以给父类的`计算属性`增加属性观察器
-    
-        class Circle {
-            var radius: Int {
-                set {
-                    print("Circle setRadius", newValue)
-                }
-        
-                get {
-                    print("Circle getRadius")
-                    return 20
-                }
-            }
-        }
-        
-        class SubCircle: Circle {
-            override var radius: Int {
-                willSet {
-                    print("SubCircle willSetRadius", newValue)
-                } 
-                didSet {
-                    print("SubCircle didSetRadius", oldValue, radius)
-                }
-            }
-        }
-        
-        var circle = SubCircle()
-        circle.radius = 10
-        
-        //Circle getRadius
-        //SubCircle willSetRadius 10
-        //Circle setRadius 10
-        //Circle getRadius
-        //SubCircle didSetRadius 20 20 
-        复制代码
-    
-
-上面打印会先调用一次`Circle getRadius`是因为在设置值之前会先拿到它的`oldValue`，所以需要调用`getter`一次
-
-为了测试，我们将`oldValue`的获取去掉后，再打印发现就没有第一次的`getter`的调用了
-
-![-w717](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a0343cfec35740fcb77982ff96267dbd~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-6.final
--------
-
-*   1.  被`final`修饰的`方法`、`下标`、`属性`，禁止被重写 ![-w643](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0ccf17c068f94675958d85987162f5dd~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b108314a8bc74118b5bb5dc9c213aea1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/61b66e59c2034bd0b3e373d0665d95d8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   2.  被`final`修饰的类，禁止被继承 ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/115cfb3c712e48b6b94af68a9b1b65b1~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-7\. 方法调用的本质
------------
-
-*   1.  我们先看下面的示例代码，分析`结构体`和`类`的调用方法区别是什么
-    
-        struct Animal {
-            func speak() {
-                print("Animal speak")
-            }
-        
-            func eat() {
-                print("Animal eat")
-            }
-        
-            func sleep() {
-                print("Animal sleep")
-            }
-        }
-        
-        var ani = Animal()
-        ani.speak()
-        ani.eat()
-        ani.sleep() 
-        复制代码
-    
-*   2.  反汇编之后，发现结构体的方法调用就是**直接找到方法所在地址直接调用**  
-        结构体的`方法地址都是固定的` ![-w715](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/752cc3d50e4c45419ce8afbfabd8dbcc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   3.  接下来 我们在看换成`类`之后反汇编的实现是怎样的
-    
-        class Animal {
-            func speak() {
-                print("Animal speak")
-            }
-        
-            func eat() {
-                print("Animal eat")
-            }
-        
-            func sleep() {
-                print("Animal sleep")
-            }
-        }
-        
-        var ani = Animal()
-        ani.speak()
-        ani.eat()
-        ani.sleep() 
-        复制代码
-    
-*   4.  反汇编之后，会发现需要`调用的方法地址`是**不确定**的  
-        所以凡是**调用固定地址**的`都不会是类的方法`的调用 ![-w1189](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/df6aa4298ea04c36ba4c0c73278c1613~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1192](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6195c8a7683449b09fd9de09dcae7770~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1190](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1b553e2aec2a4dd6b137720c92927df6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1186](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/910f04a6b13a4401b3a8a089f00293dc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1185](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1e1af14c97064f2b8a3b5292a12f6a9d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1187](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bee00d70a4945a2b43b3b5a34c23cb6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1189](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/550d001c28ea43f4810113b5fe8c0f74~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-    
-    *   而且上述的几个调用的方法地址都是从`rcx`往高地址偏移`8`个字节来调用的，也就说明几个方法地址都是连续的
-    *   我们再来分析下方法调用前做了什么:
-    *   通过反汇编我们可以看到:
-        *   会从`全局变量`的指针找到其`指向的堆内存`中的类的存储空间
-        *   然后`再根据类的前8个字节`里的`类信息`知道需要调用的方法地址
-        *   从**类信息的地址进行偏移**找到`方法地址`，然后调用 ![-w1140](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/74b06640e5f344bda01f2a511199e65d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-    *   然后我们将示例代码修改一下，再观察其本质是什么
-    
-        class Animal {
-            func speak() {
-                print("Animal speak")
-            }
-        
-            func eat() {
-                print("Animal eat")
-            }
-        
-            func sleep() {
-                print("Animal sleep")
-            }
-        }
-        
-        class Dog: Animal {
-            override func speak() {
-                print("Dog speak")
-            }
-        
-            override func eat() {
-                print("Dog eat")
-            }
-        
-            func run() {
-                print("Dog run")
-            }
-        }
-        
-        var ani = Animal()
-        ani.speak()
-        ani.eat()
-        ani.sleep()
-        
-        ani = Dog()
-        ani.speak()
-        ani.eat()
-        ani.sleep() 
-        复制代码
-    
-    *   `增加了子类后`，Dog的类信息里的方法列表会存有重写后的父类方法，以及自己新增的方法
-    
-        class Dog: Animal {
-            func run() {
-                print("Dog run")
-            }
-        } 
-        复制代码
-    
-    *   如果子类里`没有重写父类方法`，那么类信息里的方法列表会有父类的方法，以及自己新增的方法
-        
-
-十、初始化器
-======
-
-1\. 类的初始化器
-----------
-
-*   1.  `类`、`结构体`、`枚举`都可以定义初始化器
-    
-    *   **类有两种初始化器:**
-    *   指定初始化器（`designated initializer`）
-    *   便捷初始化器（`convenience initializer`）
-        
-            // 指定初始化器
-            init(parameters) {
-                statements
-            }
-            
-            // 便捷初始化器
-            convenience init(parameters) {
-                statements
-            } 
-            复制代码
-        
-*   2.  每个类`至少有一个`**指定初始化器**  
-        指定初始化器是类的主要初始化器
-*   3.  默认初始化器总是类的指定初始化器
-    
-        class Size {
-            init() {
-        
-            }
-        
-            init(age: Int) {
-        
-            }
-        
-            convenience init(height: Double) {
-                self.init()
-            }
-        }
-        
-        var s = Size()
-        s = Size(height: 180)
-        s = Size(age: 10) 
-        复制代码
-    
-*   4.  类本身会自带一个指定初始化器
-    
-        class Size {
-        
-        }
-        
-        var s = Size() 
-        复制代码
-    
-*   5.  如果有自定义的指定初始化器，默认的指定初始化器就不存在了 ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/da7f3104587044b392f3d7b85f228080~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   6.  类偏向于`少量指定初始化器`  
-        一个类通常只有一个指定初始化器
-    
-        class Size {
-            var width: Double = 0
-            var height: Double = 0
-        
-            init(height: Double, width: Double) {
-                self.width = width
-                self.height = height
-            }
-        
-            convenience init(height: Double) {
-                self.init(height: height, width: 0)
-            }
-        
-            convenience init(width: Double) {
-                self.init(height: 0,width: width)
-            }
-        }
-        
-        let size = Size(height: 180, width: 70) 
-        复制代码
-    
-
-2\. 初始化器的相互调用
--------------
-
-**初始化器的相互调用规则**
-
-*   `指定初始化器`必须从它的直系父类调用`指定初始化器`
-*   `便捷初始化器`必须从相同的类里调用`另一个初始化器`
-*   `便捷初始化器`最终必须调用一个`指定初始化器`
-    
-        class Person {
-            var age: Int
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init() {
-                self.init(age: 0)
-        
-                self.age = 10
-            }
-        }
-        
-        class Student: Person {
-            var score: Int
-        
-            init(age: Int, score: Int) {
-        
-                self.score = score
-                super.init(age: age)
-        
-                self.age = 30
-            }
-        
-            convenience init(score: Int) {
-                self.init(age: 0, score: score)
-        
-                self.score = 100
-            }
-        } 
-        复制代码
-    
-
-**这一套规则保证了:**  
-使用任何初始化器，都可以完整地初始化实例 ![-w1211](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ee15a2cdbe9249b5a2d4ba7c515497a4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
-3\. 两段式初始化和安全检查
----------------
-
-Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，设定了`两段式初始化`和`安全检查`
-
-### 3.1 两段式初始化
-
-**第一阶段: `初始化所有存储属性`**
-
-*   外层调用 **`指定/便捷`初始化器**
-*   分配内存给实例,但未初始化
-*   **`指定初始化器`** 确保**当前类定义的存储属性都初始化**
-*   **`指定初始化器`** 调用父类的初始化器,不断向上调用，形成`初始化器链`
-
-**第二阶段: 设置新的存储属性值**
-
-*   从顶部初始化器往下，链中的每一个指定初始化器**都有机会进一步定制**实例
-*   初始化器现在能够使用`self`（访问、修改它的属性、调用它的实例方法等）
-*   最终，链中任何便捷初始化器都有机会定制实例以及使用`self`
-
-### 3.2 安全检查
-
-*   `指定初始化器`**必须保证**在调用父类初始化器之前, 其所在类定义的`所有存储属性`都要初始化完成
-*   `指定初始化器`必须先调用父类初始化器,然后才能为继承的属性设置新值
-*   `便捷初始化器`必须先调用同类中的其他初始化器,然后再为任意属性设置新值
-*   `初始化器`在第一阶段初始化完成之前,不能调用任何实例方法，不能读取任何实例属性的值，也不能引用`self`
-*   直到第一阶段结束，实例才算完全合法
-
-### 3.3 重写
-
-*   1.  当重写父类的`指定初始化器`时，必须加上`override`（即使子类的实现的`便捷初始化器`）
-*   2.  `指定初始化器`只`能纵向调用`，可以被子类调用
-    
-        class Person {
-            var age: Int
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init() {
-                self.init(age: 0)
-        
-                self.age = 10
-            }
-        }
-        
-        class Student: Person {
-            var score: Int
-        
-            override init(age: Int) {
-                self.score = 0
-                super.init(age: age)
-            }
-        } 
-        复制代码
-    
-        class Person {
-            var age: Int
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init() {
-                self.init(age: 0)
-        
-                self.age = 10
-            }
-        }
-        
-        class Student: Person {
-            var score: Int
-        
-            init(age: Int, score: Int) {
-        
-                self.score = score
-                super.init(age: age)
-            }
-        
-            override convenience init(age: Int) {
-                self.init(age: age, score: 0)
-            }
-        } 
-        复制代码
-    
-*   3.  如果子类写了一个匹配父类`便捷初始化器`的初始化器，不用加`override`
-    
-        class Person {
-            var age: Int
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init() {
-                self.init(age: 0)
-            }
-        }
-        
-        class Student: Person {
-            var score: Int
-        
-            init(age: Int, score: Int) {
-        
-                self.score = score
-                super.init(age: age)
-            }
-        
-            convenience init() {
-                self.init(age: 0, score: 0)
-            }
-        } 
-        复制代码
-    
-    因为父类的便捷初始化器永远不会通过子类直接调用  
-    因此，严格来说，**子类无法重写父类的`便捷初始化器`**
-    
-*   4.  `便捷初始化器`只能**横向调用**，不能被子类调用  
-        子类没有权利更改父类的`便捷初始化器`，所以不能叫重写
-    
-        class Person {
-            var age: Int
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init() {
-                self.init(age: 0)
-            }
-        }
-        
-        class Student: Person {
-            var score: Int
-        
-            init(age: Int, score: Int) {
-        
-                self.score = score
-                super.init(age: age)
-            }
-        
-            init() {
-                self.score = 0
-                super.init(age: 0)
-            }
-        } 
-        复制代码
-    
-
-4\. 自动继承
---------
-
-*   1.  如果子类没有自定义任何指定初始化器，它会自动继承父类所有的指定初始化器
-    
-        class Person {
-            var age: Int
-        
-            init(age: Int) {
-                self.age = age
-            }
-        }
-        
-        class Student: Person {
-        
-        }
-        
-        var s = Student(age: 20) 
-        复制代码
-    
-        class Person {
-            var age: Int
-        
-            init(age: Int) {
-                self.age = age
-            }
-        }
-        
-        class Student: Person {
-        
-            convenience init(name: String) {
-                self.init(age: 0)
-            }
-        }
-        
-        var s = Student(name: "ray")
-        s = Student(age: 20) 
-        复制代码
-    
-*   2.  如果子类提供了父类所有`指定初始化器`的实现（要不通过上一种方式继承，要不重新）
-    
-        class Person {
-            var age: Int
-        
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init(sex: Int) {
-                self.init(age: 0)
-            }
-        }
-        
-        class Student: Person {
-        
-            override init(age: Int) {
-                super.init(age: 20)
-            }
-        }
-        
-        var s = Student(age: 30) 
-        复制代码
-    
-        class Person {
-            var age: Int
-        
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init(sex: Int) {
-                self.init(age: 0)
-            }
-        }
-        
-        class Student: Person {
-        
-            init(num: Int) {
-                super.init(age: 0)
-            }
-        
-            override convenience init(age: Int) {
-                self.init(num: 200)
-            }
-        }
-        
-        var s = Student(age: 30) 
-        复制代码
-    
-*   3.  如果子类自定义了`指定初始化器`，那么父类的`指定初始化器`便不会被继承  
-        子类自动继承所有的父类`便捷初始化器` ![-w643](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3f9d8da9ce41477ea3d937b0ad450f4f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   4.  就算子类添加了更多的`便捷初始化器`，这些规则仍然适用
-    
-        class Person {
-            var age: Int
-        
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init(sex: Int) {
-                self.init(age: 0)
-            }
-        }
-        
-        class Student: Person {
-        
-            convenience init(isBoy: Bool) {
-                self.init(age: 20)
-            }
-        
-            convenience init(num: Int) {
-                self.init(age: 20)
-            }
-        }
-        
-        var s = Student(age: 30)
-        s = Student(sex: 24)
-        s = Student(isBoy: true)
-        s = Student(num: 6) 
-        复制代码
-    
-*   5.  子类以`便捷初始化器`的形式重新父类的`指定初始化器`，也可以作为满足第二条规则的一部分
-    
-        class Person {
-            var age: Int
-        
-            init(age: Int) {
-                self.age = age
-            }
-        
-            convenience init(sex: Int) {
-                self.init(age: 0)
-            }
-        }
-        
-        class Student: Person {
-        
-            convenience init(sex: Int) {
-                self.init(age: 20)
-            }
-        }
-        
-        var s = Student(age: 30)
-        s = Student(sex: 24) 
-        复制代码
-    
-
-5\. required
-------------
-
-*   1.  用`required`修饰`指定初始化器`，表明其**所有子类**都`必须实现`该初始化器（通过继承或者重写实现）
-
-    class Person {
-        var age: Int
-        
-        init(age: Int) {
-            self.age = age
-        }
-        
-        required init() {
-            self.age = 0
-        }
-    }
-    
-    class Student: Person {
-        
-        
-    }
-    
-    var s = Student(age: 30) 
-    复制代码
-
-*   2.  如果子类重写了`required`初始化器，也必须加上`required`，不用加`override`
-
-    class Person {
-        var age: Int
-        
-        init(age: Int) {
-            self.age = age
-        }
-        
-        required init() {
-            self.age = 0
-        }
-    }
-    
-    class Student: Person {
-        
-        init(num: Int) {
-            super.init(age: 0)
-        }
-        
-        required init() {
-            super.init()
-        }
-    }
-    
-    var s = Student(num: 30)
-    s = Student() 
-    复制代码
-
-6\. 属性观察器
----------
-
-*   1.  父类的属性在它自己的初始化器中赋值不会触发`属性观察器`  
-        但在子类的初始化器中赋值会触发`属性观察器`
-    
-        class Person {
-            var age: Int {
-                willSet {
-                    print("willSet", newValue)
-                }
-        
-                didSet {
-                    print("didSet", oldValue, age)
-                }
-            }
-        
-            init() {
-                self.age = 0
-            }
-        }
-        
-        class Student: Person {
-        
-            override init() {
-                super.init()
-        
-                age = 1
-            }
-        }
-        
-        var s = Student() 
-        复制代码
-    
-
-7\. 可失败初始化器
------------
-
-*   1.  `类`、`结构体`、`枚举`都可以使用`init?`定义可失败初始化器
-    
-        class Person {
-            var name: String
-        
-            init?(name: String) {
-                if name.isEmpty {
-                    return nil
-                }
-        
-                self.name = name
-            }
-        }
-        
-        let p = Person(name: "Jack")
-        print(p) 
-        复制代码
-    
-    *   下面这几个也是使用了可失败初始化器
-    
-        var num = Int("123")
-        
-        enum Answer: Int {
-            case wrong, right
-        }
-        
-        var an = Answer(rawValue: 1) 
-        复制代码
-    
-    ![-w539](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9ca5a14875fb4bda8ae27f64a6a4d04d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-    
-*   2.  不允许同时定义`参数标签`、`参数个数`、`参数类型相同`的`可失败初始化器`和`非可失败初始化器` ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8725835306874ef2a15e8ec405af5742~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   3.  可以用`init!`定义隐式解包的`可失败初始化器`
-    
-        class Person {
-            var name: String
-        
-            init!(name: String) {
-                if name.isEmpty {
-                    return nil
-                }
-        
-                self.name = name
-            }
-        }
-        
-        let p = Person(name: "Jack")
-        print(p) 
-        复制代码
-    
-*   4.  `可失败初始化器`可以调用`非可失败初始化器`  
-        `非可失败初始化器`调用`可失败初始化器`需要进行`解包`
-    
-        class Person {
-            var name: String
-        
-            convenience init?(name: String) {
-                self.init()
-        
-                if name.isEmpty {
-                    return nil
-                }
-        
-                self.name = name
-            }
-        
-            init() {
-                self.name = ""
-            }
-        } 
-        复制代码
-    
-        class Person {
-            var name: String
-        
-            init?(name: String) {
-        
-                if name.isEmpty {
-                    return nil
-                }
-        
-                self.name = name
-            }
-        
-            convenience init() {
-                // 强制解包有风险
-                self.init(name: "")!
-        
-                self.name = ""
-            }
-        } 
-        复制代码
-    
-*   5.  如果初始化器调用一个`可失败初始化器`导致`初始化失败`，那么整个初始化过程都失败，并且之后的代码都停止执行
-    
-        class Person {
-            var name: String
-        
-            init?(name: String) {
-        
-                if name.isEmpty {
-                    return nil
-                }
-        
-                self.name = name
-            }
-        
-            convenience init?() {
-                // 如果这一步返回为nil，那么后面的代码就不会继续执行了
-                self.init(name: "")!
-        
-                self.name = ""
-            }
-        }
-        
-        let p = Person()
-        print(p) 
-        复制代码
-    
-*   6.  可以用一个`非可失败初始化器`重写一个`可失败初始化器`，但反过来是不行的
-    
-        class Person {
-            var name: String
-        
-            init?(name: String) {
-        
-                if name.isEmpty {
-                    return nil
-                }
-        
-                self.name = name
-            }
-        }
-        
-        class Student: Person {
-        
-            override init(name: String) {
-                super.init(name: name)!
-            }
-        } 
-        复制代码
-    
-    ![-w643](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bd34f75d2bb946c9844fe54070a41aff~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-    
-
-7\. 反初始化器（deinit）
------------------
-
-*   1.  `deinit`叫做反初始化器，类似于C++的`析构函数`，OC中的`dealloc方法`
-*   2.  当类的实例对象被释放内存时，就会调用实例对象的`deinit`方法
-    
-        class Person {
-            var name: String
-        
-            init(name: String) {
-                self.name = name
-            }
-        
-            deinit {
-                print("Person对象销毁了")
-            }
-        } 
-        复制代码
-    
-*   3.  父类的`deinit`能被子类继承
-*   4.  子类的`deinit`实现执行完毕后会调用父类的`deinit`
-    
-        class Person {
-            var name: String 
-            init(name: String) {
-                self.name = name
-            } 
-            deinit {
-                print("Person对象销毁了")
-            }
-        }
-        
-        class Student: Person { 
-            deinit {
-                print("Student对象销毁了")
-            }
-        }
-        
-        func test() {
-            let stu = Student(name: "Jack")
-        }
-        
-        test()
-        
-        // 打印
-        // Student对象销毁了
-        // Person对象销毁了 
-        复制代码
-    
-*   5.  `deinit`不接受任何参数，不能写小括号，不能自行调用
-
-十一、可选链（Optional Chaining）
-=========================
+二、可选链（Optional Chaining）
+========================
 
 看下面的示例代码:
 
-    class Person {
-        var name: String = ""
-        var dog: Dog = Dog()
-        var car: Car? = Car()
-        
-        func age() -> Int { 18 }
-        
-        func eat() {
-            print("Person eat")
-        }
-        
-        subscript(index: Int) -> Int { index }
-    } 
-    复制代码
+swift
+
+复制代码
+
+`class Person {
+ var name: String = ""
+ var dog: Dog = Dog()
+ var car: Car? = Car()
+  
+ func age() -> Int { 18 }
+  
+ func eat() {
+ print("Person eat")
+ }
+  
+ subscript(index: Int) -> Int { index }
+}` 
 
 *   1.  如果可选项为`nil`，调用方法、下标、属性失败，结果为`nil`
     
-        var person: Person? = nil
-        var age = person?.age()
-        var name = person?.name
-        var index = person?[6]
-        
-        print(age, name, index) // nil, nil, nil 
-        复制代码
+    swift
     
-        // 如果person为nil，都不会调用getName
-        func getName() -> String { "jack" }
-        
-        var person: Person? = nil
-        person?.name = getName() 
-        复制代码
+    复制代码
+    
+    `var person: Person? = nil
+    var age = person?.age()
+    var name = person?.name
+    var index = person?[6]
+    print(age, name, index) // nil, nil, nil` 
+    
+    swift
+    
+    复制代码
+    
+    `// 如果person为nil，都不会调用getName
+    func getName() -> String { "jack" }
+    var person: Person? = nil
+    person?.name = getName()` 
     
 *   2.  如果可选项不为`nil`，调用`方法`、`下标`、`属性`成功，结果会被包装成`可选项`
     
-        var person: Person? = Person()
-        var age = person?.age()
-        var name = person?.name
-        var index = person?[6]
-        
-        print(age, name, index) // Optional(18) Optional("") Optional(6) 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `var person: Person? = Person()
+    var age = person?.age()
+    var name = person?.name
+    var index = person?[6]
+    print(age, name, index) // Optional(18) Optional("") Optional(6)` 
     
 *   3.  如果结果`本来就是可选项`，不会进行再次包装
     
-        print(person?.car) // Optional(test_enum.Car) 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `print(person?.car) // Optional(test_enum.Car)` 
     
 *   4.  可以用可选绑定来判断可选项的方法调用是否成功
     
-        let result: ()? = person?.eat()
-        if let _ = result {
-            print("调用成功")
-        } else {
-            print("调用失败")
-        } 
-        复制代码
+    swift
     
-        if let age = person?.age() {
-            print("调用成功", age)
-        } else {
-            print("调用失败")
-        } 
-        复制代码
+    复制代码
     
-*   5.  没有设定返回值的方法默认返回的就是`元组类型` ![-w521](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b8b75b19c58c4059a2380e609ddb9540~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+    `let result: ()? = person?.eat()
+    if let _ = result {
+     print("调用成功")
+    } else {
+     print("调用失败")
+    }` 
+    
+    swift
+    
+    复制代码
+    
+    `if let age = person?.age() {
+     print("调用成功", age)
+    } else {
+     print("调用失败")
+    }` 
+    
+*   5.  没有设定返回值的方法默认返回的就是`元组类型` ![-w521](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b8b75b19c58c4059a2380e609ddb9540~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 *   6.  多个?可以连接在一起，组成可选链
     
-        var dog = person?.dog
-        var weight = person?.dog.weight
-        var price = person?.car?.price 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `var dog = person?.dog
+    var weight = person?.dog.weight
+    var price = person?.car?.price` 
     
 *   7.  可选链中不管中间经历多少层，只要有一个节点是可选项的，那么最后的结果就是会被包装成可选项的
     
-        print(dog, weight, price) // Optional(test_enum.Dog) Optional(0) Optional(0)
-        复制代码
+    swift
+    
+    复制代码
+    
+    `print(dog, weight, price) // Optional(test_enum.Dog) Optional(0) Optional(0)` 
     
 *   8.  如果链中任何一个节点是`nil`，那么整个链就会调用失败  
         看下面示例代码
     
-        var num1: Int? = 5
-        num1? = 10
-        print(num1)
-        
-        var num2: Int? = nil
-        num2? = 10
-        print(num2) 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `var num1: Int? = 5
+    num1? = 10
+    print(num1)
+    var num2: Int? = nil
+    num2? = 10
+    print(num2)` 
     
 *   9.  给变量加上`?`是为了判断变量是否为`nil`，如果为`nil`，那么就不会执行赋值操作了，本质也是可选链
     
-        var dict: [String : (Int, Int) -> Int] = [
-            "sum" : (+),
-            "difference" : (-)
-        ]
-        
-        var value = dict["sum"]?(10, 20)
-        print(value) 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `var dict: [String : (Int, Int) -> Int] = [
+     "sum" : (+),
+     "difference" : (-)
+    ]
+    var value = dict["sum"]?(10, 20)
+    print(value)` 
     
 
 从字典中通过key来取值，得到的也是可选类型，由于可选链中有一个节点是可选项，那么最后的结果也是可选项，最后的值也是`Int?`
 
-十二、协议（Protocol）
-===============
+三、协议（Protocol）
+==============
 
 1\. 基本概念
 --------
@@ -2898,24 +146,29 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
 *   1.  `协议`可以用来定义`方法`、`属性`、`下标`的声明  
         `协议`可以被`结构体`、`类`、`枚举`遵守
     
-        protocol Drawable {
-            func draw()
-            var x: Int { get set } // get和set只是声明
-            var y: Int { get }
-            subscript(index: Int) -> Int { get set }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Drawable {
+     func draw()
+     var x: Int { get set } // get和set只是声明
+     var y: Int { get }
+     subscript(index: Int) -> Int { get set }
+    }` 
     
 *   2.  `多个协议`之间用逗号隔开
     
-        protocol Test1 { }
-        protocol Test2 { }
-        protocol Test3 { }
-        
-        class TestClass: Test1, Test2, Test3 { } 
-        复制代码
+    swift
     
-*   3.  协议中定义方法时不能有默认参数值 ![-w633](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f7119b8167f647fe819d6285c3c57f9f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+    复制代码
+    
+    `protocol Test1 { }
+    protocol Test2 { }
+    protocol Test3 { }
+    class TestClass: Test1, Test2, Test3 { }` 
+    
+*   3.  协议中定义方法时不能有默认参数值 ![-w633](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f7119b8167f647fe819d6285c3c57f9f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 *   4.  默认情况下，协议中定义的内容必须全部都实现
 
 2\. 协议中的属性
@@ -2927,66 +180,58 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
     *   协议定义`get、set`，用`var`存储属性或`get、set`计算属性去实现
     *   协议定义`get`，用任何属性都可以实现
     
-        protocol Drawable {
-            func draw()
-            var x: Int { get set }
-            var y: Int { get }
-            subscript(index: Int) -> Int { get set }
-        }
-        
-        class Person1: Drawable {
-            var x: Int = 0
-            let y: Int = 0
-        
-            func draw() {
-                print("Person1 draw")
-            }
-        
-            subscript(index: Int) -> Int {
-                set { }
-                get { index }
-            }
-        }
-        
-        class Person2: Drawable {
-            var x: Int {
-                get { 0 }
-                set { }
-            }
-        
-            var y: Int { 0 }
-        
-            func draw() {
-                print("Person2 draw")
-            }
-        
-            subscript(index: Int) -> Int {
-                set { }
-                get { index }
-            }
-        }
-        
-        class Person3: Drawable {
-            var x: Int {
-                get { 0 }
-                set { }
-            }
-        
-            var y: Int {
-                get { 0 }
-                set { }
-            }
-        
-            func draw() {
-                print("Person3 draw")
-            }
-        
-            subscript(index: Int) -> Int {
-                set { }
-                get { index }
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Drawable {
+     func draw()
+     var x: Int { get set }
+     var y: Int { get }
+     subscript(index: Int) -> Int { get set }
+    }
+    class Person1: Drawable {
+     var x: Int = 0
+     let y: Int = 0
+     func draw() {
+     print("Person1 draw")
+     }
+     subscript(index: Int) -> Int {
+     set { }
+     get { index }
+     }
+    }
+    class Person2: Drawable {
+     var x: Int {
+     get { 0 }
+     set { }
+     }
+     var y: Int { 0 }
+     func draw() {
+     print("Person2 draw")
+     }
+     subscript(index: Int) -> Int {
+     set { }
+     get { index }
+     }
+    }
+    class Person3: Drawable {
+     var x: Int {
+     get { 0 }
+     set { }
+     }
+     var y: Int {
+     get { 0 }
+     set { }
+     }
+     func draw() {
+     print("Person3 draw")
+     }
+     subscript(index: Int) -> Int {
+     set { }
+     get { index }
+     }
+    }` 
     
 
 3\. static、class
@@ -2994,22 +239,23 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
 
 *   1.  为了保证通用，`协议`中必须用`static`定义`类型方法`、`类型属性`、`类型下标`
     
-        protocol Drawable {
-            static func draw()
-        }
-        
-        class Person1: Drawable {
-            static func draw() {
-                print("Person1 draw")
-            }
-        }
-        
-        class Person2: Drawable {
-            class func draw() {
-                print("Person2 draw")
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Drawable {
+     static func draw()
+    }
+    class Person1: Drawable {
+     static func draw() {
+     print("Person1 draw")
+     }
+    }
+    class Person2: Drawable {
+     class func draw() {
+     print("Person2 draw")
+     }
+    }` 
     
 
 4\. mutating
@@ -3018,25 +264,25 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
 *   1.  只有将`协议`中的`实例方法`标记为`mutating`，才允许`结构体`、`枚举`的具体实现修改自身内存
 *   2.  `类`在实现方法时不用加`mutating`，`结构体`、`枚举`才需要加`mutating`
     
-        protocol Drawable {
-            mutating func draw()
-        }
-        
-        class Size: Drawable {
-            var width: Int = 0
-        
-            func draw() {
-                width = 10
-            }
-        }
-        
-        struct Point: Drawable {
-            var x: Int = 0
-            mutating func draw() {
-                x = 10
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Drawable {
+     mutating func draw()
+    }
+    class Size: Drawable {
+     var width: Int = 0
+     func draw() {
+     width = 10
+     }
+    }
+    struct Point: Drawable {
+     var x: Int = 0
+     mutating func draw() {
+     x = 10
+     }
+    }` 
     
 
 5\. init
@@ -3045,113 +291,95 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
 *   1.  协议中还可以定义初始化器`init`，非`final`类实现时必须加上`required`
 *   2.  目的是为了让所有遵守这个协议的类都拥有初始化器，所以加上`required`强制子类必须实现，除非是加上`final`不需要子类的类
     
-        protocol Drawable {
-            init(x: Int, y: Int)
-        }
-        
-        class Point: Drawable {
-            required init(x: Int, y: Int) {
-        
-            }
-        }
-        
-        final class Size: Drawable {
-            init(x: Int, y: Int) {
-        
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Drawable {
+     init(x: Int, y: Int)
+    }
+    class Point: Drawable {
+     required init(x: Int, y: Int) {
+     }
+    }
+    final class Size: Drawable {
+     init(x: Int, y: Int) {
+     }
+    }` 
     
 *   3.  如果从协议实现的初始化器，刚好是重写了父类的指定初始化器，那么这个初始化必须同时加上`required、override`
     
-        protocol Livable {
-            init(age: Int)
-        }
-        
-        class Person {
-            init(age: Int) { }
-        }
-        
-        class Student: Person, Livable {
-            required override init(age: Int) {
-                super.init(age: age)
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Livable {
+     init(age: Int)
+    }
+    class Person {
+     init(age: Int) { }
+    }
+    class Student: Person, Livable {
+     required override init(age: Int) {
+     super.init(age: age)
+     }
+    }` 
     
 *   4.  协议中定义的`init?、init!`，可以用`init、init?、init!`去实现
     
-        protocol Livable {
-            init()
-            init?(age: Int)
-            init!(no: Int)
-        }
-        
-        class Person1: Livable {
-            required init() {
-        
-            }
-        
-            required init?(age: Int) {
-        
-            }
-        
-            required init!(no: Int) {
-        
-            }
-        }
-        
-        class Person2: Livable {
-            required init() {
-        
-            }
-        
-            required init!(age: Int) {
-        
-            }
-        
-            required init?(no: Int) {
-        
-            }
-        }
-        
-        class Person3: Livable {
-            required init() {
-        
-            }
-        
-            required init(age: Int) {
-        
-            }
-        
-            required init(no: Int) {
-        
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Livable {
+     init()
+     init?(age: Int)
+     init!(no: Int)
+    }
+    class Person1: Livable {
+     required init() {
+     }
+     required init?(age: Int) {
+     }
+     required init!(no: Int) {
+     }
+    }
+    class Person2: Livable {
+     required init() {
+     }
+     required init!(age: Int) {
+     }
+     required init?(no: Int) {
+     }
+    }
+    class Person3: Livable {
+     required init() {
+     }
+     required init(age: Int) {
+     }
+     required init(no: Int) {
+     }
+    }` 
     
 *   5.  协议中定义的`init`，可以用`init、init!`去实现
     
-        protocol Livable {
-            init()
-            init?(age: Int)
-            init!(no: Int)
-        }
-        
-        class Person4: Livable {
-            required init!() {
-        
-            }
-        
-            required init?(age: Int) {
-        
-            }
-        
-            required init!(no: Int) {
-        
-            }
-        }  
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Livable {
+     init()
+     init?(age: Int)
+     init!(no: Int)
+    }
+    class Person4: Livable {
+     required init!() {
+     }
+     required init?(age: Int) {
+     }
+     required init!(no: Int) {
+     }
+    }` 
     
 
 6\. 协议的继承
@@ -3159,348 +387,3720 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
 
 一个`协议`可以继承其他协议
 
-    protocol Runnable {
-        func run()
-    }
-    
-    protocol Livable: Runnable {
-        func breath()
-    }
-    
-    class Person: Livable {
-        func breath() {
-    
-        }
-    
-        func run() {
-    
-        }
-    } 
-    复制代码
+swift
+
+复制代码
+
+`protocol Runnable {
+ func run()
+}
+protocol Livable: Runnable {
+ func breath()
+}
+class Person: Livable {
+ func breath() {
+ }
+ func run() {
+ }
+}` 
 
 7\. 协议组合
 --------
 
 协议组合可以包含一个类类型
 
-    protocol Runnable { }
-    protocol Livable { }
-    class Person { }
-    
-    // 接收Person或者其子类的实例
-    func fn0(obj: Person) { }
-    
-    // 接收遵守Livable协议的实例
-    func fn1(obj: Livable) { }
-    
-    // 接收同时遵守Livable、Runnable协议的实例
-    func fn2(obj: Livable & Runnable) { }
-    
-    // 接收同时遵守Livable、Runnable协议，并且是Person或者其子类的实例
-    func fn3(obj: Person & Livable & Runnable) { }
-    
-    typealias RealPerson = Person & Livable & Runnable
-    func fn4(obj: RealPerson) { } 
-    复制代码
+swift
+
+复制代码
+
+`protocol Runnable { }
+protocol Livable { }
+class Person { }
+// 接收Person或者其子类的实例
+func fn0(obj: Person) { }
+// 接收遵守Livable协议的实例
+func fn1(obj: Livable) { }
+// 接收同时遵守Livable、Runnable协议的实例
+func fn2(obj: Livable & Runnable) { }
+// 接收同时遵守Livable、Runnable协议，并且是Person或者其子类的实例
+func fn3(obj: Person & Livable & Runnable) { }
+typealias RealPerson = Person & Livable & Runnable
+func fn4(obj: RealPerson) { }` 
 
 8\. CaseIterable
 ----------------
 
 让枚举遵守`CaseIterable`协议，可以实现遍历枚举值
 
-    enum Season: CaseIterable {
-        case spring, summer, autumn, winter
-    }
-    
-    let seasons = Season.allCases
-    print(seasons.count)
-    
-    for season in seasons {
-        print(season)
-    } // spring, summer, autumn, winter 
-    复制代码
+swift
+
+复制代码
+
+`enum Season: CaseIterable {
+ case spring, summer, autumn, winter
+}
+let seasons = Season.allCases
+print(seasons.count)
+for season in seasons {
+ print(season)
+} // spring, summer, autumn, winter` 
 
 9.CustomStringConvertible
 -------------------------
 
 *   1.  遵守`CustomStringConvertible、CustomDebugStringConvertible`协议，都可以自定义实例的打印字符串
     
-        class Person: CustomStringConvertible, CustomDebugStringConvertible {
-            var age = 0
-            var description: String { "person_(age)" }
-            var debugDescription: String { "debug_person_(age)" }
-        }
-        
-        var person = Person()
-        print(person) // person_0
-        debugPrint(person) // debug_person_0 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `class Person: CustomStringConvertible, CustomDebugStringConvertible {
+     var age = 0
+     var description: String { "person_(age)" }
+     var debugDescription: String { "debug_person_(age)" }
+    }
+    var person = Person()
+    print(person) // person_0
+    debugPrint(person) // debug_person_0` 
     
 *   2.  `print`调用的是`CustomStringConvertible`协议的`description`
 *   3.  `debugPrint、po`调用的是`CustomDebugStringConvertible`协议的`debugDescription`
 
-![-w529](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/acc8277e7aa14a60a23a27f52a4b11fc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+![-w529](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/acc8277e7aa14a60a23a27f52a4b11fc~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
-十三、Any、AnyObject
-================
+四、Any、AnyObject与元类型
+===================
+
+1\. Any、AnyObject
+-----------------
 
 *   1.  Swift提供了两种特殊的类型`Any、AnyObject`
 *   2.  `Any`可以代表任意类型（`枚举`、`结构体`、`类`，也包括`函数类型`）
     
-        var stu: Any = 10
-        stu = "Jack"
-        stu = Size() 
-        复制代码
+    swift
     
-        var data = [Any]()
-        data.append(1)
-        data.append(3.14)
-        data.append(Size())
-        data.append("Jack")
-        data.append({ 10 }) 
-        复制代码
+    复制代码
+    
+    `var stu: Any = 10
+    stu = "Jack"
+    stu = Size()` 
+    
+    swift
+    
+    复制代码
+    
+    `var data = [Any]()
+    data.append(1)
+    data.append(3.14)
+    data.append(Size())
+    data.append("Jack")
+    data.append({ 10 })` 
     
 *   3.  `AnyObject`可以代表任意类类型
-*   4.  在协议后面写上`: AnyObject`，代表只有类能遵守这个协议 ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3809ed07d17450d911eec4ad2731c0f~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-*   5.  在协议后面写上`: class`，也代表只有类能遵守这个协议 ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c3c89cc874464f83a7bdb5c65a31b83c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+*   4.  在协议后面写上`: AnyObject`，代表只有类能遵守这个协议 ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d3809ed07d17450d911eec4ad2731c0f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   5.  在协议后面写上`: class`，也代表只有类能遵守这个协议 ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c3c89cc874464f83a7bdb5c65a31b83c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
-1\. is、as
+2\. is、as
 ---------
 
 *   `is`用来判断是否为某种类型
     
-        protocol Runnable {
-            func run()
-        }
-        
-        class Person { }
-        
-        class Student: Person, Runnable {
-            func run() {
-                print("Student run")
-            }
-        
-            func study() {
-                print("Student study")
-            }
-        }
-        
-        var stu: Any = 10
-        print(stu is Int) // true
-        
-        stu = "Jack"
-        print(stu is String) // true
-        
-        stu = Student()
-        print(stu is Person) // true
-        print(stu is Student) // true
-        print(stu is Runnable) // true 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Runnable {
+     func run()
+    }
+    class Person { }
+    class Student: Person, Runnable {
+     func run() {
+     print("Student run")
+     }
+     func study() {
+     print("Student study")
+     }
+    }
+    var stu: Any = 10
+    print(stu is Int) // true
+    stu = "Jack"
+    print(stu is String) // true
+    stu = Student()
+    print(stu is Person) // true
+    print(stu is Student) // true
+    print(stu is Runnable) // true` 
     
 *   2.  `as`用来做强制类型转换(`as?`、`as!`、`as`)
     
-        protocol Runnable {
-            func run()
-        }
-        
-        class Person { }
-        
-        class Student: Person, Runnable {
-            func run() {
-                print("Student run")
-            }
-        
-            func study() {
-                print("Student study")
-            }
-        }
-        
-        var stu: Any = 10
-        (stu as? Student)?.study() // 没有调用study
-        
-        stu = Student()
-        (stu as? Student)?.study() // Student study
-        (stu as! Student).study() // Student study
-        (stu as? Runnable)?.run() // Student run 
-        复制代码
+    swift
     
-        var data = [Any]()
-        data.append(Int("123") as Any)
-        
-        var d = 10 as Double
-        print(d) // 10.0 
-        复制代码
+    复制代码
+    
+    `protocol Runnable {
+     func run()
+    }
+    class Person { }
+    class Student: Person, Runnable {
+     func run() {
+     print("Student run")
+     }
+     func study() {
+     print("Student study")
+     }
+    }
+    var stu: Any = 10
+    (stu as? Student)?.study() // 没有调用study
+    stu = Student()
+    (stu as? Student)?.study() // Student study
+    (stu as! Student).study() // Student study
+    (stu as? Runnable)?.run() // Student run` 
+    
+    swift
+    
+    复制代码
+    
+    `var data = [Any]()
+    data.append(Int("123") as Any)
+    var d = 10 as Double
+    print(d) // 10.0` 
     
 
-十四、 元类型
-=======
-
-1\. X.self
+3\. X.self
 ----------
 
 *   1.  `X.self`是一个`元类型的指针`，`metadata`存放着`类型相关信息`
 *   2.  `X.self`属于`X.Type`类型
     
-        class Person { }
-        
-        class Student: Person { }
-        
-        var perType: Person.Type = Person.self
-        var stuType: Student.Type = Student.self
-        perType = Student.self
-        
-        var anyType: AnyObject.Type = Person.self
-        anyType = Student.self
-        
-        var per = Person()
-        perType = type(of: per)
-        print(Person.self == type(of: per)) // true 
-        复制代码
+    swift
     
-*   3.  `AnyClass`的本质就是`AnyObject.Type` ![-w492](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c534ec2adb474b47bc5ab8ab7221b02a~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+    复制代码
     
-        var anyType2: AnyClass = Person.self
-        anyType2 = Student.self 
-        复制代码
+    `class Person { }
+    class Student: Person { }
+    var perType: Person.Type = Person.self
+    var stuType: Student.Type = Student.self
+    perType = Student.self
+    var anyType: AnyObject.Type = Person.self
+    anyType = Student.self
+    var per = Person()
+    perType = type(of: per)
+    print(Person.self == type(of: per)) // true` 
+    
+*   3.  `AnyClass`的本质就是`AnyObject.Type` ![-w492](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c534ec2adb474b47bc5ab8ab7221b02a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+    
+    swift
+    
+    复制代码
+    
+    `var anyType2: AnyClass = Person.self
+    anyType2 = Student.self` 
     
 
-2\. 元类型的应用
+4\. 元类型的应用
 ----------
 
-    class Animal {
-        required init() {
-            
-        }
-    }
-    
-    class Cat: Animal {
-        
-    }
-    
-    class Dog: Animal {
-        
-    }
-    
-    class Pig: Animal {
-        
-    }
-    
-    func create(_ clses: [Animal.Type]) -> [Animal] {
-        var arr = [Animal]()
-        for cls in clses {
-            arr.append(cls.init())
-        }
-        
-        return arr
-    }
-    
-    print(create([Cat.self, Dog.self, Pig.self]))
-    
-    // a1、a2、a3、a4的写法等价
-    var a1 = Animal()
-    var t = Animal.self
-    var a2 = t.init()
-    var a3 = Animal.self.init()
-    var a4 = Animal.self() 
-    复制代码
+swift
 
-3.Self
-------
+复制代码
+
+`class Animal {
+ required init() {
+  
+ }
+}
+class Cat: Animal {
+  
+}
+class Dog: Animal {
+  
+}
+class Pig: Animal {
+  
+}
+func create(_ clses: [Animal.Type]) -> [Animal] {
+ var arr = [Animal]()
+ for cls in clses {
+ arr.append(cls.init())
+ }
+  
+ return arr
+}
+print(create([Cat.self, Dog.self, Pig.self]))
+// a1、a2、a3、a4的写法等价
+var a1 = Animal()
+var t = Animal.self
+var a2 = t.init()
+var a3 = Animal.self.init()
+var a4 = Animal.self()` 
+
+5\. Self
+--------
 
 *   1.  `Self`代表当前类型
     
-        class Person {
-            var age = 1
-            static var count = 2
-        
-            func run() {
-                print(self.age)
-                print(Self.count)
-            }
-        } 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `class Person {
+     var age = 1
+     static var count = 2
+     func run() {
+     print(self.age)
+     print(Self.count)
+     }
+    }` 
     
 *   2.  `Self`一般用作返回值类型，限定返回值和方法调用者必须是同一类型（也可以作为参数类型）
     
-        protocol Runnable {
-            func test() -> Self
-        }
-        
-        class Person: Runnable {
-        
-            required init() {
-        
-            }
-        
-            func test() -> Self {
-                type(of: self).init()
-            }
-        }
-        
-        class Student: Person {
-        
-        }
-        
-        var p = Person()
-        print(p.test()) // test_enum.Person
-        
-        var stu = Student()
-        print(stu.test()) // test_enum.Student 
-        复制代码
+    swift
+    
+    复制代码
+    
+    `protocol Runnable {
+     func test() -> Self
+    }
+    class Person: Runnable {
+     required init() {
+     }
+     func test() -> Self {
+     type(of: self).init()
+     }
+    }
+    class Student: Person {
+    }
+    var p = Person()
+    print(p.test()) // test_enum.Person
+    var stu = Student()
+    print(stu.test()) // test_enum.Student` 
     
 
-4\. 元类型的本质
+6\. 元类型的本质
 ----------
 
 我们可以通过反汇编来查看元类型的实现是怎样的
 
-    var p = Person()
-    var pType = Person.self 
-    复制代码
+swift
 
-我们发现最后存储到全局变量pType中的地址值就是一开始调用的地址 ![-w1031](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8a38e68565b04a649793fd49e4962bc8~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) 再通过打印，我们发现pType的值就是Person实例对象的前8个字节的地址值，也就是类信息 ![-w1031](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f81fff9375c949a18a6e71f733e06da5~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1032](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d84b816435c0422a9ea5bfde95b40861~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) 我们再来看下面的示例代码
+复制代码
 
-    var p = Person()
-    var pType = type(of: p) 
-    复制代码
+`var p = Person()
+var pType = Person.self` 
+
+我们发现最后存储到全局变量pType中的地址值就是一开始调用的地址 ![-w1031](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8a38e68565b04a649793fd49e4962bc8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) 再通过打印，我们发现pType的值就是Person实例对象的前8个字节的地址值，也就是类信息 ![-w1031](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f81fff9375c949a18a6e71f733e06da5~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w1032](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d84b816435c0422a9ea5bfde95b40861~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) 我们再来看下面的示例代码
+
+swift
+
+复制代码
+
+`var p = Person()
+var pType = type(of: p)` 
 
 通过分析我们可以看到`type(of: p)`本质不是函数调用，只是将Person实例对象的前8个字节存储到pType中，也证明了元类型的本质就是存储的类信息
 
-![-w1031](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f11a754847b149eab14026ed50e0ff21~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w1030](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aa877aa499e7423e86c1e96bd301d291~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+![-w1031](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f11a754847b149eab14026ed50e0ff21~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w1030](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/aa877aa499e7423e86c1e96bd301d291~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
 我们还可以用以下方式来获取Swift的隐藏基类`_TtCs12_SwiftObject`
 
-    class Person {
-        var age: Int = 0
-    }
-    
-    class Student: Person {
-        var no: Int = 0
-    }
-    
-    print(class_getInstanceSize(Student.self)) // 32
-    print(class_getSuperclass(Student.self)!) // Person
-    print(class_getSuperclass(Student.self)!) // _TtCs12_SwiftObject
-    print(class_getSuperclass(NSObject.self)) // nil 
-    复制代码
+swift
+
+复制代码
+
+`class Person {
+ var age: Int = 0
+}
+class Student: Person {
+ var no: Int = 0
+}
+print(class_getInstanceSize(Student.self)) // 32
+print(class_getSuperclass(Student.self)!) // Person
+print(class_getSuperclass(Student.self)!) // _TtCs12_SwiftObject
+print(class_getSuperclass(NSObject.self)) // nil` 
 
 我们可以查看Swift源码来分析该类型
 
 发现`SwiftObject`里面也有一个`isa指针`
 
-![-w686](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b4602a6c2194461caf1a20eefd72056b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+![-w686](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b4602a6c2194461caf1a20eefd72056b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+五、错误处理
+======
+
+1\. 错误处理
+--------
+
+### 1.1 错误类型
+
+开发过程中常见的错误有
+
+*   语法错误（编译报错）
+*   逻辑错误
+*   运行时错误（可能会导致闪退，一般也叫做异常）
+*   ....
+
+### 1.2 自定义错误
+
+*   1.  Swift中可以通过`Error`协议自定义运行时的错误信息
+
+swift
+
+复制代码
+
+`enum SomeError: Error {
+ case illegalArg(String)
+ case outOffBounds(Int, Int)
+ case outOfMemory
+}` 
+
+*   2.  函数内部通过`throw`抛出自定义`Error`，可能会抛出`Error`的函数必须加上`throws`声明
+
+swift
+
+复制代码
+
+`func divide(_ num1: Int, _ num2: Int) throws -> Int {
+ if num2 == 0 {
+ throw SomeError.illegalArg("0不能作为除数")
+ }
+ return num1 / num2
+}` 
+
+*   3.  需要使用`try`调用可能会抛出`Error`的函数
+
+swift
+
+复制代码
+
+`var result = try divide(20, 10)` 
+
+*   4.  抛出错误信息的情况 ![-w715](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7930b652084241faba9c27f010bc0d2d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+### 1.3 do—catch
+
+*   1.  可以使用`do—catch`捕捉`Error`
+
+swift
+
+复制代码
+
+`do {
+ try divide(20, 0)
+} catch let error {
+ switch error {
+ case let SomeError.illegalArg(msg):
+ print("参数错误", msg)
+ default:
+ print("其他错误")
+ }
+}` 
+
+*   2.  抛出`Error`后，`try`下一句直到作用域结束的代码都将停止运行
+
+swift
+
+复制代码
+
+`func test() {
+ print("1")
+ do {
+ print("2")
+ print(try divide(20, 0)) // 这句抛出异常后面的代码不会执行了
+ print("3")
+ } catch let SomeError.illegalArg(msg) {
+ print("参数异常:", msg)
+ } catch let SomeError.outOffBounds(size, index) {
+ print("下标越界:", "size=(size)", "index=(index)")
+ } catch SomeError.outOfMemory {
+ print("内存溢出")
+ } catch {
+ print("其他错误")
+ }
+ print("4")
+}
+test()
+//1
+//2
+//参数异常: 0不能作为除数
+//4` 
+
+*   3.  `catch`作用域内默认就有`error`的变量可以捕获
+
+swift
+
+复制代码
+
+`do {
+ try divide(20, 0)
+} catch {
+ print(error)
+}` 
+
+2\. 处理Error
+-----------
+
+*   1.  处理`Error`的两种方式:
+*   a. 通过`do—catch`捕捉`Error`
+    
+    swift
+    
+    复制代码
+    
+    `do {
+     print(try divide(20, 0))
+    } catch is SomeError {
+     print("SomeError")
+    }` 
+    
+*   b. 不捕捉`Error`，在当前函数增加`throws`声明，`Error`将自动抛给上层函数  
+    如果最顶层函数`main函数`依然没有捕捉`Error`，那么程序将终止
+    
+    swift
+    
+    复制代码
+    
+    `func test() throws {
+     print("1")
+     print(try divide(20, 0))
+     print("2")
+    }
+    try test()
+    // 1
+    // Fatal error: Error raised at top level` 
+    
+*   2.  调用函数如果是写在函数里面，没有进行捕捉`Error`就会报错，而写在外面就不会 ![-w648](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5b762799211d40e0a615dd5a6e22c6f3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   3.  然后我们加上`do-catch`发现还是会报错，因为捕捉`Error`的处理不够详细，要捕捉所有`Error`信息才可以 ![-w639](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cb1a1d7f29104af994f8efec21a18f1d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   这时我们加上`throws`就可以了
+    
+    swift
+    
+    复制代码
+    
+    `func test() throws {
+     print("1")
+     do {
+     print("2")
+     print(try divide(20, 0))
+     print("3")
+     } catch let error as SomeError {
+     print(error)
+     }
+     print("4")
+    }
+    try test()
+    // 1
+    // 2
+    // illegalArg("0不能作为除数")
+    // 4` 
+    
+*   或者再加上一个`catch`捕获其他所有`Error`情况
+    
+    swift
+    
+    复制代码
+    
+    `func test() {
+     print("1")
+     do {
+     print("2")
+     print(try divide(20, 0))
+     print("3")
+     } catch let error as SomeError {
+     print(error)
+     } catch {
+     print("其他错误情况")
+     }
+     print("4")
+    }
+    test()` 
+    
+*   看下面示例代码，执行后会输出什么
+    
+    swift
+    
+    复制代码
+    
+    `func test0() throws {
+     print("1")
+     try test1()
+     print("2")
+    }
+    func test1() throws {
+     print("3")
+     try test2()
+     print("4")
+    }
+    func test2() throws {
+     print("5")
+     try test3()
+     print("6")
+    }
+    func test3() throws {
+     print("7")
+     try divide(20, 0)
+     print("8")
+    }
+    try test0()` 
+    
+*   执行后打印如下，并会抛出错误信息 ![-w717](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fb0551c1a8ea45829511ba7bf79cfaa3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+3\. try
+-------
+
+*   1.  可以使用`try?、try!`调用可能会抛出`Error`的函数，这样就不用去处理`Error`
+
+swift
+
+复制代码
+
+`func test() {
+ print("1")
+ var result1 = try? divide(20, 10) // Optional(2), Int?
+ var result2 = try? divide(20, 0) // nil
+ var result3 = try! divide(20, 10) // 2, Int
+ print("2")
+}
+test()` 
+
+*   2.  a、b是等价的
+
+swift
+
+复制代码
+
+`var a = try? divide(20, 0)
+var b: Int?
+do {
+ b = try divide(20, 0)
+} catch { b = nil }` 
+
+4\. rethrows
+------------
+
+*   `rethrows`表明，函数本身不会抛出错误，但调用闭包参数抛出错误，那么它会将错误向上抛
+
+swift
+
+复制代码
+
+`func exec(_ fn: (Int, Int) throws -> Int, _ num1: Int, _ num2: Int) rethrows {
+print(try fn(num1, num2))
+}
+// Fatal error: Error raised at top level
+try exec(divide, 20, 0)` 
+
+*   空合并运算符就是用了`rethrows`来进行声明的 ![-w609](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3d973592ccd54e0a96c23cc6d9b4b4a5~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+5\. defer
+---------
+
+*   1.  `defer`语句，用来定义以任何方式（抛错误、return等）离开代码块前必须要执行的代码
+*   2.  `defer`语句将延迟至当前作用域结束之前执行
+
+swift
+
+复制代码
+
+`func open(_ filename: String) -> Int {
+print("open")
+return 0
+}
+func close(_ file: Int) {
+print("close")
+}
+func processFile(_ filename: String) throws {
+let file = open(filename)
+defer {
+ close(file)
+}
+// 使用file
+// .....
+try divide(20, 0)
+// close将会在这里调用
+}
+try processFile("test.txt")
+// open
+// close
+// Fatal error: Error raised at top level` 
+
+*   3.  `defer`语句的执行顺序与定义顺序相反
+
+swift
+
+复制代码
+
+`func fn1() { print("fn1") }
+func fn2() { print("fn2") }
+func test() {
+defer { fn1() }
+defer { fn2() }
+}
+test()
+// fn2
+// fn1` 
+
+6\. assert（断言）
+--------------
+
+*   很多编程语言都有断言机制，不符合指定条件就抛出运行时错误，常用于调试`Debug`阶段的条件判断 ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9dd47e1150c04452aefc2cb0ff1fcefa~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   默认情况下，Swift的断言只会在`Debug`模式下生效，`Release`模式下会忽略
+*   增加`Swift Flags`修改断言的默认行为
+*   `-assert-config Release`：强制关闭断言
+*   `-assert-config Debug`：强制开启断言 ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c3876ff55e7b4d719e6639fb3f5f8e05~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+7\. fatalError
+--------------
+
+*   1.  如果遇到严重问题，希望结束程序运行时，可以直接使用`fatalError`函数抛出错误
+*   2.  这是无法通过`do—catch`捕获的错误
+*   3.  使用了`fatalError`函数，就不需要再写`return`
+
+swift
+
+复制代码
+
+`func test(_ num: Int) -> Int {
+ if num >= 0 {
+ return 1
+ }
+ fatalError("num不能小于0")
+}` 
+
+*   4.  在某些不得不实现，但不希望别人调用的方法，可以考虑内部使用`fatalError`函数
+
+swift
+
+复制代码
+
+`class Person { required init() {} }
+class Student: Person {
+ required init() {
+ fatalError("don't call Student.init")
+ }
+ init(score: Int) {
+ }
+}
+var stu1 = Student(score: 98)
+var stu2 = Student()` 
+
+8\. 局部作用域
+---------
+
+*   1.  可以使用`do`实现局部作用域
+
+swift
+
+复制代码
+
+`do {
+ let dog1 = Dog()
+ dog1.age = 10
+ dog1.run()
+}
+do {
+ let dog2 = Dog()
+ dog2.age = 10
+ dog2.run()
+}` 
+
+六、泛型（Generics）
+==============
+
+1\. 基本概念
+--------
+
+*   1.1 `泛型`可以将`类型参数化`  
+    提高代码复用率，减少代码量
+
+swift
+
+复制代码
+
+`func swapValues<T>(_ a: inout T, _ b: inout T) {
+ (a, b) = (b, a)
+}
+var i1 = 10
+var i2 = 20
+swap(&i1, &i2)
+print(i1, i2) // 20, 10
+struct Date {
+ var year = 0, month = 0, day = 0
+}
+var d1 = Date(year: 2011, month: 9, day: 10)
+var d2 = Date(year: 2012, month: 10, day: 20)
+swap(&d1, &d2)
+print(d1, d2) // Date(year: 2012, month: 10, day: 20), Date(year: 2011, month: 9, day: 10)` 
+
+*   1.2 `泛型`函数赋值给变量
+
+swift
+
+复制代码
+
+`func test<T1, T2>(_ t1: T1, _ t2: T2) {}
+var fn: (Int, Double) -> () = test` 
+
+2\. 泛型类型
+--------
+
+> Case1 `栈`
+
+swift
+
+复制代码
+
+`class Stack<E> {
+var elements = [E]()
+func push(_ element: E) {
+ elements.append(element)
+}
+func pop() -> E {
+ elements.removeLast()
+}
+func top() -> E {
+ elements.last!
+}
+func size() -> Int {
+ elements.count
+}
+}
+class SubStack<E>: Stack<E> {
+}
+var intStack = Stack<Int>()
+var stringStack = Stack<String>()
+var anyStack = Stack<Any>()` 
+
+> Case1 `栈` 继续完善
+
+swift
+
+复制代码
+
+`struct Stack<E> {
+var elements = [E]()
+mutating func push(_ element: E) {
+ elements.append(element)
+}
+mutating func pop() -> E {
+ elements.removeLast()
+}
+func top() -> E {
+ elements.last!
+}
+func size() -> Int {
+ elements.count
+}
+}
+var stack = Stack<Int>()
+stack.push(11)
+stack.push(22)
+stack.push(33)
+print(stack.top()) // 33
+print(stack.pop()) // 33
+print(stack.pop()) // 22
+print(stack.pop()) // 11
+print(stack.size()) // 0` 
+
+> Case2
+
+swift
+
+复制代码
+
+`enum Score<T> {
+case point(T)
+case grade(String)
+}
+let score0 = Score<Int>.point(100)
+let score1 = Score.point(99)
+let score2 = Score.point(99.5)
+let score3 = Score<Int>.grade("A")` 
+
+3\. 关联类型（Associated Type）
+-------------------------
+
+*   1.  关联类型的作用: 给协议中用到的类型定义一个占位名称
+
+swift
+
+复制代码
+
+`protocol Stackable {
+ associatedtype Element
+ mutating func push(_ element: Element)
+ mutating func pop() -> Element
+ func top() -> Element
+ func size() -> Int
+}
+struct Stack<E>: Stackable {
+ var elements = [E]()
+ mutating func push(_ element: E) {
+ elements.append(element)
+ }
+ mutating func pop() -> E {
+ elements.removeLast()
+ }
+ func top() -> E {
+ elements.last!
+ }
+ func size() -> Int {
+ elements.count
+ }
+}
+class StringStack: Stackable {
+ var elements = [String]()
+ func push(_ element: String) {
+ elements.append(element)
+ }
+ func pop() -> String {
+ elements.removeLast()
+ }
+ func top() -> String {
+ elements.last!
+ }
+ func size() -> Int {
+ elements.count
+ }
+}
+var ss = StringStack()
+ss.push("Jack")
+ss.push("Rose")` 
+
+*   2.  协议中可以拥有多个关联类型
+
+swift
+
+复制代码
+
+`protocol Stackable {
+ associatedtype Element
+ associatedtype Element2
+ mutating func push(_ element: Element)
+ mutating func pop() -> Element
+ func top() -> Element
+ func size() -> Int
+}` 
+
+4\. 类型约束
+--------
+
+swift
+
+复制代码
+
+`protocol Runnable { }
+class Person { }
+func swapValues<T: Person & Runnable>(_ a: inout T, _ b: inout T) {
+(a, b) = (b, a)
+}` 
+
+swift
+
+复制代码
+
+`protocol Stackable {
+associatedtype Element: Equatable
+}
+class Stack<E: Equatable>: Stackable {
+typealias Element = E
+}
+func equal<S1: Stackable, S2: Stackable>(_ s1: S1, _ s2: S2) -> Bool where S1.Element == S2.Element, S1.Element : Hashable {
+ return false
+}
+var stack1 = Stack<Int>()
+var stack2 = Stack<String>()
+equal(stack1, stack2)` 
+
+5\. 协议类型的注意点
+------------
+
+看下面的示例代码来分析
+
+swift
+
+复制代码
+
+`protocol Runnable { }
+class Person: Runnable { }
+class Car: Runnable { }
+func get(_ type: Int) -> Runnable {
+if type == 0 {
+ return Person()
+}
+return Car()
+}
+var r1 = get(0)
+var r2 = get(1)` 
+
+*   如果协议中有`associatedtype`
+
+swift
+
+复制代码
+
+`protocol Runnable {
+associatedtype Speed
+var speed: Speed { get }
+}
+class Person: Runnable {
+var speed: Double { 0.0 }
+}
+class Car: Runnable {
+var speed: Int { 0 }
+}` 
+
+*   这样写会报错，因为无法在编译阶段知道`Speed`的真实类型是什么 ![-w638](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/efce02a4842a49258ed91629e11c620f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   可以用泛型来解决
+
+swift
+
+复制代码
+
+`protocol Runnable {
+ associatedtype Speed
+ var speed: Speed { get }
+}
+class Person: Runnable {
+ var speed: Double { 0.0 }
+}
+class Car: Runnable {
+ var speed: Int { 0 }
+}
+func get<T: Runnable>(_ type: Int) -> T {
+ if type == 0 {
+ return Person() as! T
+ }
+ return Car() as! T
+}
+var r1: Person = get(0)
+var r2: Car = get(1)` 
+
+*   还可以使用`some`关键字声明一个`不透明类型`
+*   `some`限制只能返回一种类型
+
+swift
+
+复制代码
+
+`protocol Runnable {
+ associatedtype Speed
+ var speed: Speed { get }
+}
+class Person: Runnable {
+ var speed: Double { 0.0 }
+}
+class Car: Runnable {
+ var speed: Int { 0 }
+}
+func get(_ type: Int) -> some Runnable {
+ return Car()
+}
+var r1 = get(0)
+var r2 = get(1)` 
+
+*   `some`除了用在返回值类型上，一般还可以用在属性类型上
+
+swift
+
+复制代码
+
+`protocol Runnable {
+ associatedtype Speed
+}
+class Dog: Runnable {
+ typealias Speed = Double
+}
+class Person {
+ var pet: some Runnable {
+ return Dog()
+ }
+}` 
+
+6\. 泛型的本质
+---------
+
+*   我们通过下面的示例代码来分析其内部具体是怎样实现的
+
+swift
+
+复制代码
+
+`func swapValues<T>(_ a: inout T, _ b: inout T) {
+ (a, b) = (b, a)
+}
+var i1 = 10
+var i2 = 20
+swap(&i1, &i2)
+print(i1, i2) // 20, 10
+var d1 = 10.0
+var d2 = 20.0
+swap(&d1, &d2)
+print(d1, d2) // 20.0, 10.0` 
+
+*   反汇编之后 ![-w1000](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/281c636f9b5b4cbba84bea1f8833610d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w1002](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/423e799fe8324208b6a7ec356a5c90ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   从调用两个交换方法来看，最终调用的都是同一个函数，因为函数地址是一样的；
+*   但不同的是分别会将`Int的metadata`和`Double的metadata`作为参数传递进去
+*   所以推测`metadata`中应该分别指明对应的类型来做处理
+
+7\. 可选项的本质
+----------
+
+*   1.  可选项的本质的本质是`enum`类型
+*   2.  我们可以进到头文件中查看 ![-w1034](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4e338908efc74aa6b8f35758510ebafa~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   我们平时写的语法糖的真正写法如下:
+
+swift
+
+复制代码
+
+`var age: Int? = 10
+本质写法如下：
+var ageOpt0: Optional<Int> = Optional<Int>.some(10)
+var ageOpt1: Optional = .some(10)
+var ageOpt2 = Optional.some(10)
+var ageOpt3 = Optional(10)` 
+
+swift
+
+复制代码
+
+`var age: Int? = nil
+本质写法如下：
+var ageOpt0: Optional<Int> = .none
+var ageOpt1 = Optional<Int>.none` 
+
+swift
+
+复制代码
+
+`var age: Int? = .none
+age = 10
+age = .some(20)
+age = nil` 
+
+*   3.  switch中可选项的使用
+
+swift
+
+复制代码
+
+`switch age {
+case let v?: // 加上?表示如果有值会解包赋值给v
+ print("some", v)
+case nil:
+ print("none")
+}
+switch age {
+case let .some(v):
+ print("some", v)
+case .none:
+ print("none")
+}` 
+
+*   4.  多重可选项
+
+swift
+
+复制代码
+
+`var age_: Int? = 10
+var age: Int?? = age_
+age = nil
+var age0 = Optional.some(Optional.some(10))
+age0 = .none
+var age1: Optional<Optional> = .some(.some(10))
+age1 = .none` 
+
+swift
+
+复制代码
+
+`var age: Int?? = 10
+var age0: Optional<Optional> = 10` 
+
+七、String、Array的底层分析
+===================
+
+1\. String
+----------
+
+### 1.1 关于String的思考
+
+> **我们先来思考String变量`占用多少内存`？**
+
+swift
+
+复制代码
+
+`var str1 = "0123456789"
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0x3736353433323130 0xea00000000003938` 
+
+*   1.  我们通过打印可以看到`String变量`占用了`16`个字节，并且打印内存布局，前后各占用了`8个字节`
+*   2.  下面我们再进行`反汇编`来观察下:  
+        可以看到这两句指令正是分配了前后8个字节给了`String变量` ![-w715](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6660d592d9af43a891376332ffd407f1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+> **那String变量底层`存储的是什么`呢？**
+
+*   1.  我们通过上面看到`String变量`的16个字节的值其实是对应转成的`ASCII码值`
+*   2.  ASCII码表的地址：[www.ascii-code.com](https://link.juejin.cn?target=https%3A%2F%2Fwww.ascii-code.com "https://www.ascii-code.com") ![-w1139](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c3e0acfa1dfc44f2bb9b58b0d2d7f9b0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   3.  我们看上图就可以得知:
+    
+    *   左边对应的是`0~9`的十六进制`ASCII码值`
+    *   又因为`小端模式(高高低低)`下高字节放高地址，低字节放低地址的原则，对比正是我们打印的16个字节中存储的数据
+        
+        swift
+        
+        复制代码
+        
+        `0x3736353433323130 0xea00000000003938` 
+        
+
+> **然后我们再看后8个字节前面的`e`和`a`分别代表的是`类型`和`长度`**
+
+*   如果`String`的数据是`直接存储在变量中`的,就是用`e`来标明类型
+*   如果要是`存储在其他地方`,就会`用别的字母来表示`
+*   我们`String`字符的长度正好是10，所以就是十六进制的`a`
+
+swift
+
+复制代码
+
+`var str1 = "0123456789ABCDE"
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0x3736353433323130 0xef45444342413938` 
+
+*   我们打印上面这个`String变量`，发现表示长度的值正好变成了`f`
+*   而后7个字节也都被填满了，所以也证明了这种方式最多只能存储15个字节的数据
+*   这种方式很像`OC`中的`Tagger Pointer`的存储方式
+
+> **如果存储的数据超过15个字符，String变量又会是什么样呢？**
+
+*   我们改变`String变量`的值，再进行打印观察
+
+swift
+
+复制代码
+
+`var str1 = "0123456789ABCDEF"
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0xd000000000000010 0x80000001000079a0` 
+
+*   我们发现`String变量`的内存占用还是16个字节，但是内存布局已经完全不一样了
+*   这时我们就需要借助反汇编来进一步分析了: ![-w998](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5755335330d5408787db631d057a1c08~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   看上图能发现最后还是会先后分配`8个字节`给`String变量`，但不同的是在这之前会调用了函数，并将返回值给了`String变量`的`前8个字节`
+*   而且分别将`字符串`的值还有长度作为参数传递了进去，下面我们就看看调用的函数里具体做了什么 ![-w995](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/104ab1a55d59499280f28b37fcf21205~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w1058](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e7ba4e15d1e14911815c30f9f02d007a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   我们可以看到函数内部会将一个`掩码`的值和`String变量`的地址值相加，然后存储到`String变量`的后8个字节中
+*   所以我们可以反向计算出所存储的数据真实地址值
+
+swift
+
+复制代码
+
+`0x80000001000079a0 - 0x7fffffffffffffe0 = 0x1000079C0` 
+
+*   其实也就是一开始存储到`rdi`中的值 ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c8be70d3fa449fa85d744375cabd040~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+    *   通过打印真实地址值可以看到16个字节确实都是存储着对应的`ASCII码值`
+
+> **那么真实数据是存储在什么地方呢？**
+
+*   通过观察它的地址我们可以大概推测是在`数据段`
+*   为了更确切的认证我们的推测，使用`MachOView`来直接查看在可执行文件中这句代码的真正存储位置
+*   我们找到项目中的可执行文件，然后右键`Show in Finder` ![-w357](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b9e34e897cad43a7aaf099869e9c9b59~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   然后右键通过`MachOView`的方式来打开 ![-w498](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ce3b7c154d14f1493081d48953f99f5~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   最终我们发现在代码段中的字符串`常量区`中 ![-w1055](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/438688bb7e5a408e9c8302391914e0cd~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+> **对比两个字符串的存储位置**
+
+*   我们现在分别查看下这两个字符串的存储位置是否相同
+
+swift
+
+复制代码
+
+`var str1 = "0123456789"
+var str2 = "0123456789ABCDEF"` 
+
+*   我们还是用`MachOView`来打开可执行文件，发现两个字符串的真实地址都是放在代码段中的`字符串常量区`，并且相差`16个字节` ![-w1165](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/06b26919bbde4b98b028c96d686bc17e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   然后我们再看打印的地址的前8个字节
+
+swift
+
+复制代码
+
+`0xd000000000000010 0x80000001000079a0` 
+
+*   按照推测`10`应该也是表示长度的十六进制，而前面的`d`就代表着这种类型
+*   我们更改下字符串的值，发现果然表示长度的值也随之变化了
+
+swift
+
+复制代码
+
+`var str2 = "0123456789ABCDEFGH"
+print(Mems.size(ofVal: &str2)) // 16
+print(Mems.memStr(ofVal: &str2)) // 0xd000000000000012 0x80000001000079a0` 
+
+> **如果分别给两个String变量进行拼接会怎样呢？**
+
+swift
+
+复制代码
+
+`var str1 = "0123456789"
+str1.append("G")
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0x3736353433323130 0xeb00000000473938
+var str2 = "0123456789ABCDEF"
+str2.append("G")
+print(Mems.size(ofVal: &str2)) // 16
+print(Mems.memStr(ofVal: &str2)) // 0xf000000000000011 0x0000000100776ed0` 
+
+*   我们发现str1的后8个字节还有位置可以存放新的字符串，所以还是继续存储在内存变量里
+*   而str2的内存布局不一样了，前8个字节可以看出来类型变成`f`，字符串长度也变为十六进制的`11`；
+*   而后8个字节的地址很像`堆空间`的地址值
+
+> **验证String变量的存储位置是否在堆空间**
+
+*   为了验证我们的推测，下面用反汇编来进行观察
+*   我们在验证之前先创建一个类的实例变量，然后跟进去在内部调用`malloc`的指令位置打上断点
+
+swift
+
+复制代码
+
+`class Person { }
+var p = Person()` 
+
+![-w979](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/280785045b49499fb719596615a8d313~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   然后我们先将断点置灰，重新反汇编之前的`Sting变量` ![-w979](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bc12e07e8ae42f5bff7642c2af48169~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   然后将置灰的`malloc`的断点点亮，然后进入 ![-w978](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/efca144df3804ed08d949b79aca7f1b2~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   发现确实会进入到我们之前在调用`malloc`的断点处，所以这就验证了确实会分配堆空间内存来存储`String变量`的值了
+*   我们还可以用`LLDB`的指令`bt`来打印调用栈详细信息来查看 ![-w979](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2d9a75d0d4cb4d7791e9baf68910218f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   发现也是在调用完`append方法`之后就会进行`malloc`的调用了，从这一层面也验证了我们的推测
+
+> **那堆空间里存储的str2的值是怎样的呢？**
+
+*   然后我们过掉了`append函数`后，打印str2的地址值，然后再打印后8个字节存放的堆空间地址值 ![-w981](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1b804928b02f43fdbe4d7364359a24db~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   其内部偏移了`32个字节`后，正是我们`String变量`的`ASCII码值`
+
+### 1.2 总结
+
+*   1.  **如果字符串长度小于等于0xF（十进制为15）**,字符串内容直接存储到字符串变量的内存中，并以`ASCII`码值的**小端模式来进行存储**
+*   `第9个字节`会存储字符串`变量的类型`和`字符长度`
+
+swift
+
+复制代码
+
+`var str1 = "0123456789"
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0x3736353433323130 0xeb00000000473938` 
+
+> **进行字符串拼接操作后**
+
+*   2.  **如果拼接后的字符串长度还是`小于等于`0xF（十进制为15）** ,存储位置同未拼接之前
+
+swift
+
+复制代码
+
+`var str1 = "0123456789"
+str1.append("ABCDE")
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0x3736353433323130 0xef45444342413938` 
+
+*   3.  **如果拼接后的字符串长度`大于`0xF（十进制为15）**,会`开辟堆空间`来存储字符串内容
+*   字符串的地址值中:
+*   `前8个字节`存储`字符串变量的类型`和`字符长度`
+*   `后8个字节`存储着`堆空间的地址值`，`堆空间地址 + 0x20`可以得到`真正的字符串内容`
+*   堆空间地址的`前32个字节`是用来`存储描述信息`的
+*   由于`常量区`是程序运行之前就已经确定位置了的,所以拼接字符串是运行时操作,不可能再回存放到常量区,所以`直接分配堆空间`进行存储
+
+swift
+
+复制代码
+
+`var str1 = "0123456789"
+str1.append("ABCDEF")
+print(Mems.size(ofVal: &str1)) // 16
+print(Mems.memStr(ofVal: &str1)) // 0xf000000000000010 0x000000010051d600` 
+
+*   4.  **如果字符串长度大于0xF（十进制为15）** , 字符串内容会存储在`__TEXT.cstring`中（常量区）
+*   字符串的地址值中，`前8个字节`存储字符串变量的类型和字符长度，`后8个字节`存储着一个地址值，`地址值 & mask`可以得到字符串内容在常量区真正的地址值
+
+swift
+
+复制代码
+
+`var str2 = "0123456789ABCDEF"
+print(Mems.size(ofVal: &str2)) // 16
+print(Mems.memStr(ofVal: &str2)) // 0xd000000000000010 0x80000001000079a0` 
+
+*   5.  **进行字符串拼接操作后**，同上面开辟`堆空间`存储的方式
+
+swift
+
+复制代码
+
+`var str2 = "0123456789ABCDEF"
+str2.append("G")
+print(Mems.size(ofVal: &str2)) // 16
+print(Mems.memStr(ofVal: &str2)) // 0xf000000000000011 0x0000000106232230` 
+
+### 1.3 dyld\_stub\_binder
+
+*   1.  我们反汇编看到底层调用的`String.init`方法其实是`动态库`里的方法，而动态库在内存中的位置是在`Mach-O文件`的更高地址的位置，如下图所示 ![-w939](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/93c7a01e241b41249b9baa0f3a3c1e6a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   2.  所以我们这里看到的地址值其实是一个`假的地址值`，`只是用来占位的` ![-w999](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b5d8bba1b0e54694b76952752cc2c49b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   我们再跟进发现其内部会跳转到另一个地址，取出其存储的真正需要调用的地址值去调用
+*   下一个调用的地址值一般都是相差6个字节
+
+swift
+
+复制代码
+
+`0x10000774e + 0x6 = 0x100007754
+0x100007754 + 0x48bc(%rip) = 0x10000C010
+最后就是去0x10000C010地址中找到需要调用的地址值0x100007858` 
+
+![-w998](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a5afbe8541244d9dab7347755bde2656~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w997](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3a48c418233d4ade9c0c935b1d3ed5c6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   3\. 然后一直跟进，最后会进入到动态库的`dyld_stub_binder`中进行绑定 ![-w996](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8bb1f99041f24e3080de780b8405998c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   4.  最后才会真正进入到动态库中的`String.init`执行指令，而且可以发现其真正的地址值非常大，这也能侧面证明动态库是在可执行文件更高地址的位置 ![-w1000](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ffcbe445b3e94cf2ac38865229bfc08d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   5.  然后我们在执行到下一个`String.init`的调用 ![-w997](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/98f566de85184723a9edf493e4d5678e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   6.  跟进去发现这是要跳转的地址值就已经是动态库中的`String.init`真实地址值了 ![-w997](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e5179fdfdc2b4ad3ac626492ded5b6f7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w999](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2df7d588ff9444c9ab6805413b925c62~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   7.  这也说明了`dyld_stub_binder`只会执行一次，而且是用到的时候在进行调用，也就是延迟绑定
+*   8.  `dyld_stub_binder`的主要作用就是在程序运行时，将真正需要调用的函数地址替换掉之前的占位地址
+
+2\. 关于Array的思考
+--------------
+
+> **我们来思考Array变量占用多少内存？**
+
+swift
+
+复制代码
+
+`var array = [1, 2, 3, 4]
+print(Mems.size(ofVal: &array)) // 8
+print(Mems.ptr(ofVal: &array)) // 0x000000010000c1c8
+print(Mems.ptr(ofRef: array)) // 0x0000000105862270` 
+
+*   1.  我们通过打印可以看到`Array变量`占用了`8个字节`，其内存地址就是存储在`全局区`的地址
+*   2.  然而我们发现其内存地址的存储空间存储的地址值更像一个堆空间的地址
+
+> **Array变量存储在什么地方呢？**
+
+*   3.带着疑问我们还是进行反汇编来观察下，并且在`malloc`的调用指令处打上断点 ![-w988](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/485f28a97e604a2eb8bf1c16ad4ec132~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   发现确实调用了`malloc`，那么就证明了`Array变量`内部会分配堆空间 ![-w1000](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b36e7c6d60d44389c801ec6a03ddd13~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   4.  等执行完返回值给到`Array变量`之后，我们打印`Array变量`存储的地址值内存布局，发现其内部`偏移32个字节`的位置存储着元素1、2、3、4
+*   我们还可以直接通过打印内存结构来观察
+    
+    swift
+    
+    复制代码
+    
+    `var array = [1, 2, 3, 4]
+    print(Mems.memStr(ofRef: array))
+    //0x00007fff88a8dd18
+    //0x0000000200000003
+    //0x0000000000000004
+    //0x0000000000000008
+    //0x0000000000000001
+    //0x0000000000000002
+    //0x0000000000000003
+    //0x0000000000000004` 
+    
+*   我们调整一下元素数量，再打印观察
+    
+    swift
+    
+    复制代码
+    
+    `var array = [Int]()
+    for i in 1...8 {
+     array.append(i)
+    }
+    print(Mems.memStr(ofRef: array))
+    //0x00007fff88a8e460
+    //0x0000000200000003
+    //0x0000000000000008
+    //0x0000000000000010
+    //0x0000000000000001
+    //0x0000000000000002
+    //0x0000000000000003
+    //0x0000000000000004
+    //0x0000000000000005
+    //0x0000000000000006
+    //0x0000000000000007
+    //0x0000000000000008` 
+    
+
+八、高级运算符
+=======
+
+1\. 溢出运算符（Overflow Operator）
+----------------------------
+
+*   1.  Swift的算数运算符出现溢出时会抛出运行时错误
+*   2.  Swift有溢出运算符`&+、&-、&*`，用来支持溢出运算 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6978fad6d78746afae3d0c5a5cdeaf20~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+swift
+
+复制代码
+
+`var min = UInt8.min
+print(min &- 1) // 255, Int8.max
+var max = UInt8.max
+print(max &+ 1) // 0, Int8.min
+print(max &* 2) // 254, 等价于 max &+ max、` 
+
+![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/92913b09c78f4c9d8f1b5abb6aecbda9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
+
+> **计算方式**
+
+*   1.  类似于一个循环，最大值255再+1，就会回到0；最小值0再-1，就会回到255
+*   2.  而`max &* 2`就等于`max &+ max`，也就是255 + 1 + 254，255 + 1会变为0，那么最后的值就是254 ![-w596](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/052d8810d49e4f789585499c901372a4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+2\. 运算符重载（Operator Overload）
+----------------------------
+
+*   1.  `类`、`结构体`、`枚举`可以为现有的运算符提供自定义的实现，这个操作叫做`运算符重载`
+
+swift
+
+复制代码
+
+`struct Point {
+ var x: Int, y: Int
+}
+func + (p1: Point, p2: Point) -> Point {
+ Point(x: p1.x + p2.x, y: p1.y + p2.y)
+}
+let p = Point(x: 10, y: 20) + Point(x: 11, y: 22)
+print(p) // Point(x: 21, y: 42) Point(x: 11, y: 22)` 
+
+*   2.  一般将运算符重载写在相关的`结构体`、`类`、`枚举`的内部
+
+swift
+
+复制代码
+
+`struct Point {
+ var x: Int, y: Int
+ // 默认就是中缀运算符
+ static func + (p1: Point, p2: Point) -> Point {
+ Point(x: p1.x + p2.x, y: p1.y + p2.y)
+ }
+ static func - (p1: Point, p2: Point) -> Point {
+ Point(x: p1.x - p2.x, y: p1.y - p2.y)
+ }
+ // 前缀运算符
+ static prefix func - (p: Point) -> Point {
+ Point(x: -p.x, y: -p.y)
+ }
+ static func += (p1: inout Point, p2: Point) {
+ p1 = p1 + p2
+ }
+ static prefix func ++ (p: inout Point) -> Point {
+ p += Point(x: 1, y: 1)
+ return p
+ }
+ // 后缀运算符
+ static postfix func ++ (p: inout Point) -> Point {
+ let tmp = p
+ p += Point(x: 1, y: 1)
+ return tmp
+ }
+ static func == (p1: Point, p2: Point) -> Bool {
+ (p1.x == p2.x) && (p1.y == p2.y)
+ }
+}
+var p1 = Point(x: 10, y: 20)
+var p2 = Point(x: 11, y: 22)
+print(p1 + p2) // Point(x: 21, y: 42)
+print(p2 - p1) // Point(x: 1, y: 2)
+print(-p1) // Point(x: -10, y: -20)
+p1 += p2
+print(p1, p2) // Point(x: 21, y: 42) Point(x: 11, y: 22)
+p1 = ++p2
+print(p1, p2) // Point(x: 12, y: 23) Point(x: 12, y: 23)
+p1 = p2++
+print(p1, p2) // Point(x: 12, y: 23) Point(x: 13, y: 24)
+print(p1 == p2) // false` 
+
+3\. Equatable
+-------------
+
+*   1.  要想得知两个实例是否等价，一般做法是遵守`Equatable协议`，重载`==`运算符 于此同时，等价于`!=`运算符
+
+swift
+
+复制代码
+
+`class Person: Equatable {
+ var age: Int
+ init(age: Int) {
+ self.age = age
+ }
+ static func == (lhs: Person, rhs: Person) -> Bool {
+ lhs.age == rhs.age
+ }
+}
+var p1 = Person(age: 10)
+var p2 = Person(age: 20)
+print(p1 == p2) // false
+print(p1 != p2) // true` 
+
+*   2.  如果没有遵守`Equatable协议`，使用`!=`就会报错 ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d27c4247a3b24460ac35ad8614007b19~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   3.  如果没有遵守`Equatable协议`，只重载`==`运算符，也可以使用`p1 == p2`的判断，但是遵守`Equatable协议`是为了能够在有限制的泛型函数中作为参数使用
+
+swift
+
+复制代码
+
+`func equal<T: Equatable>(_ t1: T, _ t2: T) -> Bool {
+ t1 == t2
+}
+print(equal(p1, p2)) // false` 
+
+> **Swift为以下类型提供默认的`Equatable`实现**
+
+*   1.  没有关联类型的枚举
+
+swift
+
+复制代码
+
+`enum Answer {
+ case right, wrong
+}
+var s1 = Answer.right
+var s2 = Answer.wrong
+print(s1 == s2)` 
+
+*   2.  只拥有遵守`Equatable协议`关联类型的枚举
+*   3.  系统很多自带类型都已经遵守了`Equatable协议`，类似`Int、Double`等
+
+swift
+
+复制代码
+
+`enum Answer: Equatable {
+ case right, wrong(Int)
+}
+var s1 = Answer.wrong(20)
+var s2 = Answer.wrong(10)
+print(s1 == s2)` 
+
+*   4.  关联类型没有遵守`Equatable协议`的就会报错 ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fbe5768c60e74704ab7c5996cb3174fb~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   5.  只拥有遵守`Equatable协议`存储属性的结构体
+
+swift
+
+复制代码
+
+`struct Point: Equatable {
+ var x: Int, y: Int
+}
+var p1 = Point(x: 10, y: 20)
+var p2 = Point(x: 11, y: 22)
+print(p1 == p2) // false
+print(p1 != p2) // true` 
+
+*   6.  引用类型比较存储的地址值是否相等（是否引用着同一个对象），使用恒等运算符`===、!==`
+
+swift
+
+复制代码
+
+`class Person {
+}
+var p1 = Person()
+var p2 = Person()
+print(p1 === p2) // false
+print(p1 !== p2) // true` 
+
+4\. Comparable
+--------------
+
+*   1.  要想比较两个实例的大小，一般做法是遵守`Comparable协议`，重载相应的运算符
+
+swift
+
+复制代码
+
+`struct Student: Comparable {
+ var age: Int
+ var score: Int
+ init(score: Int, age: Int) {
+ self.score = score
+ self.age = age
+ }
+ static func < (lhs: Student, rhs: Student) -> Bool {
+ (lhs.score < rhs.score) || (lhs.score == rhs.score && lhs.age > rhs.age)
+ }
+ static func > (lhs: Student, rhs: Student) -> Bool {
+ (lhs.score > rhs.score) || (lhs.score == rhs.score && lhs.age < rhs.age)
+ }
+ static func <= (lhs: Student, rhs: Student) -> Bool {
+ !(lhs > rhs)
+ }
+ static func >= (lhs: Student, rhs: Student) -> Bool {
+ !(lhs < rhs)
+ }
+}
+var stu1 = Student(score: 100, age: 20)
+var stu2 = Student(score: 98, age: 18)
+var stu3 = Student(score: 100, age: 20)
+print(stu1 > stu2) // true
+print(stu1 >= stu2) // true
+print(stu1 >= stu3) // true
+print(stu1 <= stu3) // true
+print(stu2 < stu1) // true
+print(stu2 <= stu1) // true` 
+
+5\. 自定义运算符（Custom Operator）
+---------------------------
+
+*   1.  可以`自定义新的运算符`: 在全局作用域使用`operator`进行声明
+
+swift
+
+复制代码
+
+`prefix operator 前缀运算符
+postfix operator 后缀运算符
+infix operator 中缀运算符：优先级组
+precedencegroup 优先级组 {
+ associativity: 结合性（left\right\none）
+ higherThan: 比谁的优先级更高
+ lowerThan: 比谁的优先级低
+ assignment: true代表在可选链操作中拥有跟赋值运算符一样的优先级
+}` 
+
+*   2.  `自定义运算符`的使用示例如下
+
+swift
+
+复制代码
+
+`prefix operator +++
+prefix func +++ (_ i: inout Int) {
+ i += 2
+}
+var age = 10
++++age
+print(age) // 12` 
+
+swift
+
+复制代码
+
+`infix operator +-: PlusMinusPrecedence
+precedencegroup PlusMinusPrecedence {
+ associativity: none
+ higherThan: AdditionPrecedence
+ lowerThan: MultiplicationPrecedence
+ assignment: true
+}
+struct Point {
+ var x = 0, y = 0
+ static func +- (p1: Point, p2: Point) -> Point {
+ Point(x: p1.x + p2.x, y: p1.y - p2.y)
+ }
+}
+var p1 = Point(x: 10, y: 20)
+var p2 = Point(x: 5, y: 10)
+print(p1 +- p2) // Point(x: 15, y: 10)` 
+
+> **优先级组中的associativity的设置影响**
+
+swift
+
+复制代码
+
+`associativity对应的三个选项
+left: 从左往右执行，可以多个进行结合
+right: 从右往左执行，可以多个进行结合
+none: 不支持多个结合` 
+
+*   3.  如果再增加一个计算就会报错，因为我们设置的`associativity`为`none` ![-w643](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc1d00a4584b47388f5e57ee164d9c2f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   4.  我们把`associativity`改为`left`或者`right`，再运行就可以了
+
+swift
+
+复制代码
+
+`infix operator +-: PlusMinusPrecedence
+precedencegroup PlusMinusPrecedence {
+ associativity: left
+ higherThan: AdditionPrecedence
+ lowerThan: MultiplicationPrecedence
+ assignment: true
+}
+var p3 = Point(x: 5, y: 10)
+print(p1 +- p2 +- p3) // Point(x: 20, y: 0)` 
+
+> **优先级组中的assignment的设置影响**
+
+我们先看下面的示例代码
+
+swift
+
+复制代码
+
+`class Person {
+var age = 0
+var point: Point = Point()
+}
+var p: Person? = nil
+print(p?.point +- Point(x: 10, y: 20))` 
+
+设置`assignment`为`true`的意思就是如果在运算中，前面的可选项为`nil`，那么运算符后面的代码就不会执行了
+
+Apple文档参考链接： [developer.apple.com/documentati…](https://link.juejin.cn?target=https%3A%2F%2Fdeveloper.apple.com%2Fdocumentation%2Fswift%2Fswift_standard_library%2Foperator_declarations "https://developer.apple.com/documentation/swift/swift_standard_library/operator_declarations")
+
+另一个： [docs.swift.org/swift-book/…](https://link.juejin.cn?target=https%3A%2F%2Fdocs.swift.org%2Fswift-book%2FReferenceManual%2FDeclarations.html "https://docs.swift.org/swift-book/ReferenceManual/Declarations.html")
+
+九、扩展（Extension）
+===============
+
+1\. 基本概念
+--------
+
+*   1.  Swift中的扩展，类似于`OC`中的`Category`
+*   2.  扩展可以为`枚举`、`类`、`结构体`、`协议`添加新功能；可以添加方法、`便捷初始化器`、`计算属性`、`下标`、`嵌套类型`、`协议`等
+*   3.  扩展`不能做到`以下这几项
+    
+    *   不能覆盖原有的功能
+    *   不能添加存储属性，不能向已有的属性添加属性观察器
+    *   不能添加父类
+    *   不能添加指定初始化器，不能添加反初始化器
+    *   ....
+
+2\. 计算属性、方法、下标、嵌套类型
+-------------------
+
+swift
+
+复制代码
+
+`extension Double {
+ var km: Double { self * 1_000.0 }
+ var m: Double { self }
+ var dm: Double { self / 10.0 }
+ var cm: Double { self / 100.0 }
+ var mm: Double { self / 1_000.0 }
+}` 
+
+swift
+
+复制代码
+
+`extension Array {
+ subscript(nullable idx: Int) -> Element? {
+ if (startIndex..<endIndex).contains(idx) {
+ return self[idx]
+ }
+ return nil
+ }
+}` 
+
+swift
+
+复制代码
+
+`extension Int {
+ func repetitions(task: () -> Void) {
+ for _ in 0..<self { task() }
+ }
+  
+ mutating func square() -> Int {
+ self = self * self
+ return self
+ }
+  
+ enum Kind { case negative, zero, positive }
+  
+ var kind: Kind {
+ switch self {
+ case 0: return .zero
+ case let x where x > 0: return .positive
+ default: return .negative
+ }
+ }
+  
+ subscript(digitIndex: Int) -> Int {
+ var decimalBase = 1
+ for _ in 0..<digitIndex { decimalBase += 10 }
+ return (self / decimalBase) % 10
+ }
+}` 
+
+3\. 初始化器
+--------
+
+swift
+
+复制代码
+
+`class Person {
+ var age: Int
+ var name: String
+ init (age: Int, name: String) {
+ self.age = age
+ self.name = name
+ }
+}
+extension Person: Equatable {
+ static func == (left: Person, right: Person) -> Bool {
+ left.age == right.age && left.name == right.name
+ }
+  
+ convenience init() {
+ self.init(age: 0, name: "")
+ }
+}` 
+
+*   如果希望自定义初始化器的同时，编译器也能够生成默认初始化器，可以在扩展中编写自定义初始化器
+    
+    swift
+    
+    复制代码
+    
+    `struct Point {
+     var x: Int = 0
+     var y: Int = 0
+    }
+    extension Point {
+     init(_ point: Point) {
+     self.init(x: point.x, y: point.y)
+     }
+    }
+    var p1 = Point()
+    var p2 = Point(x: 10)
+    var p3 = Point(y: 10)
+    var p4 = Point(x: 10, y: 20)
+    var p5 = Point(p4)` 
+    
+*   `required`的初始化器也不能写在扩展中 ![-w634](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/86b30907739b411ba4860320550b8df6~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+4\. 协议
+------
+
+*   1.  如果一个类型`已经实现了协议`的所有要求，但是`还没有声明它遵守`了这个协议，`可以通过扩展来让他遵守`这个协议
+    
+    swift
+    
+    复制代码
+    
+    `protocol TestProtocol {
+     func test1()
+    }
+    class TestClass {
+     func test1() {
+     print("TestClass test1")
+     }
+    }
+    extension TestClass: TestProtocol { }` 
+    
+    swift
+    
+    复制代码
+    
+    `extension BinaryInteger {
+     func isOdd() -> Bool {self % 2 != 0 }
+    }
+    print(10.isOdd())` 
+    
+*   2.  `扩展`可以给`协议`提供`默认实现`，也`间接实现可选协议`的结果  
+        `扩展`可以给`协议`扩充协议中从未声明过的方法
+    
+    swift
+    
+    复制代码
+    
+    `protocol TestProtocol {
+     func test1()
+    }
+    extension TestProtocol {
+     func test1() {
+     print("TestProtocol test1")
+     }
+     func test2() {
+     print("TestProtocol test2")
+     }
+    }
+    class TestClass: TestProtocol { }
+    var cls = TestClass()
+    cls.test1() // TestProtocol test1
+    cls.test2() // TestProtocol test2
+    var cls2: TestProtocol = TestClass()
+    cls2.test1() // TestProtocol test1
+    cls2.test2() // TestProtocol test2` 
+    
+    swift
+    
+    复制代码
+    
+    `class TestClass: TestProtocol {
+     func test1() {
+     print("TestClass test1")
+     }
+     func test2() {
+     print("TestClass test2")
+     }
+    }
+    var cls = TestClass()
+    cls.test1() // TestClass test1
+    cls.test2() // TestClass test2
+    var cls2: TestProtocol = TestClass()
+    cls2.test1() // TestClass test1
+    cls2.test2() // TestProtocol test2` 
+    
+
+5\. 泛型
+------
+
+swift
+
+复制代码
+
+`class Stack<E> {
+ var elements = [E]()
+ func push(_ element: E) {
+ elements.append(element)
+ }
+  
+ func pop() -> E {
+ elements.removeLast()
+ }
+  
+ func size() -> Int {
+ elements.count
+ }
+}` 
+
+*   1.  扩展中依然可以使用原类型中的泛型类型
+    
+    swift
+    
+    复制代码
+    
+    `extension Stack {
+     func top() -> E {
+     elements.last!
+     }
+    }` 
+    
+*   2.  符合条件才扩展
+    
+    swift
+    
+    复制代码
+    
+    `extension Stack: Equatable where E : Equatable {
+     static func == (left: Stack, right: Stack) -> Bool {
+     left.elements == right.elements
+     }
+    }` 
+    
+
+十、访问控制（Access Control）
+======================
+
+1\. 基本概念
+--------
+
+在访问权限控制这块，Swift提供了5个不同的访问级别（以下是从高到低排列，实体指被访问级别修饰的内容）
+
+*   `open`: 允许在定义实体的模块、其他模块中访问，允许其他模块进行继承、重写（open只能用在类、类成员上）
+*   `public`: 允许在定义实体的模块、其他模块中访问，不允许其他模块进行继承、重写
+*   `internal`: 只允许在定义实体的模块中访问，不允许在其他模块中访问
+*   `fileprivate`: 只允许在定义实体的源文件中访问
+*   `private`： 只允许在定义实体的封闭声明中访问
+
+绝大部分实体默认都是`internal`级别
+
+2\. 访问级别的使用准则
+-------------
+
+*   1.  一个实体不可以被更低访问级别的实体定义
+*   2.  变量\\常量类型 ≥ 变量\\常量
+
+swift
+
+复制代码
+
+`internal class Person {} // 变量类型
+fileprivate var person: Person // 变量` 
+
+![-w635](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/eea1ff7e061d4999aa10e06cc88f009d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   3\. 参数类型、返回值类型 ≥ 函数
+
+swift
+
+复制代码
+
+`// 参数类型：Int、Double
+// 函数：func test
+internal func test(_ num: Int) -> Double {
+ return Double(num)
+}` 
+
+*   4.  父类 ≥ 子类
+
+swift
+
+复制代码
+
+`class Person {}
+class Student: Person {}` 
+
+swift
+
+复制代码
+
+`public class Person {}
+class Student: Person {}` 
+
+![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/253c5018731a4da5b5efb8cd7228dd78~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   5\. 父协议 ≥ 子协议
+
+swift
+
+复制代码
+
+`public protocol Sportable {}
+internal protocol Runnalbe: Sportable {}` 
+
+![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8ed33acfc6054650bacb1de9a9c813e1~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   6\. 原类型 ≥ typealias
+
+swift
+
+复制代码
+
+`class Person {} // 原类型
+private typealias MyPerson = Person` 
+
+*   7.  原始值类型\\关联值类型 ≥ 枚举类型
+
+swift
+
+复制代码
+
+`typealias MyInt = Int
+typealias MyString = String
+enum Score {
+ case point(MyInt)
+ case grade(MyString)
+}` 
+
+![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d2da62d6a3d74091819315c6949b036b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   8\. 定义类型A时用到的其他类型 ≥ 类型A
+
+swift
+
+复制代码
+
+`typealias MyString = String
+struct Dog {}
+class Person {
+ var age: MyString = ""
+ var dog: Dog?
+}` 
+
+![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/09023b2368544bdb81e245da6d1e9091~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+3\. 元组类型
+--------
+
+*   元组类型的访问级别是所有成员类型最低的那个
+
+swift
+
+复制代码
+
+`internal struct Dog { }
+fileprivate class Person { }
+// (Dog, Person)中更低的访问级别是fileprivate，所以元组的访问级别就是fileprivate
+fileprivate var datal: (Dog, Person)
+private var data2: (Dog, Person)` 
+
+4\. 泛型类型
+--------
+
+*   泛型类型的访问级别是类型的访问级别以及所有泛型类型参数的访问级别中最低的那个
+
+swift
+
+复制代码
+
+`internal class Car {}
+fileprivate class Dog {}
+public class Person<T1, T2> {}
+// Person<Car, Dog>中比较的是Person、Car、Dog三个的访问级别最低的那个，也就是fileprivate，fileprivate就是泛型类型的访问级别
+fileprivate var p = Person<Car, Dog>()` 
+
+5\. 成员、嵌套类型
+-----------
+
+*   1.  类型的访问级别会影响成员（`属性`、`方法`、`初始化器`、`下标`），嵌套类型的默认访问级别
+*   2.  一般情况下，类型为`private`或`fileprivate`，那么成员\\嵌套类型默认也是`private`或`fileprivate`
+
+swift
+
+复制代码
+
+`fileprivate class FilePrivateClass { // fileprivate
+ func f1() {} // fileprivate
+ private func f2() {} // private
+}
+private class PrivateClass { // private
+ func f() {} // private
+}` 
+
+*   3.  一般情况下，类型为`internal`或`public`，那么成员/嵌套类型默认是`internal`
+
+swift
+
+复制代码
+
+`public class PublicClass { // public
+ public var p1 = 0 // public
+ var p2 = 0 // internal
+ fileprivate func f1() {} // fileprivate
+ private func f2() {} // private
+}
+class InternalClass { // internal
+ var p = 0 // internal
+ fileprivate func f1() {} // fileprivate
+ private func f2() {} // private
+}` 
+
+**看下面几个示例，编译能否通过？**
+
+示例1
+
+swift
+
+复制代码
+
+`private class Person {}
+fileprivate class Student: Person {}` 
+
+swift
+
+复制代码
+
+`class Test {
+ private class Person {}
+ fileprivate class Student: Person {}
+}` 
+
+结果是第一段代码编译通过，第二段代码编译报错
+
+![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d750e03e5ce144fe98c26befa71887b7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+第一段代码编译通过，是因为两个全局变量不管是`private`还是`fileprivate`，作用域都是当前文件，所以访问级别就相同了
+
+第二段代码的两个属性的作用域局限到类里面了，那访问级别就有差异了
+
+示例2
+
+swift
+
+复制代码
+
+`private struct Dog {
+ var age: Int = 0
+ func run() {}
+}
+fileprivate struct Person {
+ var dog: Dog = Dog()
+ mutating func walk() {
+ dog.run()
+ dog.age = 1
+ }
+}` 
+
+swift
+
+复制代码
+
+`private struct Dog {
+ private var age: Int = 0
+ private func run() {}
+}
+fileprivate struct Person {
+ var dog: Dog = Dog()
+ mutating func walk() {
+ dog.run()
+ dog.age = 1
+ }
+}` 
+
+结果是第一段代码编译通过，第二段代码编译报错 ![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/763c5459c3f14f1f876a6c67893bea4f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+第一段代码编译通过，是因为两个结构体的访问级别都是该文件内，所以访问级别相同
+
+第二段代码报错是因为Dog里的属性和方法的访问级别是更低的了，虽然两个结构体的访问级别相同，但从Person里调用Dog中的属性和方法是访问不到的
+
+**结论：直接在全局作用域下定义的`private`等于`fileprivate`**
+
+6\. 成员的重写
+---------
+
+子类重写成员的访问级别必须 ≥ 子类的访问级别，或者 ≥ 父类被重写成员的访问级别
+
+swift
+
+复制代码
+
+`class Person {
+ internal func run() {}
+}
+fileprivate class Student: Person {
+ fileprivate override func run() {}
+}` 
+
+父类的成员不能被成员作用域外定义的子类重写 ![-w641](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/73b4fef531b8438b8df637149f2c1833~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+放到同一个作用域下
+
+swift
+
+复制代码
+
+`public class Person {
+ private var age: Int = 0
+  
+ public class Student: Person {
+ override var age: Int {
+ set {}
+ get { 10 }
+ }
+ }
+}` 
+
+7\. getter、setter
+-----------------
+
+*   1.  `getter、setter`默认自动接收它们所属环境的访问级别
+*   2.  可以给`setter`单独设置一个比`getter`更低的访问级别，用以限制写的权限
+
+swift
+
+复制代码
+
+`fileprivate(set) public var num = 10
+num = 10
+print(num)` 
+
+![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bf43c0b5920a4302902ad7e5ff56a35b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+8\. 初始化器
+--------
+
+*   1.  如果一个`public类`想在另一个模块调用编译生成的默认无参初始化器，必须显式提供`public`的无参初始化器，因为`public类`的默认初始化器是`internal`级别
+    
+    swift
+    
+    复制代码
+    
+    `public class Person {
+     // 默认生成的，因为是internal，所以外部无法调用到该初始化器
+    //    internal init() {
+    //
+    //    }
+    }
+    变成这样
+    public class Person {
+     // 自己手动添加指定初始化器，并用public修饰，外部才能访问的到
+     public init() {
+     }
+    }` 
+    
+*   2.  `required`初始化器 ≥ 它的默认访问级别
+    
+    swift
+    
+    复制代码
+    
+    `fileprivate class Person {
+     internal required init() {}
+    }` 
+    
+*   3.  当类是`public`的时候，它的默认初始化器就是`internal`级别的，所以不会报错
+    
+    swift
+    
+    复制代码
+    
+    `public class Person {
+     internal required init() {}
+    }` 
+    
+    ![-w639](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/47ab245d23184e2a9c20f566f14c6555~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+    
+*   4.  如果结构体有`private\fileprivate`的存储实例属性，那么它的成员初始化器也是`private\fileprivate`，否则默认就是`internal` ![-w641](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ea49c229a71148738b54d4194a77083a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   5.  结构体里有一个属性设置为private，带有其他属性的初始化器也没有了 ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/9bbbbab59a884181bfb5b45020035d68~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+9\. 枚举类型的case
+-------------
+
+*   1.  不能给`enum`的每个case单独设置访问级别 ![-w641](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/31bbc797440645668025dc4f6101c2c4~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   2.  每个case自动接收`enum`的访问级别
+    
+    swift
+    
+    复制代码
+    
+    `fileprivate enum Season {
+     case spring // fileprivate
+     case summer // fileprivate
+     case autumn // fileprivate
+     case winter // fileprivate
+    }` 
+    
+*   3.  `public enum`定义的case也是`public`
+    
+    swift
+    
+    复制代码
+    
+    `public enum Season {
+     case spring // public
+     case summer // public
+     case autumn // public
+     case winter // public
+    }` 
+    
+
+10\. 协议
+-------
+
+*   1.  协议中定义的要求自动接收协议的访问级别，不能单独设置访问级别 ![-w637](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/17ae162147ba4460be6e0bbb2e49f20a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   2.  `public`协议定义的要求也是`public`
+    
+    swift
+    
+    复制代码
+    
+    `public protocol Runnable {
+     func run()
+    }` 
+    
+*   3.  协议实现的访问级别必须 ≥ 类型的访问级别，或者 ≥ 协议的访问级别 ![-w641](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/12a3840994aa443ea9f81a71b2025068~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w640](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/16d1b6478fd244b0b6e8cf7f54e91d8e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+11\. 扩展
+-------
+
+*   1.  如果有显式设置扩展的访问级别，扩展添加的成员自动接收扩展的访问级别
+    
+    swift
+    
+    复制代码
+    
+    `class Person {
+    }
+    private extension Person {
+     func run() {} // private
+    }` 
+    
+*   2.  如果没有显式设置扩展的访问级别，扩展添加的成员的默认访问级别，跟直接在类型中定义的成员一样
+    
+    swift
+    
+    复制代码
+    
+    `private class Person {
+    }
+    extension Person {
+     func run() {} // private
+    }` 
+    
+*   3.  可以单独给扩展添加的成员设置访问级别
+    
+    swift
+    
+    复制代码
+    
+    `class Person {
+    }
+    extension Person {
+     private func run() {} 
+    }` 
+    
+*   4.  不能给用于遵守协议的扩展显式设置扩展的访问级别 ![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e8c688d9e860454b8417dcc7e6cf2a9d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   5.  在同一文件中的扩展，可以写成类似多个部分的类型声明
+*   6.  在原本的声明中声明一个私有成员，可以在同一个文件的扩展中访问它
+*   7.  在扩展中声明一个私有成员，可以在同一文件的其他扩展中、原本声明中访问它
+    
+    swift
+    
+    复制代码
+    
+    `public class Person {
+     private func run0() {}
+     private func eat0() {
+     run1()
+     }
+    }
+    extension Person {
+     private func run1() {}
+     private func eat1() {
+     run0()
+     }
+    }
+    extension Person {
+     private func eat2() {
+     run1()
+     }
+    }` 
+    
+
+12\. 将方法赋值给var\\let
+-------------------
+
+*   1.  方法也可以像函数那样，赋值给一个`let`或者`var`
+    
+    swift
+    
+    复制代码
+    
+    `struct Person {
+     var age: Int
+     func run(_ v : Int) { print("func run", age, v)}
+     static func run(_ v: Int) { print("static func run", v)}
+    }
+    let fn1 = Person.run
+    fn1(10) // static func run 10
+    let fn2: (Int) -> () = Person.run
+    fn2(20) // static func run 20
+    let fn3: (Person) -> ((Int) -> ()) = Person.run
+    fn3(Person(age: 18))(30) // func run 18 30` 
+    
+
+十一、内存管理
+=======
+
+1\. 基本概念
+--------
+
+*   跟`OC`一样，Swift也是采取基于`引用计数的ARC`内存管理方案（`针对堆空间`）
+*   Swift的ARC中有三种引用:
+*   a. **强引用（strong reference）** ： 默认情况下，引用都是强引用
+    
+    swift
+    
+    复制代码
+    
+    `class Person { }
+    var po: Person?` 
+    
+*   b. **弱引用（weak reference）** ：通过`weak`定义弱引用
+    
+    swift
+    
+    复制代码
+    
+    `class Person { }
+    weak var po: Person?` 
+    
+    *   必须是可选类型的`var`，因为实例销毁后，ARC会自动将弱引用设置为`nil` ![-w634](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/96b77e643805422dbe1fc1674df9988c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+        
+    *   ARC自动给弱引用设置`nil`时，不会触发属性观察器
+        
+*   c. **无主引用（unowned reference）** ： 通过`unowned`定义无主引用  
+    不会产生强引用，实例销毁后仍然存储着实例的内存地址（类似于`OC`中的`unsafe_unretained`）
+    
+    swift
+    
+    复制代码
+    
+    `class Person { }
+    unowned var po: Person?` 
+    
+    *   试图在实例销毁后访问无主引用，会产生运行时错误（野指针）
+
+2\. weak、unowned的使用限制
+---------------------
+
+*   1.  `weak、unowned`只能用在`类实例`上面
+*   2.  只有`类`是存放在`堆空间`的，堆空间的内存是需要我们手动管理的
+
+swift
+
+复制代码
+
+`protocol Liveable: AnyObject { }
+class Person { }
+weak var po: Person?
+weak var p1: AnyObject?
+weak var p2: Liveable?
+unowned var p10: Person?
+unowned var p11: AnyObject?
+unowned var p12: Liveable?` 
+
+3\. Autoreleasepool
+-------------------
+
+![-w628](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2423f7b20efc41a182c192968f2f029d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+swift
+
+复制代码
+
+`class Person {
+var age: Int
+var name: String
+init(age: Int, name: String) {
+ self.age = age
+ self.name = name
+}
+func run() {}
+}
+autoreleasepool {
+let p = Person(age: 20, name: "Jack")
+p.run()
+}` 
+
+4\. 循环引用（Reference Cycle）
+-------------------------
+
+*   1.  `weak、unowned`都能解决循环引用的问题，`unowned`要比`weak`少一些性能消耗
+*   2.  在生命周期中可能会变为`nil`的使用`weak` ![-w649](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ae54ada24fdd4980826c095c975900c3~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   3.  初始化赋值后再也不会变为`nil`的使用`unowned` ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cf3332da09bc4522ba39c957fe78014d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+5\. 闭包的循环引用
+-----------
+
+*   1.  闭包表达式默认会对用到的外层对象产生额外的强引用（对外层对象进行了`retain`操作）
+*   2.  下面代码会产生循环引用，导致Person对象无法释放（看不到Person的`deinit`被调用）
+
+swift
+
+复制代码
+
+`class Person {
+ var fn: (() -> ())?
+ func run() { print("run") }
+ deinit { print("deinit") }
+}
+func test() {
+ let p = Person()
+ p.fn = { p.run() }
+}
+test()` 
+
+*   3.  在闭包表达式的捕获列表声明`weak`或`unowned`引用，解决循环引用问题
+
+swift
+
+复制代码
+
+`func test() {
+ let p = Person()
+ p.fn = {
+ [weak p] in
+ p?.run()
+ }
+}` 
+
+swift
+
+复制代码
+
+`func test() {
+ let p = Person()
+ p.fn = {
+ [unowned p] in
+ p.run()
+ }
+}` 
+
+*   4.  如果想在定义闭包属性的同时引用`self`，这个闭包必须是`lazy`的（因为在实例初始化完毕之后才能引用`self`） ![-w645](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fd9d5910b51d48be8c9453ede114e27d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+swift
+
+复制代码
+
+`class Person {
+ lazy var fn: (() -> ()) = {
+ [weak self] in
+ self?.run()
+ }
+ func run() { print("run") }
+ deinit { print("deinit") }
+}` 
+
+*   5.  闭包fn内部如果用到了实例成员（属性、方法），编译器会强制要求明确写出`self` ![-w642](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1fcf107651554f919175ef073d648907~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   6.  如果`lazy属性`是闭包调用的结果，那么不用考虑循环引用的问题（因为闭包调用后，闭包的生命周期就结束了）
+
+swift
+
+复制代码
+
+`class Person {
+ var age: Int = 0
+ lazy var getAge: Int = {
+ self.age
+ }()
+ deinit { print("deinit") }
+}` 
+
+6\. @escaping
+-------------
+
+*   1.  非逃逸闭包、逃逸闭包，一般都是`当做参数`传递给函数
+*   2.  非逃逸闭包：闭包调用发生在函数结束前，闭包调用在函数作用域内
+
+swift
+
+复制代码
+
+`typealias Fn = () -> ()
+func test1(_ fn: Fn) { fn() }` 
+
+*   3.  逃逸闭包：闭包有可能在函数结束后调用，闭包调用逃离了函数的作用域，需要通过`@escaping`声明
+
+swift
+
+复制代码
+
+`typealias Fn = () -> ()
+var gFn: Fn?
+func test2(_ fn: @escaping Fn) { gFn = fn }` 
+
+*   4.  `DispatchQueue.global().async`也是一个逃逸闭包 ![-w605](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1ec645caee914960bfdc6c01b8ff915f~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) 使用示例如下
+
+swift
+
+复制代码
+
+`import Dispatch
+typealias Fn = () -> ()
+func test3(_ fn: @escaping Fn) {
+DispatchQueue.global().async {
+ fn()
+}
+}` 
+
+swift
+
+复制代码
+
+`class Person {
+var fn: Fn
+// fn是逃逸闭包
+init(fn: @escaping Fn) {
+ self.fn = fn
+}
+func run() {
+ // DispatchQueue.global().async也是一个逃逸闭包
+ // 它用到了实例成员（属性、方法），编译器会强制要求明确写出self
+ DispatchQueue.global().async {
+ self.fn()
+ }
+}
+}` 
+
+*   5.  逃逸闭包不可以捕获`inout`参数  
+        看下面的示例 ![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/13af1d9ba59c440db4a5adbe2103ac9a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w644](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a29ee1f1c3b340c99961c7165c92062e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   如果逃逸闭包里捕获的是外面的局部变量的地址值，就会有局部变量已经不存在了之后才会执行逃逸闭包的情况，那么捕获的值就是不合理的
+*   而非逃逸闭包是可以保证在局部变量的生命周期没有结束的时候就能够执行闭包的
+
+7\. 内存访问冲突（Conflicting Access to Memory）
+----------------------------------------
+
+内存访问冲突会在两个访问满足下列条件时发生：
+
+*   `至少一个是写入`操作
+*   它们访问的是`同一块内存`
+*   它们的`访问时间重叠`（比如在同一个函数内）
+
+1.  看下面示例，哪个会造成内存访问冲突
+
+swift
+
+复制代码
+
+`func plus(_ num: inout Int) -> Int { num + 1 }
+var number = 1
+number = plus(&number)` 
+
+swift
+
+复制代码
+
+`var step = 1
+func increment(_ num: inout Int) { num += step }
+increment(&step)` 
+
+*   第一个不会造成`内存访问`冲突，第二个`会造成内存访问`冲突，并报错
+*   因为在`num += step`中既访问了step的值，同时又进行了写入操作 ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/13e0e749f3d84fa7a87497bcf9854523~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) 解决方案如下
+
+swift
+
+复制代码
+
+`var step = 1
+func increment(_ num: inout Int) { num += step }
+var copyOfStep = step
+increment(&copyOfStep)
+step = copyOfStep` 
+
+2.看下面示例，哪个会造成内存访问冲突
+
+swift
+
+复制代码
+
+`func balance(_ x: inout Int, _ y: inout Int) {
+let sum = x + y
+x = sum / 2
+y = sum - x
+}
+var num1 = 42
+var num2 = 30
+balance(&num1, &num2) // ok
+balance(&num1, &num1) // Error` 
+
+*   第一句执行不会报错，因为传进去的是两个变量的地址值，不会冲突
+*   第二句会报错，传进去的都是同一个变量的地址值，而内部又同时进行了对num1的读写操作，所以会造成内存访问冲突
+*   而且都不用运行，编译器直接就报错
+
+![-w635](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6dfc7e4c8a4a4c3fac30b869db7d65c8~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+3.看下面示例，哪个会造成内存访问冲突
+
+swift
+
+复制代码
+
+`struct Player {
+var name: String
+var health: Int
+var energy: Int
+mutating func shareHealth(with teammate: inout Player) {
+ balance(&teammate.health, &health)
+}
+}
+var oscar = Player(name: "Oscar", health: 10, energy: 10)
+var maria = Player(name: "Maria", health: 5, energy: 10)
+oscar.shareHealth(with: &maria)
+oscar.shareHealth(with: &oscar)` 
+
+*   第一句执行不会报错，第二句执行会报错
+*   因为传入的地址都是同一个，会造成内存访问冲突，而且也是在编译阶段就直接报错了 ![-w647](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e1bf5017ac334ea085cf407349f5800e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+4.看下面示例，哪个会造成内存访问冲突
+
+swift
+
+复制代码
+
+`var tuple = (health: 10, energy: 20)
+balance(&tuple.health, &tuple.energy)
+var holly = Player(name: "Holly", health: 10, energy: 10)
+balance(&holly.health, &holly.energy)` 
+
+*   这两个都会报错，都是操作了同一个存储空间，同时进行了读写操作 ![-w712](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2ca2a3d6d91a43b298cfecdfb8f3e96a~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+如果下面的条件可以满足，就说明重叠访问结构体的属性是安全的
+
+*   你只访问实例存储属性，不是计算属性或者类属性
+*   结构体是局部变量而非全局变量
+*   结构体要么没有被闭包捕获，要么只被非逃逸闭包捕获
+
+swift
+
+复制代码
+
+ `func test() {
+ var tuple = (health: 10, energy: 20)
+ balance(&tuple.health, &tuple.energy)
+ var holly = Player(name: "Holly", health: 10, energy: 10)
+ balance(&holly.health, &holly.energy)
+ }
+ test()` 
+
+十二、指针
+=====
+
+1\. 指针简介
+--------
+
+Swift中也有专门的指针类型，这些都被定性为`Unsafe`（不安全的）,常见的有以下四种类型:
+
+*   **`UnsafePointer<Pointee>`:** 类似于
+
+swift
+
+复制代码
+
+`const Pointee *` 
+
+*   **`UnsafeMutablePointer<Pointee>`:** 类似于
+
+swift
+
+复制代码
+
+`Pointee *` 
+
+*   **`UnsafeRawPointer`:** 类似于
+
+swift
+
+复制代码
+
+`const void *` 
+
+*   **`UnsafeMutableRawPointer`:** 类似于
+
+swift
+
+复制代码
+
+`void *` 
+
+*   **`UnsafePointer`、`UnsafeMutablePointer`**
+
+swift
+
+复制代码
+
+`var age = 10
+func test1(_ ptr: UnsafeMutablePointer<Int>) {
+ptr.pointee += 10
+}
+func test2(_ ptr: UnsafePointer<Int>) {
+print(ptr.pointee)
+}
+test1(&age)
+test2(&age) // 20
+print(age) // 20` 
+
+*   **`UnsafeRawPointer`、`UnsafeMutableRawPointer`**
+
+swift
+
+复制代码
+
+`var age = 10 
+func test3(_ ptr: UnsafeMutableRawPointer) {
+ptr.storeBytes(of: 30, as: Int.self)
+}
+func test4(_ ptr: UnsafeRawPointer) {
+print(ptr.load(as: Int.self))
+}
+test3(&age)
+test4(&age) // 30
+print(age) // 30` 
+
+2\. 指针应用示例
+----------
+
+> **`NSArray`的遍历方法中也使用了指针类型**
+
+![-w545](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/77332c011f144a93afe938beac6ba27d~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+swift
+
+复制代码
+
+`var arr = NSArray(objects: 11, 22, 33, 44)
+arr.enumerateObjects { (obj, idx, stop) in
+print(idx, obj)
+if idx == 2 { // 下标为2就停止遍历
+ stop.pointee = true
+}
+print("----")
+}
+//0 11
+//----
+//1 22
+//----
+//2 33
+//----` 
+
+*   `arr.enumerateObjects`中的stop并不等同于`break`的作用，设置完stop也会继续执行完作用域中的代码，然后才会判断是否需要下一次循环
+*   在Swift中遍历元素更适用于`enumerated`的方式
+
+swift
+
+复制代码
+
+`var arr = NSArray(objects: 11, 22, 33, 44)
+for (idx, obj) in arr.enumerated() {
+ print(idx, obj)
+ if idx == 2 { break }
+}` 
+
+3\. 获得指向某个变量的指针
+---------------
+
+*   我们可以调用`withUnsafeMutablePointer、withUnsafePointer`来获得指向变量的指针
+
+swift
+
+复制代码
+
+`var age = 11
+var ptr1 = withUnsafeMutablePointer(to: &age) { $0 }
+var ptr2 = withUnsafePointer(to: &age) { $0 }
+ptr1.pointee = 22
+print(ptr2.pointee) // 22
+print(age) // 22
+var ptr3 = withUnsafeMutablePointer(to: &age) { UnsafeMutableRawPointer($0)}
+var ptr4 = withUnsafePointer(to: &age) { UnsafeRawPointer($0) }
+ptr3.storeBytes(of: 33, as: Int.self)
+print(ptr4.load(as: Int.self)) // 33
+print(age) // 33` 
+
+*   `withUnsafeMutablePointer`的实现本质就是将传入的变量地址值放到闭包表达式中作为返回值
+
+swift
+
+复制代码
+
+`func withUnsafeMutablePointer<Result, T>(to value: inout T, _ body: (UnsafeMutablePointer<T>) throws -> Result) rethrows -> Result {
+ try body(&value)
+}` 
+
+4\. 获得指向堆空间实例的指针
+----------------
+
+swift
+
+复制代码
+
+`class Person {}
+var person = Person()
+// ptr中存储的还是person指针变量的地址值
+var ptr = withUnsafePointer(to: &person) { UnsafeRawPointer($0) }
+// 从指针变量里取8个字节，也就是取出存储的堆空间地址值
+var heapPtr = UnsafeRawPointer(bitPattern: ptr.load(as: UInt.self))
+print(heapPtr!)` 
+
+5\. 创建指针
+--------
+
+> 第一种方式
+
+swift
+
+复制代码
+
+`var ptr = UnsafeRawPointer(bitPattern: 0x100001234)` 
+
+> 第二种方式
+
+swift
+
+复制代码
+
+`// 创建
+var ptr = malloc(16)
+// 存
+ptr?.storeBytes(of: 11, as: Int.self)
+ptr?.storeBytes(of: 22, toByteOffset: 8, as: Int.self)
+// 取
+print(ptr?.load(as: Int.self)) // 11
+print(ptr?.load(fromByteOffset: 8, as: Int.self)) // 22
+// 销毁
+free(ptr)` 
+
+> 第三种方式
+
+swift
+
+复制代码
+
+`var ptr = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
+// 从前8个字节开始存储11
+ptr.storeBytes(of: 11, as: Int.self)
+// 指向后8个字节开始存储22
+ptr.advanced(by: 8).storeBytes(of: 22, as: Int.self)
+print(ptr.load(as: Int.self)) // 11
+print(ptr.advanced(by: 8).load(as: Int.self)) // 22
+ptr.deallocate()` 
+
+> 第四种方式
+
+swift
+
+复制代码
+
+`var ptr = UnsafeMutablePointer<Int>.allocate(capacity: 3)
+// 先初始化内存
+ptr.initialize(to: 11)
+// ptr.successor表示下一个Int，也就是跳一个类型字节大小
+ptr.successor().initialize(to: 22)
+ptr.successor().successor().initialize(to: 33)
+print(ptr.pointee) // 11
+// ptr + 1，意味着跳过一个Int类型大小的字节数
+print((ptr + 1).pointee) // 22
+print((ptr + 2).pointee) // 33
+print(ptr[0]) // 11
+print(ptr[1]) // 22
+print(ptr[2]) // 33
+// 释放要调用反初始化，调用了几个就释放几个
+ptr.deinitialize(count: 3)
+ptr.deallocate()` 
+
+swift
+
+复制代码
+
+`class Person {
+var age: Int
+var name: String
+init(age: Int, name: String) {
+ self.age = age
+ self.name = name
+}
+deinit {
+ print(name, "deinit")
+}
+}
+var ptr = UnsafeMutablePointer<Person>.allocate(capacity: 3)
+ptr.initialize(to: Person(age: 10, name: "Jack"))
+(ptr + 1).initialize(to: Person(age: 11, name: "Rose"))
+(ptr + 2).initialize(to: Person(age: 12, name: "Kate"))
+ptr.deinitialize(count: 3)
+ptr.deallocate()` 
+
+6\. 指针之间的转换
+-----------
+
+swift
+
+复制代码
+
+`var ptr = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
+// 假想一个类型
+ptr.assumingMemoryBound(to: Int.self)
+// 不确定类型的pointer+8是真的加8个字节，不同于有类型的pointer
+(ptr + 8).assumingMemoryBound(to: Double.self).pointee = 22.0
+// 强制转换类型为Int
+print(unsafeBitCast(ptr, to: UnsafePointer<Int>.self).pointee) // 11
+print(unsafeBitCast((ptr + 8), to: UnsafePointer<Double>.self).pointee) // 22.0
+ptr.deallocate()` 
+
+*   `unsafeBitCast`是忽略数据类型的强制转换，不会因为数据类型的变化而改变原来的内存数据，所以这种转换也是不安全的
+*   类似于`C++`中的`reinterpret_cast`
+*   我们可以用`unsafeBitCast`的强制转换指针类型，直接将person变量里存储的堆空间地址值拷贝到ptr指针变量中，由于ptr是指针类型，那么它所指向的地址值就是堆空间地址
+
+swift
+
+复制代码
+
+`class Person {}
+var person = Person()
+var ptr = unsafeBitCast(person, to: UnsafeRawPointer.self)
+print(ptr)` 
+
+*   另一个转换方式，可以先转成`UInt类型`的变量，然后再从变量中取出存储的地址值
+
+swift
+
+复制代码
+
+`class Person {}
+var person = Person()
+var address = unsafeBitCast(person, to: UInt.self)
+var ptr = UnsafeRawPointer(bitPattern: address)` 
+
+看下面的示例 ![-w944](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3541f61318f34cf1be6e18394cba135c~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+*   `Int`和`Double`的内存结构应该是有差异的，但通过`unsafeBitCast`转换的age3的内存结构和age1是一样的，所以说`unsafeBitCast`只会转换数据类型，不会改变内存数据
+
+十三、字面量（Literal）
+===============
+
+1\. 基本概念
+--------
+
+*   下面代码中的`10、false、"Jack"`就是字面量
+
+swift
+
+复制代码
+
+`var age = 10
+var isRed = false
+var name = "Jack"` 
+
+*   常见字面量的默认类型 ![-w507](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/95680f960f7a4430b437754b0ce8567b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+*   可以通过`typealias`修改字面量的默认类型
+
+swift
+
+复制代码
+
+`typealias FloatLiteralType = Float
+typealias IntegerLiteralType = UInt8
+var age = 10 // UInt8
+var height = 1.68 // Float` 
+
+Swift自带的绝大部分类型、都支持直接通过字面量进行初始化
+
+swift
+
+复制代码
+
+`Bool、Int、Float、Double、String、Array、Dictionary、Set、Optional等` 
+
+2\. 字面量协议
+---------
+
+Swift自带类型之所以能够通过字面量初始化，是因为它们遵守了对应的协议
+
+*   Bool: `ExpressibleByBooleanLiteral`
+*   Int: `ExpressibleByIntegerLiteral`
+*   Float、Double: `ExpressibleByIntegerLiteral、ExpressibleByFloatLiteral`
+*   String: `ExpressibleByStringLiteral`
+*   Array、Set: `ExpressibleByArrayLiteral`
+*   Dictionary: `ExpressibleByDictionaryLiteral`
+*   Optional: `ExpressibleByNilLiteral`
+
+swift
+
+复制代码
+
+`var b: Bool = false // ExpressibleByBooleanLiteral
+var i: Int = 10 // ExpressibleByIntegerLiteral
+var f0: Float = 10 // ExpressibleByIntegerLiteral
+var f1: Float = 10.0 // ExpressibleByFloatLiteral
+var d0: Double = 10 // ExpressibleByIntegerLiteral
+var d1: Double = 10.0 // ExpressibleByFloatLiteral
+var s: String = "jack" // ExpressibleByStringLiteral
+var arr: Array = [1, 2, 3] // ExpressibleByArrayLiteral
+var set: Set = [1, 2, 3] // ExpressibleByArrayLiteral
+var dict: Dictionary = ["jack" : 60] // ExpressibleByDictionaryLiteral
+var o: Optional<Int> = nil // ExpressibleByNilLiteral` 
+
+3.字面量协议应用
+---------
+
+有点类似于`C++`中的`转换构造函数`
+
+swift
+
+复制代码
+
+`extension Int: ExpressibleByBooleanLiteral {
+public init(booleanLiteral value: Bool) {
+ self = value ? 1 : 0
+}
+}
+var num: Int = true
+print(num) // 1` 
+
+swift
+
+复制代码
+
+`class Student: ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByStringLiteral, CustomDebugStringConvertible {
+var name: String = ""
+var score: Double = 0
+required init(floatLiteral value: Double) {
+ self.score = value
+}
+required init(integerLiteral value: Int) {
+ self.score = Double(value)
+}
+required init(stringLiteral value: String) {
+ self.name = value
+}
+required init(unicodeScalarLiteral value: String) {
+ self.name = value
+}
+required init(extendedGraphemeClusterLiteral value: String) {
+ self.name = value
+}
+var debugDescription: String {
+ "name=(name), score=(score)"
+}
+}
+var stu: Student = 90
+print(stu) // name=, score=90.0
+stu = 98.5
+print(stu) // name=, score=98.5
+stu = "Jack"
+print(stu) // name=Jack, score=0.0` 
+
+swift
+
+复制代码
+
+`struct Point {
+var x = 0.0, y = 0.0
+}
+extension Point: ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral {
+init(arrayLiteral elements: Double...) {
+ guard elements.count > 0 else { return }
+ self.x = elements[0]
+ guard elements.count > 1 else { return }
+ self.y = elements[1]
+}
+init(dictionaryLiteral elements: (String, Double)...) {
+ for (k, v) in elements {
+ if k == "x" { self.x = v }
+ else if k == "y" { self.y = v }
+ }
+}
+}
+var p: Point = [10.5, 20.5]
+print(p) // Point(x: 10.5, y: 20.5)
+p = ["x" : 11, "y" : 22]
+print(p) // Point(x: 11.0, y: 22.0)` 
+
+十四、模式匹配（Pattern）
+================
+
+1\. 基本概念
+--------
+
+> **什么是模式？**
+
+*   模式是用于匹配的规则，比如`switch的case、捕捉错误的catch、if\guard\while\for语句的条件`等
+
+Swift中的模式有
+
+*   通配符模式（Wildcard Pattern）
+*   标识符模式（Identifier Pattern）
+*   值绑定模式（Value-Binding Pattern）
+*   元组模式（Tuple Pattern）
+*   枚举Case模式（Enumeration Case Pattern）
+*   可选模式（Optional Pattern）
+*   类型转换模式（Type-Casting Pattern）
+*   表达式模式（Expression Pattern）
+
+2\. 通配符模式（Wildcard Pattern）
+---------------------------
+
+*   `_`匹配任何值
+*   `_?`匹配非`nil`值
+
+swift
+
+复制代码
+
+`enum Life {
+case human(name: String, age: Int?)
+case animal(name: String, age: Int?)
+}
+func check(_ life: Life) {
+switch life {
+case .human(let name, _):
+ print("human", name)
+case .animal(let name, _?):
+ print("animal", name)
+default:
+ print("other")
+}
+}
+check(.human(name: "Rose", age: 20)) // human Rose
+check(.human(name: "Jack", age: nil)) // human Jack
+check(.animal(name: "Dog", age: 5)) // animal Dog
+check(.animal(name: "Cat", age: nil)) // other` 
+
+2.标识符模式（Identifier Pattern）
+---------------------------
+
+给对应的变量、常量名赋值
+
+swift
+
+复制代码
+
+`var age = 10
+let name = "jack"` 
+
+3.值绑定模式（Value-Binding Pattern）
+------------------------------
+
+swift
+
+复制代码
+
+`let point = (3, 2)
+switch point {
+case let (x, y):
+print("The point is at ((x), (y).")
+}` 
+
+4.元组模式（Tuple Pattern）
+---------------------
+
+swift
+
+复制代码
+
+`let points = [(0, 0), (1, 0), (2, 0)]
+for (x, _) in points {
+print(x)
+}` 
+
+swift
+
+复制代码
+
+`let name: String? = "jack"
+let age = 18
+let info: Any = [1, 2]
+switch (name, age, info) {
+case (_?, _, _ as String):
+print("case")
+default:
+print("default")
+} // default` 
+
+swift
+
+复制代码
+
+`var scores = ["jack" : 98, "rose" : 100, "kate" : 86]
+for (name, score) in scores {
+print(name, score)
+}` 
+
+5\. 枚举Case模式（Enumeration Case Pattern）
+--------------------------------------
+
+*   `if case`语句等价于只有1个`case`的`switch`语句
+
+swift
+
+复制代码
+
+`let age = 2
+// 原来的写法
+if age >= 0 && age <= 9 {
+print("[0, 9]")
+}
+// 枚举Case模式
+if case 0...9 = age {
+print("[0, 9]")
+}
+guard case 0...9 = age else { return }
+print("[0, 9]")
+// 等同于switch case
+switch age {
+case 0...9: print("[0, 9]")
+default: break
+}` 
+
+swift
+
+复制代码
+
+`let ages: [Int?] = [2, 3, nil, 5]
+for case nil in ages {
+print("有nil值")
+break
+} // 有nil值` 
+
+swift
+
+复制代码
+
+`let points = [(1, 0), (2, 1), (3, 0)]
+for case let (x, 0) in points {
+print(x)
+} // 1 3` 
+
+6\. 可选模式（Optional Pattern）
+--------------------------
+
+swift
+
+复制代码
+
+`let age: Int? = 42
+if case .some(let x) = age { print(x) }
+if case let x? = age { print(x) }` 
+
+swift
+
+复制代码
+
+`let ages: [Int?] = [nil, 2, 3, nil, 5]
+for case let age? in ages {
+print(age)
+} // 2 3 5
+// 同上面效果等价
+let ages: [Int?] = [nil, 2, 3, nil, 5]
+for item in ages {
+if let age = item {
+ print(age)
+}
+}` 
+
+swift
+
+复制代码
+
+`func check(_ num: Int?) {
+switch num {
+case 2?: print("2")
+case 4?: print("4")
+case 6?: print("6")
+case _?: print("other")
+case _: print("nil")
+}
+}
+check(4) // 4
+check(8) // other
+check(nil) // nil` 
+
+7.类型转换模式（Type-Casting Pattern）
+------------------------------
+
+swift
+
+复制代码
+
+`let num: Any = 6
+switch num {
+case is Int:
+// 编译器依然认为num是Any类型
+print("is Int", num)
+//case let n as Int:
+//    print("as Int", n + 1)
+default:
+break
+}` 
+
+swift
+
+复制代码
+
+`class Animal {
+func eat() {
+ print(type(of: self), "eat")
+}
+}
+class Dog: Animal {
+func run() {
+ print(type(of: self), "run")
+}
+}
+class Cat: Animal {
+func jump() {
+ print(type(of: self), "jump")
+}
+}
+func check(_ animal: Animal) {
+switch animal {
+case let dog as Dog:
+ dog.eat()
+ dog.run()
+case is Cat:
+ animal.eat()
+default: break
+}
+}
+check(Dog()) // Dog eat, Dog run
+check(Cat()) // Cat eat` 
+
+8.表达式模式（Expression Pattern）
+---------------------------
+
+表达式模式用在`case`中
+
+swift
+
+复制代码
+
+`let point = (1, 2)
+switch point {
+case (0, 0):
+print("(0, 0) is at the origin.")
+case (-2...2, -2...2):
+print("((point.0), (point.1) is near the origin.")
+default:
+print("The point is at ((point.0), (point.1).")
+} // (1, 2) is near the origin.` 
+
+通过反汇编，我们可以看到其内部会调用`~=运算符`来计算`(-2...2, -2...2)`这个区间
+
+![-w714](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5e9c12335d5e4f01bac6820368e90f2b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
+
+9\. 自定义表达式模式
+------------
+
+可以通过重载运算符，自定义表达式模式的匹配规则
+
+swift
+
+复制代码
+
+`struct Student {
+var score = 0, name = ""
+// pattern：放的是case后面的值
+// value：放的是switch后面的值
+static func ~= (pattern: Int, value: Student) -> Bool {
+ value.score >= pattern
+}
+static func ~= (pattern: ClosedRange<Int>, value: Student) -> Bool {
+ pattern.contains(value.score)
+}
+static func ~= (pattern: Range<Int>, value: Student) -> Bool {
+ pattern.contains(value.score)
+}
+}
+var stu = Student(score: 75, name: "Jack")
+switch stu {
+case 100: print(">= 100")
+case 90: print(">= 90")
+case 80..<90: print("[80, 90]")
+case 60...79: print("[60, 79]")
+case 0: print(">= 0")
+default: break
+} // [60, 79]
+if case 60 = stu {
+print(">= 60")
+} // >= 60
+var info = (Student(score: 70, name: "Jack"), "及格")
+switch info {
+case let (60, text): print(text)
+default: break
+} // 及格` 
+
+swift
+
+复制代码
+
+`extension String {
+static func ~= (pattern: (String) -> Bool, value: String) -> Bool {
+ pattern(value)
+}
+}
+func hasPrefix(_ prefix: String) -> ((String) -> Bool) {
+{ $0.hasPrefix(prefix) }
+}
+func hasSuffix(_ suffix: String) -> ((String) -> Bool) {
+{ $0.hasSuffix(suffix) }
+}
+var str = "jack"
+switch str {
+case hasPrefix("j"), hasSuffix("k"):
+print("以j开头，以k结尾")
+default: break
+} // 以j开头，以k结尾` 
+
+swift
+
+复制代码
+
+`func isEven(_ i: Int) -> Bool { i % 2 == 0 }
+func isOdd(_ i: Int) -> Bool { i % 2 != 0 }
+extension Int {
+static func ~= (pattern: (Int) -> Bool, value: Int) -> Bool {
+ pattern(value)
+}
+}
+var age = 9
+switch age {
+case isEven: print("偶数")
+case isOdd: print("奇数")
+default: print("其他")
+}` 
+
+swift
+
+复制代码
+
+`extension Int {
+static func ~= (pattern: (Int) -> Bool, value: Int) -> Bool {
+ pattern(value)
+}
+}
+prefix operator ~>
+prefix operator ~>=
+prefix operator ~<
+prefix operator ~<=
+prefix func ~> (_ i: Int) -> ((Int) -> Bool) {{ $0 > i }}
+prefix func ~>= (_ i: Int) -> ((Int) -> Bool) {{ $0 >= i }}
+prefix func ~< (_ i: Int) -> ((Int) -> Bool) {{ $0 < i }}
+prefix func ~<= (_ i: Int) -> ((Int) -> Bool) {{ $0 <= i }}
+var age = 9
+switch age {
+case ~>=0: print("1")
+case ~>10: print("2")
+default: break
+} // 1` 
+
+10\. where
+----------
+
+可以使用`where`为模式匹配增加匹配条件
+
+swift
+
+复制代码
+
+`var data = (10, "Jack")
+switch data {
+case let (age, _) where age > 10:
+print(data.1, "age>10")
+case let (age, _) where age > 0:
+print(data.1, "age>0")
+default:
+break
+}` 
+
+swift
+
+复制代码
+
+`var ages = [10, 20, 44, 23, 55]
+for age in ages where age > 30 {
+print(age)
+} // 44 55` 
+
+swift
+
+复制代码
+
+`protocol Stackable {
+associatedtype Element
+}
+protocol Container {
+associatedtype Stack: Stackable where Stack.Element: Equatable
+}
+func equal<S1: Stackable, S2: Stackable>(_ s1: S1, _ s2: S2) -> Bool where S1.Element == S2.Element, S1.Element : Hashable { false }` 
+
+swift
+
+复制代码
+
+`extension Container where Self.Stack.Element: Hashable { }` 
 
 专题系列文章
 ======
 
-### 1.前知识
+1\. 前知识
+-------
 
 *   **[01-探究iOS底层原理|综述](https://juejin.cn/post/7089043618803122183/ "https://juejin.cn/post/7089043618803122183/")**
 *   **[02-探究iOS底层原理|编译器LLVM项目【Clang、SwiftC、优化器、LLVM】](https://juejin.cn/post/7093842449998561316/ "https://juejin.cn/post/7093842449998561316/")**
 *   **[03-探究iOS底层原理|LLDB](https://juejin.cn/post/7095079758844674056 "https://juejin.cn/post/7095079758844674056")**
 *   **[04-探究iOS底层原理|ARM64汇编](https://juejin.cn/post/7115302848270696485/ "https://juejin.cn/post/7115302848270696485/")**
 
-### 2\. 基于OC语言探索iOS底层原理
+2\. 基于OC语言探索iOS底层原理
+-------------------
 
 *   **[05-探究iOS底层原理|OC的本质](https://juejin.cn/post/7094409219361193997/ "https://juejin.cn/post/7094409219361193997/")**
 *   **[06-探究iOS底层原理|OC对象的本质](https://juejin.cn/post/7094503681684406302 "https://juejin.cn/post/7094503681684406302")**
@@ -3522,48 +4122,57 @@ Swift在编码安全方面煞费苦心，为了保证初始化过程的安全，
 *   **[22-探究iOS底层原理|多线程技术【原子锁atomic、gcd Timer、NSTimer、CADisplayLink】](https://juejin.cn/post/7116907029465137165 "https://juejin.cn/post/7116907029465137165")**
 *   **[23-探究iOS底层原理|内存管理【Mach-O文件、Tagged Pointer、对象的内存管理、copy、引用计数、weak指针、autorelease](https://juejin.cn/post/7117274106940096520 "https://juejin.cn/post/7117274106940096520")**
 
-### 3\. 基于Swift语言探索iOS底层原理
+3\. 基于Swift语言探索iOS底层原理
+----------------------
 
 关于`函数`、`枚举`、`可选项`、`结构体`、`类`、`闭包`、`属性`、`方法`、`swift多态原理`、`String`、`Array`、`Dictionary`、`引用计数`、`MetaData`等Swift基本语法和相关的底层原理文章有如下几篇:
 
-*   [Swift5核心语法1-基础语法](https://juejin.cn/post/7119020967430455327 "https://juejin.cn/post/7119020967430455327")
-*   [Swift5核心语法2-面向对象语法1](https://juejin.cn/post/7119510159109390343 "https://juejin.cn/post/7119510159109390343")
-*   [Swift5核心语法2-面向对象语法2](https://juejin.cn/post/7119513630550261774 "https://juejin.cn/post/7119513630550261774")
-*   [Swift5常用核心语法3-其它常用语法](https://juejin.cn/post/7119714488181325860 "https://juejin.cn/post/7119714488181325860")
-*   [Swift5应用实践常用技术点](https://juejin.cn/post/7119722433589805064 "https://juejin.cn/post/7119722433589805064")
+*   **[01-📝Swift5常用核心语法|了解Swift【Swift简介、Swift的版本、Swift编译原理】](https://juejin.cn/spost/7119020967430455327 "https://juejin.cn/spost/7119020967430455327")**
+*   **[02-📝Swift5常用核心语法|基础语法【Playground、常量与变量、常见数据类型、字面量、元组、流程控制、函数、枚举、可选项、guard语句、区间】](https://juejin.cn/spost/7119510159109390343 "https://juejin.cn/spost/7119510159109390343")**
+*   **[03-📝Swift5常用核心语法|面向对象【闭包、结构体、类、枚举】](https://juejin.cn/spost/7119513630550261774 "https://juejin.cn/spost/7119513630550261774")**
+*   **[04-📝Swift5常用核心语法|面向对象【属性、inout、类型属性、单例模式、方法、下标、继承、初始化】](https://juejin.cn/spost/7119714488181325860 "https://juejin.cn/spost/7119714488181325860")**
+*   **[05-📝Swift5常用核心语法|高级语法【可选链、协议、错误处理、泛型、String与Array、高级运算符、扩展、访问控制、内存管理、字面量、模式匹配】](https://juejin.cn/spost/7119722433589805064 "https://juejin.cn/spost/7119722433589805064")**
+*   **[06-📝Swift5常用核心语法|编程范式与Swift源码【从OC到Swift、函数式编程、面向协议编程、响应式编程、Swift源码分析】](https://juejin.cn/spost/7253350009289424933 "https://juejin.cn/spost/7253350009289424933")**
 
 其它底层原理专题
 ========
 
-### 1.底层原理相关专题
+1\. 底层原理相关专题
+------------
 
-*   [01-计算机原理|计算机图形渲染原理这篇文章](https://juejin.cn/post/7018755998823219213 "https://juejin.cn/post/7018755998823219213")
-*   [02-计算机原理|移动终端屏幕成像与卡顿 ](https://juejin.cn/post/7019117942377807908 "https://juejin.cn/post/7019117942377807908")
+*   **[01-计算机原理|计算机图形渲染原理这篇文章](https://juejin.cn/post/7018755998823219213 "https://juejin.cn/post/7018755998823219213")**
+*   **[02-计算机原理|移动终端屏幕成像与卡顿 ](https://juejin.cn/post/7019117942377807908 "https://juejin.cn/post/7019117942377807908")**
 
-### 2.iOS相关专题
+2\. iOS相关专题
+-----------
 
-*   [01-iOS底层原理|iOS的各个渲染框架以及iOS图层渲染原理](https://juejin.cn/post/7019193784806146079 "https://juejin.cn/post/7019193784806146079")
-*   [02-iOS底层原理|iOS动画渲染原理](https://juejin.cn/post/7019200157119938590 "https://juejin.cn/post/7019200157119938590")
-*   [03-iOS底层原理|iOS OffScreen Rendering 离屏渲染原理](https://juejin.cn/post/7019497906650497061/ "https://juejin.cn/post/7019497906650497061/")
-*   [04-iOS底层原理|因CPU、GPU资源消耗导致卡顿的原因和解决方案](https://juejin.cn/post/7020613901033144351 "https://juejin.cn/post/7020613901033144351")
+*   **[01-iOS底层原理|iOS的各个渲染框架以及iOS图层渲染原理](https://juejin.cn/post/7019193784806146079 "https://juejin.cn/post/7019193784806146079")**
+*   **[02-iOS底层原理|iOS动画渲染原理](https://juejin.cn/post/7019200157119938590 "https://juejin.cn/post/7019200157119938590")**
+*   **[03-iOS底层原理|iOS OffScreen Rendering 离屏渲染原理](https://juejin.cn/post/7019497906650497061/ "https://juejin.cn/post/7019497906650497061/")**
+*   **[04-iOS底层原理|因CPU、GPU资源消耗导致卡顿的原因和解决方案](https://juejin.cn/post/7020613901033144351 "https://juejin.cn/post/7020613901033144351")**
 
-### 3.webApp相关专题
+3\. webApp相关专题
+--------------
 
-*   [01-Web和类RN大前端的渲染原理](https://juejin.cn/post/7021035020445810718/ "https://juejin.cn/post/7021035020445810718/")
+*   **[01-Web和类RN大前端的渲染原理](https://juejin.cn/post/7021035020445810718/ "https://juejin.cn/post/7021035020445810718/")**
 
-### 4.跨平台开发方案相关专题
+4\. 跨平台开发方案相关专题
+---------------
 
-*   [01-Flutter页面渲染原理](https://juejin.cn/post/7021057396147486750/ "https://juejin.cn/post/7021057396147486750/")
+*   **[01-Flutter页面渲染原理](https://juejin.cn/post/7021057396147486750/ "https://juejin.cn/post/7021057396147486750/")**
 
-### 5.阶段性总结:Native、WebApp、跨平台开发三种方案性能比较
+5\. 阶段性总结:Native、WebApp、跨平台开发三种方案性能比较
+-------------------------------------
 
-*   [01-Native、WebApp、跨平台开发三种方案性能比较](https://juejin.cn/post/7021071990723182606/ "https://juejin.cn/post/7021071990723182606/")
+*   **[01-Native、WebApp、跨平台开发三种方案性能比较](https://juejin.cn/post/7021071990723182606/ "https://juejin.cn/post/7021071990723182606/")**
 
-### 6.Android、HarmonyOS页面渲染专题
+6\. Android、HarmonyOS页面渲染专题
+---------------------------
 
-*   [01-Android页面渲染原理](https://juejin.cn/post/7021840737431978020/ "https://juejin.cn/post/7021840737431978020/")
-*   [02-HarmonyOS页面渲染原理](# "#") (`待输出`)
+*   **[01-Android页面渲染原理](https://juejin.cn/post/7021840737431978020/ "https://juejin.cn/post/7021840737431978020/")**
+*   **[02-HarmonyOS页面渲染原理](# "#") (`待输出`)**
 
-### 7.小程序页面渲染专题
+7\. 小程序页面渲染专题
+-------------
 
-*   [01-小程序框架渲染原理](https://juejin.cn/post/7021414123346853919 "https://juejin.cn/post/7021414123346853919")
+*   **[01-小程序框架渲染原理](https://juejin.cn/post/7021414123346853919 "https://juejin.cn/post/7021414123346853919")**
