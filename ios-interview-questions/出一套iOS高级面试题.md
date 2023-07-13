@@ -123,8 +123,8 @@
 arduino
 
 复制代码
-
-`struct category_t {
+```
+struct category_t {
  const char *name; //名字
  classref_t cls; //类的引用
  struct method_list_t *instanceMethods;//实例方法列表
@@ -133,7 +133,8 @@ arduino
  struct property_list_t *instanceProperties;//实例属性列表
  // 此属性不一定真正的存在
  struct property_list_t *_classProperties;//类属性列表
-};` 
+};
+```
 
 ### 2.讲一下atomic的实现机制；为什么不能保证绝对的线程安全（最好可以结合场景来说）？
 
