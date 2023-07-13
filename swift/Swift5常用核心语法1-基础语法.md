@@ -1891,7 +1891,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 ```
     
 *   4.  当使用`guard语句`进行可选项绑定时，绑定的`常量（let）、变量（var）`也能在外层作用域中使用
-    
+```     
         func login(_ info: [String : String]) {
                 guard let username = info["username"] else {
                         print("请输入用户名")
@@ -1910,10 +1910,10 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         login(["username" : "jack", "password" : "123456"]) // 用户名：jack 密码：123456 登陆ing 
         login(["password" : "123456"]) // 请输入密码 
         login(["username" : "jack"]) // 请输入用户名
-        复制代码
+``` 
     
     *   在没有`guard`语句之前,用if-else条件分支语句代码如下(比对):
-    
+```     
         func login(_ info: [String : String]) { 
             let username: String
             if let tmp = info["username"] {
@@ -1937,7 +1937,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         login(["username" : "jack", "password" : "123456"]) // 用户名：jack 密码：123456 登陆ing 
         login(["password" : "123456"]) // 请输入密码 
         login(["username" : "jack"]) // 请输入用户名
-        复制代码
+``` 
     
 
 ### 12.5 隐式解包（Implicitly Unwrapped Optional）
@@ -1945,7 +1945,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 *   1.  在某些情况下，可选项一旦被设定值之后，就会一直拥有值
 *   2.  在这种情况下，可以去掉检查，也不必每次访问的时候都进行解包，因为他能确定每次访问的时候都有值
 *   3.  可以在类型后面加个感叹号`!`定义一个隐式解包的可选项
-    
+```     
         let num1: Int! = 10
         let num2: Int = num1
         
@@ -1956,7 +1956,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         if let num3 = num1 {
             print(num3)
         }
-        复制代码
+``` 
     
 
 如果对空值的可选项进行隐式解包，也会报错: ![-w687](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6f4c0ffe2df948bd931cbbde5d9828fc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
@@ -1970,31 +1970,31 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 
 *   1.  可选项在字符串插值或者直接打印时，编译器会发出警告 ![-w708](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5fe6df8f0c1e47dca77116ea8eba93aa~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 *   2.  至少有三种方法消除警告
-    
+```     
         var age: Int? = 10
         
         print("My age is \(age!)") // My age is 10
         print("My age is \(String(describing: age))") // My age is Optional(10)
         print("My age is \(age ?? 0)") // My age is 10
-        复制代码
+``` 
     
 
 ### 12.7 多重可选项
 
 *   1.  看下面几个可选类型，可以用以下图片来解析
-    
+```     
         var num1: Int? = 10
         var num2: Int?? = num1
         var num3: Int?? = 10 
         
         print(num2 == num3) // true
-        复制代码
+``` 
     
     ![-w787](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c8d7cd77721747a595d8d6d7ddfeaed4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
     
 *   2.  可使用`lldb`指令`frame variable -R`或者`fr v -R`查看区别 ![-w1124](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/543a56b813164199980919899a2adbb6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 *   3.  看下面几个可选类型，可以用以下图片来解析
-    
+``` 
         var num1: Int? = nil
         var num2: Int?? = num1
         var num3: Int?? = nil
@@ -2004,7 +2004,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         
         (num2 ?? 1) ?? 2 // 2
         (num3 ?? 1) ?? 2 // 1
-        复制代码
+``` 
     
 
 ![-w784](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f1a5e933b9b245b2a641a9ef21cb13b9~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
@@ -2024,7 +2024,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             (参数列表) -> 返回值类型 in
             函数体代码
         }
-        复制代码
+``` 
     
         var fn = {
             (v1: Int, v2: Int) -> Int in
@@ -2036,22 +2036,22 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             (v1: Int, v2: Int) -> Int in
             return v1 + v2
         }(10, 20)
-        复制代码
+``` 
     
 *   3.  闭包表达式的简写如下:
     
     *   case1
-    
+```     
         var fn = {
             (v1: Int, v2: Int) -> Int in
             return v1 + v2
         }
         
         var fn: (Int, Int) -> Int = { $0 + $1 }
-        复制代码
+``` 
     
     *   case2
-    
+```     
         func exec(v1: Int, v2: Int, fn: (Int, Int) -> Int) {
             print(fn(v1, v2))
         }
@@ -2083,14 +2083,14 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         exec(v1: 10, v2: 20, fn: { $0 + $1 })
         
         exec(v1: 10, v2: 20, fn: +)
-        复制代码
+``` 
     
 
 ### 13.2 尾随闭包
 
 *   1.  如果将一个**很长的闭包表达式**作为`函数的最后一个实参`，使用尾随闭包可以增强函数的可读性
 *   2.  尾随闭包是一个被书写在函数调用括号外面（后面）的闭包表达式
-    
+``` 
         func exec(v1: Int, v2: Int, fn: (Int, Int) -> Int) {
             print(fn(v1, v2))
         }
@@ -2098,10 +2098,10 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         exec(v1: 10, v2: 20) {
             $0 + $1
         }
-        复制代码
+``` 
     
 *   3.  如果闭包表达式是函数的唯一实参，而且使用了尾随闭包的语法，那就不需要在函数名后边写圆括号
-    
+``` 
         func exec(fn: (Int, Int) -> Int) {
             print(fn(1, 2))
         }
@@ -2110,11 +2110,11 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         exec() { $0 + $1 }
         exec { $0 + $1 }
         exec { _, _ in 10 }
-        复制代码
+``` 
     
 
 > **Swift中的`sort函数`用来排序的，使用的就是闭包的写法** ![-w449](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f9ca96482e64b23a2070103d27e0864~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) ![-w597](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c14249c8cbee44eabecb4d75ac969fbc~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
-
+``` 
     var nums = [11, 2, 18, 6, 5, 68, 45]
     
     //1.
@@ -2148,7 +2148,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
      
     //10.
     print(nums) // [2, 5, 6, 11, 18, 45, 68]
-    复制代码
+``` 
 
 ### 13.3 闭包的定义（Closure）
 
@@ -2159,7 +2159,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     *   一般指定义在函数内部的函数
     *   一般它捕获的是外层函数的局部变量\\常量
     *   全局变量,全局都可以访问,内存只有一份,且只要程序不停止运行,其内存就不会回收
-    
+``` 
         typealias Fn = (Int) -> Int
         
         func getFn() -> Fn {
@@ -2170,7 +2170,6 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             }
             return plus
         }
-        复制代码
     
         func getFn() -> Fn {
             var num = 0
@@ -2179,7 +2178,6 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
                 return num
             }
         }
-        复制代码
     
          var fn1 = getFn()
          var fn2 = getFn() 
@@ -2189,12 +2187,11 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
          fn1(3) // 4 
          fn2(4) // 6
          fn1(5) // 9 
-         fn2(6) // 12
-        复制代码
+``` 
     
 
 > **通过汇编分析闭包的实现** 看下面示例代码，分别打印为多少
-
+``` 
     func getFn() -> Fn {
         var num = 0
         func plus(_ i: Int) -> Int {
@@ -2210,7 +2207,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     print(fn(2)) // 3
     print(fn(3)) // 6
     print(fn(4)) // 10
-    复制代码
+``` 
 
 我们通过反汇编来观察: ![-w1012](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6738fd229b74dda8a490a4af0749cb6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) 通过这句调用可以看出:
 
@@ -2256,7 +2253,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 *   组成闭包的函数就是类内部定义的方法
 
 类似如下示例
-
+``` 
     class Closure {
         var num = 0
         
@@ -2271,7 +2268,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     cs.plus(2)
     cs.plus(3)
     cs.plus(4)
-    复制代码
+``` 
 
 而且通过反汇编也能看出类和闭包的共同之处:
 
@@ -2280,7 +2277,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 > **再看下面的示例**
 
 如果把num变成全局变量呢，还会不会分配堆内存
-
+``` 
     typealias Fn = (Int) -> Int
     
     var num = 0
@@ -2300,14 +2297,14 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     print(fn(2)) // 3
     print(fn(3)) // 6
     print(fn(4)) // 10
-    复制代码
+``` 
 
 我们通过反汇编可以看到，系统不再分配堆内存空间了
 
 ![-w717](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d6a93827e65740c592f1a633795568cb~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
 > **注意:** 如果返回值是函数类型，那么参数的修饰要保持统一
-
+``` 
     func add(_ num: Int) -> (inout Int) -> Void {
         func plus(v: inout Int) {
             v += num
@@ -2320,14 +2317,14 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     add(20)(&num)
     
     print(num)
-    复制代码
+``` 
 
 ### 13.4 自动闭包
 
 我们先看下面的示例代码
 
 如果调用`getFirstPositive`并传入两个参数，第一个参数符合条件，但是还需要调用`plus`来得到第二个参数，这种设计相比就稍许有些浪费了
-
+``` 
     // 如果第1个数大于0，返回第一个数。否则返回第2个数
     func getFirstPositive(_ v1: Int, _ v2: Int) -> Int {
         v1 > 0 ? v1 : v2
@@ -2353,7 +2350,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     }
     
     getFirstPositive(10, { plus(2, 4)} )
-    复制代码
+``` 
 
 这样确定能够满足条件避免多余的调用，但是可读性就会差一些
 
@@ -2361,7 +2358,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 
 *   1.  `@autoclosure`会将传进来的类型包装成闭包表达式，这是编译器特性
 *   2.  `@autoclosure`只支持`() -> T`格式的参数
-    
+``` 
         func getFirstPositive(_ v1: Int, _ v2: @autoclosure () -> Int) -> Int {
             v1 > 0 ? v1 : v2()
         }
@@ -2372,19 +2369,19 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         }
         
         getFirstPositive(10, plus(2, 4))
-        复制代码
+``` 
     
 *   3.  `@autoclosure`并非只支持最后一个参数
-    
+```   
         func getFirstPositive(_ v1: Int, _ v2: @autoclosure () -> Int, _ v3: Int) -> Int 
         {
             v1 > 0 ? v1 : v2()
         }
-        复制代码
+``` 
     
 *   4.  `空合并运算符??`中就使用了`@autoclosure`来将`??`后面的参数进行了包装 ![-w860](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bd984c9d6f3643dab1b92ab556f30183~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 *   5.  有`@autoclosure`和无`@autoclosure`会构成函数重载，不会报错
-    
+``` 
         func getFirstPositive(_ v1: Int, _ v2: () -> Int) -> Int {
             v1 > 0 ? v1 : v2()
         }
@@ -2392,7 +2389,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         func getFirstPositive(_ v1: Int, _ v2: @autoclosure () -> Int) -> Int {
             v1 > 0 ? v1 : v2()
         }
-        复制代码
+``` 
     
 
 **注意：为了避免与期望冲突，使用了`@autoclosure`的地方最好明确注释清楚：这个值会被推迟执行**
@@ -2400,12 +2397,12 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 ### 13.5 通过汇编进行底层分析
 
 **1.分析下面这个函数的内存布局**
-
+``` 
     func sum(_ v1: Int, _ v2: Int) -> Int { v1 + v2 }
     
     var fn = sum
     print(MemoryLayout.stride(ofValue: fn)) // 16
-    复制代码
+``` 
 
 反汇编之后 ![-w717](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a4ba5da513114259b612ace0f69a5aed~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp) 可以看到:
 
@@ -2415,7 +2412,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 两个地址相差8个字节，所以是连续的，都表示fn的前后8个字节的地址值
 
 **2.分析下面这个函数的内存布局**
-
+``` 
     typealias Fn = (Int) -> Int
     
     func getFn() -> Fn {
@@ -2430,7 +2427,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     var fn = getFn()
     
     print(Mems.size(ofVal: &fn)) // 16
-    复制代码
+``` 
 
 反汇编之后 ![-w716](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a378d1df3a52495fb11f4faeb14dd569~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
@@ -2451,12 +2448,12 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 等同于将`plus函数`赋值给fn
 
     var fn = plus()
-    复制代码
+
 
 **3.分析下面这个函数的内存布局**
 
 我们将上面示例里的`plus函数`内部对num进行捕获，看看其内存布局有什么变化
-
+``` 
     typealias Fn = (Int) -> Int
     
     func getFn() -> Fn {
@@ -2476,7 +2473,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     fn(3)
     
     print(Mems.size(ofVal: &fn)) // 16
-    复制代码
+``` 
 
 反汇编之后
 
@@ -2543,7 +2540,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 **4.分析下面这个函数的内存布局**
 
 我们来看下面这个闭包里的变量会被捕获几次
-
+``` 
     typealias Fn = (Int) -> (Int, Int)
     
     func getFns() -> (Fn, Fn) {
@@ -2570,7 +2567,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     print(m(5)) // 1, 2
     print(p(4)) // 5, 10
     print(m(3)) // 2, 4
-    复制代码
+ ``` 
 
 反汇编之后
 
@@ -2677,13 +2674,14 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 
     //实例
     //创建了一个空的字符串数组，然后通过isEmpty来判断数组是否为空，再通过append来添加新的元素到数组中。
+    ``` 
     var animalArray = [String]()
     if animalArray.isEmpty {
         print("数组animalArray是空的 ")
     }
     animalArray.append("tiger")
     animalArray.append("lion")
-    复制代码
+    ``` 
 
 #### 3.2 数组初始化
 
