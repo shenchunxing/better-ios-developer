@@ -1707,10 +1707,10 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 
 *   1.  可选项，一般也叫可选类型，它允许将值设置为`nil`
 *   2.  在类型名称后面加个`问号` `?`来定义一个可选项
+
      ```
         var name: String? = nil
      ```
-        复制代码
     
 *   3.  如果可选类型定义的时候没有给定值，默认值就是`nil`
     ```
@@ -1718,14 +1718,12 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         
         等价于
         var age: Int? = nil
-        ```
-        复制代码
+    ```
     
 *   4.  如果可选类型定义的时候赋值了，那么就是一个`Optional类型`的值
     ```
         var name: String? = "Jack" // Optional(Jack)
-        ```
-        复制代码
+    ```
     
 *   5.  可选类型也`可以作为函数返回值`使用
     ```
@@ -1736,8 +1734,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             } 
             return array[index]
         }
-        ```
-        复制代码
+    ```
     
 
 ### 12.1 强制解包（Forced Unwrapping）
@@ -1750,8 +1747,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         var age: Int?
         age = 10
         age = nil
-        ```
-        复制代码
+    ```
     
     *   可选关系的类型大致如下图: ![-w606](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bbb2195a00c4cf190a113afb28a8a07~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 *   3.  如果要从可选项中取出被包装的数据（将盒子里装的东西取出来），需要使用`感叹号` `!`进行强制解包
@@ -1759,26 +1755,25 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
         var age: Int? = 10
         var ageInt = age!
         ageInt += 10 // ageInt为Int类型
-        ```
-        复制代码
+    ```
     
 *   4.  如果对值为`nil`的可选项（空盒子）进行强制解包，将会产生运行时错误 ![-w668](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6b492766979492a9eb881d23be02d29~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
 ### 12.2 可选项绑定（Optional Binding）
 
 *   1.  我们可以判断可选项是否包含值
-    
+    ```
         let number = Int("123") // number为Int?
         
         if number != nil {
             print(number!)
         }
-        复制代码
+    ```
     
 *   2.  还可以使用`可选项绑定`来判断可选项是否包含值
     
     *   如果包含就`自动解包`，把值赋给一个`临时的常量（let）或者变量（var）`，并返回`true`，否则返回`false`
-    
+     ```
         if let number = Int("123") {
              print("字符串转换整数成功：(number)")
              // number是强制解包之后的Int值
@@ -1787,10 +1782,10 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             print("字符串转换整数失败")
         }
         // 字符串转换整数成功：123
-        复制代码
+      ```
     
 *   3.  如果判断条件有多个，可以合并在一起，用逗号`,`来分隔开
-    
+     ```
         if let first = Int("4") {
             if let second = Int("42") {
                 if first < second && second < 100 {
@@ -1806,10 +1801,10 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             first < second && second < 100 {
                 print("(first) < (second) < 100")
         }
-        复制代码
+      ``` 
     
 *   4.  `while循环`中使用可选项绑定
-    
+    ```
         let strs = ["10", "20", "abc", "-20", "30"]
         
         var index = 0
@@ -1818,7 +1813,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             sum += num
             index += 1
         }
-        复制代码
+     ```
     
 
 ### 12.3 空合并运算符（Nil-Coalescing Operator）
@@ -1839,7 +1834,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     *   如果`a`为`nil`，就返回`b`
 
 > **结果的类型取决于`??`后面的值类型是什么**
-
+```
     let a: Int? = 1
     let b: Int = 2
     let c = a ?? b // c是Int , 1 
@@ -1847,10 +1842,10 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     let a: Int? = nil
     let b: Int = 2
     let c = a ?? b // c是Int , 2
-    复制代码
+```
 
 > **多个`??`一起使用**
-
+```
     let a: Int? = 1
     let b: Int? = 2
     let c = a ?? b ?? 3 
@@ -1858,18 +1853,18 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
     let a: Int? = nil
     let b: Int? = 2
     let c = a ?? b ?? 3
-    复制代码
-
+```
+```
     var a: Int??? = 10
     var b: Int = 20
     var c: Int? = 30
     
     print(a ?? b) // Optional(Optional(10))
     print(a ?? c) // Optional(Optional(10))
-    复制代码
+```
 
 > **`??`和`if let`配合使用**
-
+```
     let a: Int? = nil
     let b: Int? = 2
     if let c = a ?? b {
@@ -1880,20 +1875,20 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
        print(c)
        print(d)
     }// 类似于if a != nil && b != nil
-    复制代码
+```
 
 ### 12.4 guard语句
 
 *   1.  当`guard语句`的条件为`false`时，就会执行大括号里面的代码
 *   2.  当`guard语句`的条件为`true`时，就会跳过`guard语句`
 *   3.  `guard语句`适合用来“提前退出”
-    
+```   
         guard 条件 else {
             // do something....
             退出当前作用域
             // return、break、continue、throw error
         }
-        复制代码
+```
     
 *   4.  当使用`guard语句`进行可选项绑定时，绑定的`常量（let）、变量（var）`也能在外层作用域中使用
     
