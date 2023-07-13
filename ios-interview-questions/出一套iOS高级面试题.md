@@ -98,11 +98,11 @@ arduino
 ```
 struct category_t {
  const char *name; //名字
- classref_t cls; //类的引用
- struct method_list_t *instanceMethods;//实例方法列表
+ classref_t cls; //类的引用，类信息都存储在里面
+ struct method_list_t *instanceMethods;//对象方法列表
  struct method_list_t *classMethods;//类方法列表
  struct protocol_list_t *protocols;//协议列表
- struct property_list_t *instanceProperties;//实例属性列表
+ struct property_list_t *instanceProperties;//实例属性列表（分类里面可以添加属性，只不过该属性只有setter和getter的方法声明，且没有实例变量生成）
  // 此属性不一定真正的存在
  struct property_list_t *_classProperties;//类属性列表
 };
@@ -124,17 +124,16 @@ struct category_t {
 2.  weak是如何实现的？  
     runTime会把对weak修饰的对象放到一个全局的哈希表中，用weak修饰的对象的内存地址为key，weak指针为值，在对象进行销毁时，用通过自身地址去哈希表中查找到所有指向此对象的weak指针，并把所有的weak指针置位nil
     
-3.  sideTable的结构
-    
-
-arduino
-
+3.  sideTable的结构(注意：该结构并不是直接存储在对象的内存中，而是存储在运行时系统中，由运行时系统维护)
 复制代码
 ```
 struct SideTable {
- spinlock_t slock;//操作SideTable时用到的锁
- RefcountMap refcnts;//引用计数器的值
- weak_table_t weak_table;//存放weak指针的哈希表
+    <!-- 自旋锁，确保线程安全 -->
+ spinlock_t slock;
+ <!-- 引用计数映射表（RefcountMap），用于记录对象的引用计数。每个对象都有一个对应的引用计数，用于跟踪对象在内存中的引用情况，以便在不再需要时进行释放 -->
+ RefcountMap refcnts;
+ <!-- 弱引用表（weak_table_t），用于管理对象的弱引用。 -->
+ weak_table_t weak_table;
 };
 ```
 

@@ -1707,25 +1707,28 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 
 *   1.  可选项，一般也叫可选类型，它允许将值设置为`nil`
 *   2.  在类型名称后面加个`问号` `?`来定义一个可选项
-    
+     ```
         var name: String? = nil
+     ```
         复制代码
     
 *   3.  如果可选类型定义的时候没有给定值，默认值就是`nil`
-    
+    ```
         var age: Int?
         
         等价于
         var age: Int? = nil
+        ```
         复制代码
     
 *   4.  如果可选类型定义的时候赋值了，那么就是一个`Optional类型`的值
-    
+    ```
         var name: String? = "Jack" // Optional(Jack)
+        ```
         复制代码
     
 *   5.  可选类型也`可以作为函数返回值`使用
-    
+    ```
         var array = [1, 2, 3, 4] 
         func get(_ index: Int) -> Int? {
             if index < 0 || index >= array.count {
@@ -1733,6 +1736,7 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
             } 
             return array[index]
         }
+        ```
         复制代码
     
 
@@ -1742,18 +1746,20 @@ Swift里的`if else`后面的条件是可以省略小括号的，但大括号不
 
 *   1.  如果为`nil`，那么它就是个空盒子
 *   2.  如果不为`nil`，那么盒子里装的是：**被包装类型的数据**
-    
+    ```
         var age: Int?
         age = 10
         age = nil
+        ```
         复制代码
     
     *   可选关系的类型大致如下图: ![-w606](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bbb2195a00c4cf190a113afb28a8a07~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 *   3.  如果要从可选项中取出被包装的数据（将盒子里装的东西取出来），需要使用`感叹号` `!`进行强制解包
-    
+    ```
         var age: Int? = 10
         var ageInt = age!
         ageInt += 10 // ageInt为Int类型
+        ```
         复制代码
     
 *   4.  如果对值为`nil`的可选项（空盒子）进行强制解包，将会产生运行时错误 ![-w668](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e6b492766979492a9eb881d23be02d29~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
