@@ -35,6 +35,7 @@
 
 ## 小码哥Swift课程总结
  - [闭包](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/闭包.md) 
+ - [结构体、类、枚举](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/结构体、类、枚举.md)
 
 
 ## iOS面试题
