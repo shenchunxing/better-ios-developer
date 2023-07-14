@@ -35,9 +35,10 @@
 
 ## 小码哥Swift课程总结
  - [Swift简介、Swift编译原理、基础语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift简介、Swift编译原理、基础语法.md) 
- - [函数、可选项、集合类型](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/函数、可选项、集合类型.md) 
+ - [函数、枚举、可选项、集合](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/函数、枚举、可选项、集合.md) 
  - [闭包](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/闭包.md) 
- - [结构体、类、枚举](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/结构体、类、枚举.md)
+ - [结构体、类](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/结构体、类.md)
+ - [属性、inout、方法、下标、继承、多态、初始化](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/属性、inout、方法、下标、继承、多态、初始化.md)
  - [可选链、协议、错误处理、泛型](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/可选链、协议、错误处理、泛型.md)
  - [Strin与Array的底层分析、高级运算符、扩展Extension](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Strin与Array的底层分析、高级运算符、扩展Extension.md)
  - [访问控制、内存管理、指针](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/访问控制、内存管理、指针.md)
