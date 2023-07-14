@@ -34,9 +34,16 @@
  - [Swift5应用实践常用技术点](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5应用实践常用技术点.md) 
 
 ## 小码哥Swift课程总结
+ - [Swift简介、Swift编译原理、基础语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift简介、Swift编译原理、基础语法.md) 
+ - [函数、可选项、集合类型](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/函数、可选项、集合类型.md) 
  - [闭包](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/闭包.md) 
  - [结构体、类、枚举](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/结构体、类、枚举.md)
-
+ - [可选链、协议、错误处理、泛型](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/可选链、协议、错误处理、泛型.md)
+ - [Strin与Array的底层分析、高级运算符、扩展Extension](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Strin与Array的底层分析、高级运算符、扩展Extension.md)
+ - [访问控制、内存管理、指针](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/访问控制、内存管理、指针.md)
+ - [字面量、模式匹配](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/字面量、模式匹配.md)
+ - [从OC到Swift、函数式编程](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/从OC到Swift、函数式编程.md)
+ - [面向协议编程、响应式编程、Swift源码分析](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/面向协议编程、响应式编程、Swift源码分析.md)
 
 ## iOS面试题
  - [出一套iOS高级面试题](https://github.com/shenchunxing/better-ios-developer/blob/master/ios-interview-questions/出一套iOS高级面试题.md) 
