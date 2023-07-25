@@ -26,6 +26,9 @@
   - [原子锁atomic、gcdTimer、NSTimer、CADisplayLink](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/原子锁atomic、gcdTimer、NSTimer、CADisplayLink.md) 
   - [Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/Mach-O文件、TaggedPointer、对象的内存管理、copy、引用计数、weak指针、autorelease.md) 
 
+## C语言
+ - [C语言一些tips](https://github.com/shenchunxing/better-ios-developer/blob/master/C语言/tips.md) 
+
 ## Swift
  - [Swift5常用核心语法1-基础语法](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法1-基础语法.md)  
  - [Swift5常用核心语法2-面向对象语法1](https://github.com/shenchunxing/better-ios-developer/blob/master/swift/Swift5常用核心语法2-面向对象语法1.md) 
