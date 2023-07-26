@@ -90,6 +90,8 @@
  * [抖音品质建设 - iOS启动优化《原理篇》](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/抖音品质建设-iOS启动优化《原理篇》.md) 
  * [性能优化之启动优化](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/性能优化之启动优化.md) 
  * [性能优化之卡顿优化](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/性能优化之卡顿优化.md)
+ - [dyld加载过程](https://juejin.cn/post/6844904040149729294)
+ - [二进制重排](https://juejin.cn/post/6844904130406793224?searchId=202307261436326489063FD998C416A8C4)
  
  
 ## 架构和设计模式
@@ -109,10 +111,12 @@
  - [《Objective-C 高级编程》干货三部曲（三）：GCD篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（三）：GCD篇.md)
 
 
-## [iOS第三方库源码解析](https://github.com/shenchunxing/ios-third-party-analysis/blob/master/README.md)
+## iOS第三方库源码解析系列
+- [iOS第三方库源码解析](https://github.com/shenchunxing/ios-third-party-analysis/blob/master/README.md)
 
 
-## [Flutter](https://github.com/shenchunxing/better-flutter-developer/blob/master)
+## Flutter
+- [Flutter](https://github.com/shenchunxing/better-flutter-developer/blob/master)
 
 
 ## 操作系统系列
