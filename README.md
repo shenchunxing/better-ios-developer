@@ -1,5 +1,8 @@
 主要用于学习和理解ios的知识，
 
+## 新知识
+- [Xcode15新特性](https://juejin.cn/post/7244561312709558330)
+
 ## iOS底层原理
 - OC对象
    - [OC对象的本质【底层实现、内存布局、继承关系】](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/OC对象的本质【底层实现、内存布局、继承关系】.md)
@@ -81,16 +84,20 @@
  * [内存管理之TaggedPointer](https://github.com/shenchunxing/better-ios-developer/blob/master/memory-management/TaggedPointer.md) 
  * [内存管理之定时器的循环引用](https://github.com/shenchunxing/better-ios-developer/blob/master/memory-management/定时器的循环引用.md) 
  * [内存管理之3种内存管理机制](https://github.com/shenchunxing/better-ios-developer/blob/master/memory-management/3种内存管理机制.md) 
+
+## 性能优化
  * [iOS各种Crash防护](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/iOS各种Crash防护.md) 
  * [抖音品质建设 - iOS启动优化《原理篇》](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/抖音品质建设-iOS启动优化《原理篇》.md) 
  * [性能优化之启动优化](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/性能优化之启动优化.md) 
  * [性能优化之卡顿优化](https://github.com/shenchunxing/better-ios-developer/blob/master/performance-optimization/性能优化之卡顿优化.md)
+ 
+ 
+## 架构和设计模式
  * [谈谈 MVX 中的 Model](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-model.md) 
  * [谈谈 MVX 中的 View](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-view.md) 
  * [谈谈 MVX 中的 Controller](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-controller.md) 
  * [浅谈 MVC、MVP 和 MVVM 架构模式](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx.md) 
- 
- 
+
 
 ## 书籍和代码规范
  - [Swift提高代码质量的一些Tips](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/Swift提高代码质量的一些Tips.md) 
