@@ -91,10 +91,6 @@
 3.  多个分类的方法重名，会调用最后编译的那个分类的实现
 
 分类的结构体里有哪些成员
-
-arduino
-
-复制代码
 ```
 struct category_t {
  const char *name; //名字
@@ -103,8 +99,7 @@ struct category_t {
  struct method_list_t *classMethods;//类方法列表
  struct protocol_list_t *protocols;//协议列表
  struct property_list_t *instanceProperties;//实例属性列表（分类里面可以添加属性，只不过该属性只有setter和getter的方法声明，且没有实例变量生成）
- // 此属性不一定真正的存在
- struct property_list_t *_classProperties;//类属性列表
+ struct property_list_t *_classProperties;//类属性列表(此属性不一定真正的存在)
 };
 ```
 
@@ -128,7 +123,7 @@ struct category_t {
 复制代码
 ```
 struct SideTable {
-    <!-- 自旋锁，确保线程安全 -->
+ <!-- 自旋锁，确保线程安全 -->
  spinlock_t slock;
  <!-- 引用计数映射表（RefcountMap），用于记录对象的引用计数。每个对象都有一个对应的引用计数，用于跟踪对象在内存中的引用情况，以便在不再需要时进行释放 -->
  RefcountMap refcnts;
@@ -161,10 +156,6 @@ struct SideTable {
 2.  如何取消系统默认的KVO并手动触发（给KVO的触发设定条件：改变的值符合某个条件时再触发KVO）？  
     举例：取消Person类age属性的默认KVO，设置age大于18时，手动触发KVO
     
-
-ini
-
-复制代码
 ```
 + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
  if ([key isEqualToString:@"age"]) {
@@ -189,7 +180,6 @@ ini
 
 Autoreleasepool是由多个AutoreleasePoolPage以双向链表的形式连接起来的， Autoreleasepool的基本原理：在每个自动释放池创建的时候，会在当前的AutoreleasePoolPage中设置一个标记位，在此期间，当有对象调用autorelsease时，会把对象添加到AutoreleasePoolPage中，若当前页添加满了，会初始化一个新页，然后用双向量表链接起来，并把新初始化的这一页设置为hotPage,当自动释放池pop时，从最下面依次往上pop，调用每个对象的release方法，直到遇到标志位。 AutoreleasePoolPage结构如下
 
-复制代码
 ```
 class AutoreleasePoolPage {
  magic_t const magic;
@@ -237,10 +227,6 @@ class\_rw\_t提供了运行时对类拓展的能力，而class\_ro\_t存储的�
 ### 10\. 在运行时创建类的方法objc\_allocateClassPair的方法名尾部为什么是pair（成对的意思）？
 
 因为此方法会创建一个类对象以及元类，正好组成一队
-
-scss
-
-复制代码
 ```
 Class objc_allocateClassPair(Class superclass, const char *name, 
  size_t extraBytes){
@@ -264,7 +250,7 @@ ini
 ```
 struct __Block_byref_age_0 {
  void *__isa;
-__Block_byref_age_0 *__forwarding; //指向自己
+__Block_byref_age_0 *__forwarding; //指向自己的指针
  int __flags;
  int __size;
  int age;//包装的具体的值
@@ -275,7 +261,7 @@ __Block_byref_age_0 *__forwarding; //指向自己
 
 ### 12\. 为什么在block外部使用\_\_weak修饰的同时需要在内部使用\_\_strong修饰？
 
-用\_\_weak修饰之后block不会对该对象进行retain，只是持有了weak指针，在block执行之前或执行的过程时，随时都有可能被释放，将weak指针置位nil，产生一些未知的错误。在内部用\_\_strong修饰，会在block执行时，对该对象进行一次retain，保证在执行时若该指针不指向nil，则在执行过程中不会指向nil。但有可能在执行执行之前已经为nil了
+用\_\_weak修饰之后block不会对该对象进行retain，只是持有了weak指针，在block执行之前或执行的过程时，随时都有可能被释放，将weak指针置位nil，产生一些未知的错误。在内部用\_\_strong修饰，会在block执行时，对该对象进行一次retain，保证在执行时若该指针不指向nil，则在执行过程中不会指向nil。但有可能在执行执行之前已经为nil了（比如；block里面执行一个gcd的延迟函数）
 
 ### 13\. RunLoop的作用是什么？它的内部工作机制了解么？（最好结合线程和内存管理来说）
 
@@ -309,10 +295,6 @@ __Block_byref_age_0 *__forwarding; //指向自己
 
 1.  AppDelegate为什么会那么臃肿？ AppDelegate是一个项目的入口，承担了太多的功能，如初始化根控制器，管理应用的状态，管理推送，和其他APP交互，初始化第三方SDK，获取权限等等
 2.  如何瘦身 瘦身的方案有很多，比如说把某些方法放到swift扩展或者OC的分类中，抽取中间类，利用通知监听等等，不过我比较喜欢的是使用命令设计模式进行瘦身。 命令模式是描述对象被称作命令相当于是一个简单的方法或者事件。因为对象封装了触发自身所需的所有参数，因此命令的调用者不知道该命令做了什么以及响应者是谁 可以为APPdelegate的每一个职责定义一个命令，这个命令的名字有他们自己指定
-
-swift
-
-复制代码
 ```
 protocol Command {
  func execute()
@@ -337,10 +319,6 @@ struct RegisterToRemoteNotificationsCommand: Command {
 ```
 
 然后我们定义`StartupCommandsBuilder`来封装如何创建命令的详细信息。APPdelegate调用这个builder去初始化命令并执行这些命令
-
-swift
-
-复制代码
 
 ```
 // MARK: - Builder
@@ -404,7 +382,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 1.  iOS的启动流程
     1.  根据 info.plist 里的设置加载闪屏，建立沙箱，对权限进行检查等
-    2.  加载可执行文件
+    2.  加载可执行文件Mach-O
     3.  加载动态链接库，进行 rebase 指针调整和 bind 符号绑定
     4.  Objc 运行时的初始处理，包括 Objc 相关类的注册、category 注册、selector 唯一性检查等；
     5.  初始化，包括了执行 +load() 方法、attribute((constructor)) 修饰的函数的调用、创建 C++ 静态全局变量。
