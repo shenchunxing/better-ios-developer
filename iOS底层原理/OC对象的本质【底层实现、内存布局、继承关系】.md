@@ -1,20 +1,5 @@
 # OC对象的本质
 
-前言
-==
-
-> 之前,我们在探索动画及渲染相关原理的时候,我们输出了几篇文章,解答了`iOS动画是如何渲染,特效是如何工作的疑惑`。我们深感系统设计者在创作这些系统框架的时候,是如此脑洞大开,也 **`深深意识到了解一门技术的底层原理对于从事该方面工作的重要性。`**
-> 
-> 因此我们决定 **`进一步探究iOS底层原理的任务`** ,本文探索的底层原理围绕“`OC对象的本质【底层实现、内存布局、继承关系`”展开
-
-一、概述
-====
-
-我们在日常开发中得知,OC语言中,**所有的类都继承自** `NSObject类`。  
-那么,我们要探索`OC对象的本质`,首先就要围绕NSObject,通过几个维度入手:
-
-*   1.  NSObject的底层实现
-*   2.  通过NSObject的继承关系,去进一步了解其NSObject对象的本质
 
 二、NSObject的底层实现
 ===============
@@ -30,7 +15,6 @@
 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d28cf5c4b9494023833567e1f09963b6~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?) **命令行:** 格式: `clang -rewrite-objc OC源文件 -o 输出的CPP文件`
 
     clang -rewrite-objc main.m -o main.mm
-    复制代码
 
 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b1f5007bffbd4186a798280a8d0eb8f4~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -41,7 +25,6 @@
     struct NSObject_IMPL {
          Class isa; 
     };
-    复制代码
 
 2.查看源码
 ------
@@ -54,14 +37,11 @@
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f1cbbbf034904d9aa0d58ba4b9ea017b~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?) 我们查看源码得知,Class本质是一个 objc\_class 类型的结构体指针
 
     typedef struct objc_class *Class;
-    复制代码
 
 我们进一步去看一下 `objc_class`这个结构体： ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0d243aad39d44ffd8874e0ad931c2a89~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?) 我们发现`objc_class`结构体继承自`objc_object`结构体，且`objc_class`内部有若干成员如下(忽略其函数、方法):
-
-    struct objc_class : objc_object {
-    
+```
+ struct objc_class : objc_object {
         Class superclass;
-    
         const char *name;
     
         uint32_t version;
@@ -83,9 +63,9 @@
         const uint8_t *ivar_layout;
     
         struct old_class_ext *ext;
-        ....    
     }
-    复制代码
+```
+
 
 我们跳进去查看 `objc_object`发现,其本身也只有一个 `isa_t`类型的成员 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5bf56868bee14e73a556fd2bb5ce2575~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 

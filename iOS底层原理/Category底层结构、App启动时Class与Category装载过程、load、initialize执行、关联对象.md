@@ -24,8 +24,8 @@
     
         #import <objc/runtime.h> 
         void  objc_setAssociatedObject(id _Nonnull object, const void * _Nonnull key,id _Nullable value, objc_AssociationPolicy policy) ;
+
         id _Nullable objc_getAssociatedObject(id _Nonnull object, const void * _Nonnull key); 
-        复制代码
     
 
 本文将以KnowWhat的事实基础为前提,达到KnowHow。围绕前面得到的这些结论,探究其底层原理的实现:
