@@ -37,28 +37,25 @@ int main(int argc, const char * argv[]) {
         Class objectClass4 = object_getClass(object2);
         Class objectClass5 = [NSObject class];
         
-        // meta-class对象，元类对象
-        // 将类对象当做参数传入，获得元类对象
-        Class objectMetaClass = object_getClass(objectClass5);
-//        Class objectMetaClass2 = [[[NSObject class] class] class];
-        
-        NSLog(@"instance - %p %p",
-              object1,
-              object2);
-        
         NSLog(@"class - %p %p %p %p %p %d", //打印一样的地址，都是类对象
               objectClass1,
               objectClass2,
               objectClass3,
               objectClass4,
               objectClass5,
-              class_isMetaClass(objectClass3)); //false
+              class_isMetaClass(objectClass3)); //不是元类对象，返回false
     
-        NSLog(@"objectMetaClass - %p %d", objectMetaClass, class_isMetaClass(objectMetaClass)); //元类
+        // meta-class对象，元类对象
+        // 将类对象当做参数传入，获得元类对象
+        Class objectMetaClass = object_getClass(objectClass5);
+        //class返回的方法就是一直是类对象
+        Class objectMetaClass2 = [[[NSObject class] class] class];
+        NSLog(@"objectMetaClass是一个元类 - %p %d", objectMetaClass, class_isMetaClass(objectMetaClass)); //元类
+        NSLog(@"objectMetaClass2不是元类 - %p %d", objectMetaClass2, class_isMetaClass(objectMetaClass2)); //不是元类
         
         
-        NSLog(@"%p",object_getClass(objectMetaClass)); //NSObject的元类的元类是其本身
-        NSLog(@"%p",class_getSuperclass(objectMetaClass)); //NSObject的元类的父类是NSObject类对象
+        NSLog(@"objectMetaClass的元类是：%p",object_getClass(objectMetaClass)); //NSObject的元类的元类是其本身
+        NSLog(@"objectMetaClass的父类是：%p",class_getSuperclass(objectMetaClass)); //NSObject的元类的父类是NSObject类对象
     }
     return 0;
 }
