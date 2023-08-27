@@ -3,9 +3,6 @@
 ## 持续更新
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
 
-## 新知识
-- [Xcode15新特性](https://juejin.cn/post/7244561312709558330)
-
 ## iOS底层原理
 - OC对象
    - [OC对象的本质【底层实现、内存布局、继承关系】](https://github.com/shenchunxing/better-ios-developer/blob/master/iOS底层原理/OC对象的本质【底层实现、内存布局、继承关系】.md)
