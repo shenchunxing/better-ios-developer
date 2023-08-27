@@ -1,5 +1,8 @@
 主要用于学习和理解ios的知识，
 
+## 持续更新
+- 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
+
 ## 新知识
 - [Xcode15新特性](https://juejin.cn/post/7244561312709558330)
 
