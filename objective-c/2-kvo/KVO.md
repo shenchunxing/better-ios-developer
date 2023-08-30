@@ -1,351 +1,264 @@
-# KVO相关面试题
-### addObserver:forKeyPath:options:context:各个参数的作用分别是什么，observer中需要实现哪个方法才能获得KVO回调？
+ KVO的使用
+----------
 
-```Objective-C
-// 添加键值观察
-/*
-1 观察者，负责处理监听事件的对象
-2 观察的属性
-3 观察的选项
-4 上下文
-*/
-[self.person addObserver:self forKeyPath:@"name" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:@"Person Name"];
+*   发起监听
+    *   可以通过`addObserver: forKeyPath:`方法对属性发起监听
+*   接收监听信息
+    *   然后通过`observeValueForKeyPath: ofObject: change:`方法中对应进行监听，见下面示例代码:
 ```
-observer中需要实现一下方法：
-
-```Objective-C
-// 所有的 kvo 监听到事件，都会调用此方法
-/*
+   @interface Person : NSObject
+    
+    @property (assign, nonatomic) int age;
+    @property (assign, nonatomic) int height;
+    @end
+    
+    @implementation Person
+    
+    @end
+    
+    @interface ViewController ()
+    
+    @property (strong, nonatomic) Person *person1;
+    @property (strong, nonatomic) Person *person2;
+    @end
+    
+    @implementation ViewController
+    
+    - (void)viewDidLoad {
+        [super viewDidLoad];
+        
+        self.person1 = [[Person alloc] init];
+        self.person1.age = 1;
+        
+        self.person2 = [[Person alloc] init];
+        self.person2.age = 2;
+        
+        // 打印添加监听之前person1和person2对应的isa指针指向的类型
+        NSLog(@"person1添加KVO监听之前 - %@ %@",
+              object_getClass(self.person1),
+              object_getClass(self.person2)); 
+        // 打印结果：Person Person
+        
+        // 打印添加监听之前person1和person2对应的setAge方法是否有改变
+        NSLog(@"person1添加KVO监听之前 - %p %p",
+              [self.person1 methodForSelector:@selector(setAge:)],
+              [self.person2 methodForSelector:@selector(setAge:)]);
+        // 0x10b60c4b0 0x10b60c4b0
+              
+        // 给person1对象添加KVO监听
+        /* 1 观察者，负责处理监听事件的对象 2 观察的属性 3 观察的选项 4 上下文 */
+        NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
+        [self.person1 addObserver:self forKeyPath:@"age" options:options context:@"123"];
+        
+        // 打印添加监听之后person1和person2对应的isa指针指向的类型
+        NSLog(@"person1添加KVO监听之后 - %@ %@",
+              object_getClass(self.person1),
+              object_getClass(self.person2)); 
+        // 打印结果：NSKVONotifying_Person Person
+        
+         // 打印添加监听之后person1和person2对应的setAge方法是否有改变
+        NSLog(@"person1添加KVO监听之前 - %p %p",
+              [self.person1 methodForSelector:@selector(setAge:)],
+              [self.person2 methodForSelector:@selector(setAge:)]);
+        // 0x7fff207b62b7 0x10b60c4b0
+    }
+    
+    - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+    {
+        self.person1.age = 20;    
+    }
+    
+    - (void)dealloc {
+        [self.person1 removeObserver:self forKeyPath:@"age"];
+    }
+    
+    // 当监听对象的属性值发生改变时，就会调用
+    /*
  1. 观察的属性
  2. 观察的对象
  3. change 属性变化字典（新／旧）
  4. 上下文，与监听的时候传递的一致
  */
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+    - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+    {
+        NSLog(@"监听到%@的%@属性值改变了 - %@ - %@", object, keyPath, change, context);
+    }
+    
+    @end
 ```
 
-### 如何手动触发一个value的KVO
+**注意：**  监听的对象销毁之前要移除该监听`removeObserver: forKeyPath:`
 
-所谓的“手动触发”是区别于“自动触发”：
+二、KVO的实现本质
+==========
 
-自动触发是指类似这种场景：在注册 KVO 之前设置一个初始值，注册之后，设置一个不一样的值，就可以触发了。
+1.通过上面示例代码发现，函数在调用`addObserver: forKeyPath:`方法之后，`person1`的实例对象的`isa指针`指向了一个新的类型`NSKVONotifying_Person`，而没有添加监听的`person2`的`isa指针`还是指向了`Person`这个类型
 
-想知道如何手动触发，必须知道自动触发 KVO 的原理：
-
-键值观察通知依赖于 NSObject 的两个方法:  `willChangeValueForKey:` 和 `didChangevlueForKey:` 。在一个被观察属性发生改变之前，  `willChangeValueForKey:` 一定会被调用，这就
-会记录旧的值。而当改变发生后，  `observeValueForKey:ofObject:change:context:` 会被调用，继而 `didChangeValueForKey:` 也会被调用。如果可以手动实现这些调用，就可以实现“手动触发”了。
-
-那么“手动触发”的使用场景是什么？一般我们只在希望能控制“回调的调用时机”时才会这么做。
-
-具体做法如下：
-如果这个  `value` 是  表示时间的 `self.now` ，那么代码如下：最后两行代码缺一不可。
-
-相关代码已放在仓库里。
-
- ```Objective-C
-//  .m文件
-//  手动触发 value 的KVO，最后两行代码缺一不可。
-
-//@property (nonatomic, strong) NSDate *now;
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    _now = [NSDate date];
-    [self addObserver:self forKeyPath:@"now" options:NSKeyValueObservingOptionNew context:nil];
-    NSLog(@"1");
-    [self willChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"2");
-    [self didChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"4");
-}
- ```
-
-但是平时我们一般不会这么干，我们都是等系统去“自动触发”。“自动触发”的实现原理：
-
-
- > 比如调用 `setNow:` 时，系统还会以某种方式在中间插入 `wilChangeValueForKey:` 、  `didChangeValueForKey:` 和 `observeValueForKeyPath:ofObject:change:context:` 的调用。
-
-
-大家可能以为这是因为 `setNow:` 是合成方法，有时候我们也能看到有人这么写代码:
-
- ```Objective-C
-- (void)setNow:(NSDate *)aDate {
-    [self willChangeValueForKey:@"now"]; // 没有必要
-    _now = aDate;
-    [self didChangeValueForKey:@"now"];// 没有必要
-}
- ```
-
-这完全没有必要，不要这么做，这样的话，KVO代码会被调用两次。KVO在调用存取方法之前总是调用 `willChangeValueForKey:`  ，之后总是调用 `didChangeValueForkey:` 。怎么做到的呢?答案是通过 isa 混写（isa-swizzling）。下文《apple用什么方式实现对一个对象的KVO？》会有详述。
-
-
-其中会触发两次，具体原因可以查看文档[Apple document : Key-Value Observing Programming Guide-Manual Change Notification]( https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOCompliance.html#//apple_ref/doc/uid/20002178-SW3 "") ，主要是 `+automaticallyNotifiesObserversForKey:` 类方法了。
-参考链接： [Manual Change Notification---Apple 官方文档](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOCompliance.html#//apple_ref/doc/uid/20002178-SW3) 
-
-### KVC和KVO的keyPath一定是属性么？
-KVC 支持实例变量，KVO 只能手动支持[手动设定实例变量的KVO实现监听](https://yq.aliyun.com/articles/30483)
-
-
-### 如何关闭默认的KVO的默认实现，并进入自定义的KVO实现？
-请参考：
-  1. [《如何自己动手实现 KVO》](http://tech.glowing.com/cn/implement-kvo/)
-  2. [**KVO for manually implemented properties**]( http://stackoverflow.com/a/10042641/3395008 ) 
-
-### apple用什么方式实现对一个对象的KVO？ 
-[Apple 的文档](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html)对 KVO 实现的描述：
-
- > Automatic key-value observing is implemented using a technique called isa-swizzling... When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class ...
-
-从[Apple 的文档](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html)可以看出：Apple 并不希望过多暴露 KVO 的实现细节。不过，要是借助 runtime 提供的方法去深入挖掘，所有被掩盖的细节都会原形毕露：
-
- > 当你观察一个对象时，一个新的类会被动态创建。这个类继承自该对象的原本的类，并重写了被观察属性的 setter 方法。重写的 setter 方法会负责在调用原 setter 方法之前和之后，通知所有观察对象：值的更改。最后通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa 指针 ( isa 指针告诉 Runtime 系统这个对象的类是什么 ) 指向这个新创建的子类，对象就神奇的变成了新创建的子类的实例。我画了一张示意图，如下所示：
-
-
-<p align="center"><a href="https://mp.weixin.qq.com/s/A4e5h3xgIEh6PInf1Rjqsw"><img src="https://tva1.sinaimg.cn/large/007S8ZIlly1gfec69ggukj30qh0fvjta.jpg"></a></p>
-
-
- KVO 确实有点黑魔法：
- > Apple 使用了 ` isa 混写（isa-swizzling）`来实现 KVO 。
-
-
-下面做下详细解释：
-
-键值观察通知依赖于 NSObject 的两个方法:  `willChangeValueForKey:` 和 `didChangevlueForKey:` 。在一个被观察属性发生改变之前，  `willChangeValueForKey:` 一定会被调用，这就会记录旧的值。而当改变发生后， `observeValueForKey:ofObject:change:context:` 会被调用，继而  `didChangeValueForKey:` 也会被调用。可以手动实现这些调用，但很少有人这么做。一般我们只在希望能控制回调的调用时机时才会这么做。大部分情况下，改变通知会自动调用。
-
- 比如调用 `setNow:` 时，系统还会以某种方式在中间插入 `wilChangeValueForKey:` 、  `didChangeValueForKey:`  和 `observeValueForKeyPath:ofObject:change:context:` 的调用。大家可能以为这是因为 `setNow:` 是合成方法，有时候我们也能看到有人这么写代码:
-
- ```Objective-C
-- (void)setNow:(NSDate *)aDate {
-    [self willChangeValueForKey:@"now"]; // 没有必要
-    _now = aDate;
-    [self didChangeValueForKey:@"now"];// 没有必要
-}
- ```
-
-这完全没有必要，不要这么做，这样的话，KVO代码会被调用两次。KVO在调用存取方法之前总是调用 `willChangeValueForKey:`  ，之后总是调用 `didChangeValueForkey:` 。怎么做到的呢?答案是通过 isa 混写（isa-swizzling）。第一次对一个对象调用 `addObserver:forKeyPath:options:context:` 时，框架会创建这个类的新的 KVO 子类，并将被观察对象转换为新子类的对象。在这个 KVO 特殊子类中， Cocoa 创建观察属性的 setter ，大致工作原理如下:
-
- ```Objective-C
-- (void)setNow:(NSDate *)aDate {
-    [self willChangeValueForKey:@"now"];
-    [super setValue:aDate forKey:@"now"];
-    [self didChangeValueForKey:@"now"];
-}
- ```
-这种继承和方法注入是在运行时而不是编译时实现的。这就是正确命名如此重要的原因。只有在使用KVC命名约定时，KVO才能做到这一点。
-
-KVO 在实现中通过 ` isa 混写（isa-swizzling）` 把这个对象的 isa 指针 ( isa 指针告诉 Runtime 系统这个对象的类是什么 ) 指向这个新创建的子类，对象就神奇的变成了新创建的子类的实例。这在[Apple 的文档](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/Articles/KVOImplementation.html)可以得到印证：
-
- > Automatic key-value observing is implemented using a technique called isa-swizzling... When an observer is registered for an attribute of an object the isa pointer of the observed object is modified, pointing to an intermediate class rather than at the true class ...
-
-
-然而 KVO 在实现中使用了 ` isa 混写（ isa-swizzling）` ，这个的确不是很容易发现：Apple 还重写、覆盖了 `-class` 方法并返回原来的类。 企图欺骗我们：这个类没有变，就是原本那个类。。。
-
-但是，假设“被监听的对象”的类对象是 `MYClass` ，有时候我们能看到对 `NSKVONotifying_MYClass` 的引用而不是对  `MYClass`  的引用。借此我们得以知道 Apple 使用了 ` isa 混写（isa-swizzling）`。具体探究过程可参考[ 这篇博文 ](https://www.mikeash.com/pyblog/friday-qa-2009-01-23.html)。
-
-
-那么 `wilChangeValueForKey:` 、  `didChangeValueForKey:`  和 `observeValueForKeyPath:ofObject:change:context:` 这三个方法的执行顺序是怎样的呢？
-
- `wilChangeValueForKey:` 、  `didChangeValueForKey:` 很好理解，`observeValueForKeyPath:ofObject:change:context:` 的执行时机是什么时候呢？
-
- 先看一个例子：
-
-代码已放在仓库里。
-
- ```Objective-C
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self addObserver:self forKeyPath:@"now" options:NSKeyValueObservingOptionNew context:nil];
-    NSLog(@"1");
-    [self willChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"2");
-    [self didChangeValueForKey:@"now"]; // “手动触发self.now的KVO”，必写。
-    NSLog(@"4");
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-    NSLog(@"3");
-}
-
- ```
-
-
-
-如果单单从下面这个例子的打印上， 
-
-顺序似乎是 `wilChangeValueForKey:` 、 `observeValueForKeyPath:ofObject:change:context:` 、 `didChangeValueForKey:` 。
-
-其实不然，这里有一个 `observeValueForKeyPath:ofObject:change:context:`  , 和 `didChangeValueForKey:` 到底谁先调用的问题：如果 `observeValueForKeyPath:ofObject:change:context:` 是在 `didChangeValueForKey:` 内部触发的操作呢？ 那么顺序就是： `wilChangeValueForKey:` 、  `didChangeValueForKey:`  和 `observeValueForKeyPath:ofObject:change:context:` 
-
-不信你把 `didChangeValueForKey:` 注视掉，看下 `observeValueForKeyPath:ofObject:change:context:` 会不会执行。
-
-了解到这一点很重要，正如  [46. 如何手动触发一个value的KVO](https://github.com/ChenYilong/iOSInterviewQuestions/blob/master/01《招聘一个靠谱的iOS》面试题参考答案/《招聘一个靠谱的iOS》面试题参考答案（下）.md#46-如何手动触发一个value的kvo)  所说的：
-
-“手动触发”的使用场景是什么？一般我们只在希望能控制“回调的调用时机”时才会这么做。
-
-而“回调的调用时机”就是在你调用 `didChangeValueForKey:` 方法时。
-
-### 自定义的KVO实现
-```Objective-C
-MJPerson
-#import "MJPerson.h"
-
-@implementation MJPerson
-
-- (void)setAge:(int)age
-{
-    _age = age;
-    
-    NSLog(@"setAge:");
-}
-
-//- (int)age
-//{
-//    return _age;
-//}
-
-- (void)willChangeValueForKey:(NSString *)key
-{
-    [super willChangeValueForKey:key];
-    
-    NSLog(@"willChangeValueForKey");
-}
-
-- (void)didChangeValueForKey:(NSString *)key
-{
-    NSLog(@"didChangeValueForKey - begin");
-    
-    [super didChangeValueForKey:key];
-    
-    NSLog(@"didChangeValueForKey - end");
-}
-
-@end
-
-继承自MJPerson的子类
-#import "NSKVONotifying_MJPerson.h"
-
-@implementation NSKVONotifying_MJPerson
-
-- (void)setAge:(int)age
-{
-    _NSSetIntValueAndNotify();
-}
-
-// 伪代码
-void _NSSetIntValueAndNotify()
-{
-    [self willChangeValueForKey:@"age"];
-    [super setAge:age];
-    [self didChangeValueForKey:@"age"];
-}
-
-- (void)didChangeValueForKey:(NSString *)key
-{
-    // 通知监听器，某某属性值发生了改变
-    [oberser observeValueForKeyPath:key ofObject:self change:nil context:nil];
-}
-
-@end
-
-
-#import "ViewController.h"
-#import "MJPerson.h"
-#import <objc/runtime.h>
-
-@interface ViewController ()
-@property (strong, nonatomic) MJPerson *person1;
-@property (strong, nonatomic) MJPerson *person2;
-@end
-
-// 反编译工具 - Hopper
-
-@implementation ViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    self.person1 = [[MJPerson alloc] init];
-    self.person1.age = 1;
-    
-    self.person2 = [[MJPerson alloc] init];
-    self.person2.age = 2;
-    
-    
-    NSLog(@"person1添加KVO监听之前 - %@ %@",
-          object_getClass(self.person1),
-          object_getClass(self.person2));
-    NSLog(@"person1添加KVO监听之前 - %p %p",
-          [self.person1 methodForSelector:@selector(setAge:)],
-          [self.person2 methodForSelector:@selector(setAge:)]);
-    
-    // 给person1对象添加KVO监听
-    NSKeyValueObservingOptions options = NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld;
-    [self.person1 addObserver:self forKeyPath:@"age" options:options context:@"123"];
-    
-    NSLog(@"person1添加KVO监听之后 - %@ %@",
-          object_getClass(self.person1),//类对象地址变了
-          object_getClass(self.person2));
-    NSLog(@"person1添加KVO监听之后 - %p %p",
-          [self.person1 methodForSelector:@selector(setAge:)],//方法在类对象中，地址也变了
-          [self.person2 methodForSelector:@selector(setAge:)]);
+2.我们发现通过`object_getClass`打印`person1`的类对象和元类对象都是新派生出来的`NSKVONotifying_Person`这个类型
 
     NSLog(@"类对象 - %@ %@",
-          object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
-          object_getClass(self.person2)); // self.person2.isa //MJPerson
+              object_getClass(self.person1), 
+              object_getClass(self.person2)); 
+    // NSKVONotifying_Person Person
     
-    NSLog(@"类对象地址 - %p %p",
-          object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
-          object_getClass(self.person2)); // self.person2.isa //MJPerson
-
     NSLog(@"元类对象 - %@ %@",
-          object_getClass(object_getClass(self.person1)), // self.person1.isa.isa //NSKVONotifying_MJPerson
-          object_getClass(object_getClass(self.person2))); // self.person2.isa.isa //MJPerson
+              object_getClass(object_getClass(self.person1)), 
+              object_getClass(object_getClass(self.person2))); 
+    // NSKVONotifying_Person Person
+     
+    复制代码
+
+3.我们发现通过`object_getClass`打印`person1`的`superclass`是`Person`这个类型，说明新派生出来的`NSKVONotifying_Person`是`Person`的子类
+
+    NSLog(@"父类 - %@ %@", 
+            object_getClass(self.person1).superclass,
+            object_getClass(self.person2).superclass);
+            // Person NSObject
+    复制代码
+
+4.通过打印我们发现，`person1`调用的`setAge`方法的内存地址发生了改变，通过`LLDB`打印该地址的详细信息发现`setAge`方法的实现实际是`Foundation框架`中的`_NSSetIntValueAndNotify`这个函数
+
+    (lldb) p (IMP)0x7fff207b62b7
+    (IMP) $2 = 0x00007fff207b62b7 (Foundation`_NSSetIntValueAndNotify)
+    (lldb) p (IMP) 0x108801480
+    (IMP) $3 = 0x0000000108801480 (Interview01`-[Person setAge:] at Person.m:13)
+    复制代码
+
+5.我们手动创建这个派生类型`NSKVONotifying_Person`，并且在Person里面重写`setAge:、willChangeValueForKey:、didChangeValueForKey:`这三个方法，运行程序并观察调用情况
+
+    @interface NSKVONotifying_Person : Person
     
-    NSLog(@"元类对象地址 - %p %p",
-          object_getClass(object_getClass(self.person1)), // self.person1.isa.isa //NSKVONotifying_MJPerson
-          object_getClass(object_getClass(self.person2))); // self.person2.isa.isa //MJPerson
+    @end
     
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    // NSKVONotifying_MJPerson是使用Runtime动态创建的一个类，是MJPerson的子类
-    // self.person1.isa == NSKVONotifying_MJPerson
-    [self.person1 setAge:21];
+    @implementation NSKVONotifying_Person
     
-    // self.person2.isa = MJPerson
-//    [self.person2 setAge:22];
-}
+    @end
+    
+    
+    @interface Person : NSObject
+    
+    @property (assign, nonatomic) int age;
+    @property (assign, nonatomic) int height;
+    @end
+    
+    @implementation Person
+    
+    - (void)setAge:(int)age {
+        _age = age;
+        NSLog(@"setAge:");
+    }
+    
+    - (void)willChangeValueForKey:(NSString *)key{
+        [super willChangeValueForKey:key];
+        NSLog(@"willChangeValueForKey");
+    }
+    
+    - (void)didChangeValueForKey:(NSString *)key {
+        NSLog(@"didChangeValueForKey - begin");
+        [super didChangeValueForKey:key];    
+        NSLog(@"didChangeValueForKey - end");
+    }
+    
+    bool __isKVOA { 
+      return true;
+    } 
+    
+    //隐藏子类 
+    Class class {
+       return object_getClass(self).superclass;
+    }
+    
+    - (void)dealloc {
+    }
+    
+    @end
 
-- (void)dealloc {
-    [self.person1 removeObserver:self forKeyPath:@"age"];
-}
+由此可见，当监听的属性发生改变，系统派生出的这个类`NSKVONotifying_Person`(在)会对应的先后调用
 
-// 当监听对象的属性值发生改变时，就会调用
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-    NSLog(@"监听到%@的%@属性值改变了 - %@ - %@", object, keyPath, change, context);
-}
+*   `willChangeValueForKey:`
+*   `setAge:`
+*   `didChangeValueForKey:` 这三个方法，并在`didChangeValueForKey:`里调用观察者的`observeValueForKeyPath: ofObject: change:`来通知值属性值的变化
 
-@end
+    // 执行后打印
 ```
-### 给KVO添加筛选条件
- 重写automaticallyNotifiesObserversForKey，需要筛选的key返回NO。
- setter里添加判断后手动触发KVO
-```Objective-C
- + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
-     if ([key isEqualToString:@"age"]) {
-         return NO;
-     }
-     return [super automaticallyNotifiesObserversForKey:key];
- }
- ​
- - (void)setAge:(NSInteger)age {
-     if (age >= 18) {
-         [self willChangeValueForKey:@"age"];
-         _age = age;
-         [self didChangeValueForKey:@"age"];
-     }else {
-         _age = age;
-     }
- }
+    2021-01-19 13:42:02.071987+0800 Interview01[37119:19609444] willChangeValueForKey
+    2021-01-19 13:42:02.072192+0800 Interview01[37119:19609444] setAge:
+    2021-01-19 13:42:02.072332+0800 Interview01[37119:19609444] didChangeValueForKey - begin
+    2021-01-19 13:42:02.072662+0800 Interview01[37119:19609444] 监听到<Person: 0x6000036ac2c0>的age属性值改变了 - {
+        kind = 1;
+        new = 21;
+        old = 1;
+    } - 123
+    2021-01-19 13:42:02.072817+0800 Interview01[37119:19609444] didChangeValueForKey - end
 ```
+
+6.通过`class方法`打印`person1`的类发现还是`Person`这个类型，说明在派生出的这个类`NSKVONotifying_Person`内部重写了`class`方法，并返回的是`Person`这个类型。所以只能通过`object_getClass`才能获取到真实的类型
+
+    NSLog(@"%@ %@",
+              [self.person1 class], 
+              [self.person2 class]); 
+    // Person Person
+    
+    NSLog(@"%@ %@",
+              object_getClass(self.person1), 
+              object_getClass(self.person2)); 
+    // NSKVONotifying_Person Person
+    复制代码
+
+7.通过`Runtime`的`class_copyMethodList`函数查看`NSKVONotifying_Person`内部还动态生成了`dealloc、_isKVOA`这两个函数
+
+    - (void)printMethodNamesOfClass:(Class)cls
+    {
+        unsigned int count;
+        // 获得方法数组
+        Method *methodList = class_copyMethodList(cls, &count);
+        
+        // 存储方法名
+        NSMutableString *methodNames = [NSMutableString string];
+        
+        // 遍历所有的方法
+        for (int i = 0; i < count; i++) {
+            // 获得方法
+            Method method = methodList[i];
+            // 获得方法名
+            NSString *methodName = NSStringFromSelector(method_getName(method));
+            // 拼接方法名
+            [methodNames appendString:methodName];
+            [methodNames appendString:@", "];
+        }
+        
+        // 释放
+        free(methodList);
+        
+        // 打印方法名
+        NSLog(@"%@ %@", cls, methodNames);
+    }
+    
+    [self printMethodNamesOfClass:object_getClass(self.person1)];
+    [self printMethodNamesOfClass:object_getClass(self.person2)];
+    
+    // 打印结果
+    2021-01-19 15:38:13.552990+0800 Interview01[41940:19730538] NSKVONotifying_MJPerson setAge:, class, dealloc, _isKVOA,
+    2021-01-19 15:38:13.553166+0800 Interview01[41940:19730538] MJPerson setAge:, age,
+
+三、总结
+====
+
+**通过上面一系列操作可以汇总为：**
+
+*   利用`RuntimeAPI`动态生成一个子类，并且让`instance对象`的`isa`指向这个全新的子类
+*   全新的子类会重写`class`这个函数，并返回父类类型
+*   在全新的子类里面会重写被监听的`成员对象/属性`的`setter`方法,当修改`instance对象`的属性时，会调用`Foundation`的`_NSSetXXXValueAndNotify函数`
+*   *   函数内部首先调用`willChangeValueForKey:`
+*   *   紧接着函数内部 调用父类原来的`setter`
+*   *   最后调用`didChangeValueForKey:`
+*   *   *   内部会触发监听器（Oberser）的监听方法 `observeValueForKeyPath:ofObject:change:context:`
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0383f5ab05324e50a84dc3fe6a72f00c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+
+四、KVO的应用场景
+==========
+
+*   1.监听`ScrollView`的偏移量，改变导航栏背景色
+*   2.给`TextView`增加`placeHolder`，通过`KVO`监听文本是否输入对应隐藏展示`placeHolder`
+*   ...

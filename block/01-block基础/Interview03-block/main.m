@@ -154,13 +154,13 @@
  普通的block会，一般会使用强引用持有，就会触发copy操作
  */
 
-struct __main_block_desc_0 {
+struct __main_block_desc_0 { //4+4 = 8
     size_t reserved; //保留，暂时不会用
     size_t Block_size;//大小
 };
 
 //实现体
-struct __block_impl {
+struct __block_impl {  //8+4+4+8 = 24
     void *isa;//isa指针
     int Flags;
     int Reserved;
@@ -168,9 +168,9 @@ struct __block_impl {
 };
 
 struct __main_block_impl_0 {
-    struct __block_impl impl;//block实现
+    struct __block_impl impl;//实现
     struct __main_block_desc_0* Desc;//描述
-    int age;
+    int age;//4
 };
 
 int main(int argc, const char * argv[]) {
@@ -191,8 +191,7 @@ int main(int argc, const char * argv[]) {
         
         
         struct __main_block_impl_0 *blockStruct = (__bridge struct __main_block_impl_0 *)block;
-        
-        
+        NSLog(@"size = %zu",blockStruct->Desc->Block_size);//36
         
         block(10, 10);
     }

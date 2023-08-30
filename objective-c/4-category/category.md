@@ -1,4 +1,4 @@
-# Category底层结构、App启动时Class与Category装载过程、load 和 initialize 执行、关联对象
+# Category
 
 
 我们前面在回顾 [Category](https://juejin.cn/post/7096359857221009444 "https://juejin.cn/post/7096359857221009444") 的基本使用的时候,我们得出了 `Category` 相关的结论:
@@ -12,15 +12,13 @@
 *   *   编译器只会 默认给 该属性 添加 setter方法、getter方法的定义
 *   *   通过Category 添加的属性的 setter方法、getter方法 需要 开发者实现
 *   *   我们最终 通过 runtimeAPI 进行`关联对象`操作,对 setter 、getter 方法 完成了最简便、最可靠的实现
-    
-        #import <objc/runtime.h> 
-        void  objc_setAssociatedObject(id _Nonnull object, const void * _Nonnull key,id _Nullable value, objc_AssociationPolicy policy) ;
+```
+#import <objc/runtime.h> 
+void  objc_setAssociatedObject(id _Nonnull object, const void * _Nonnull key,id _Nullable value, objc_AssociationPolicy policy) ;
 
-        id _Nullable objc_getAssociatedObject(id _Nonnull object, const void * _Nonnull key); 
-    
-
-本文将以KnowWhat的事实基础为前提,达到KnowHow。围绕前面得到的这些结论,探究其底层原理的实现:
-
+id _Nullable objc_getAssociatedObject(id _Nonnull object, const void * _Nonnull key); 
+```
+探究其底层原理的实现:
 *   1.  Category如何给类添加 Instance对象方法、Class对象方法的？
 *   2.  Category与原来的Class内部的方法的调用优先级如何实现的？
 *   3.  为什么 通过Category可以给 原类 增加属性,但是只会添加 setter方法、getter方法的定义,而 setter方法、getter方法的实现需要 开发者自己完成？
@@ -28,25 +26,6 @@
 
 二、Category的本质
 =============
-
-我们首先还是先添加一个类(Car),并未其添加Category(Car+Test.h):
-
-*   分类中添加了 方法:
-*   *   instance对象方法:`- (void)runFaster;`
-*   *   Class 对象方法:`+ (void)lightLongTime;`
-*   分类中实现了 原来类中定义的方法:
-*   *   `- (void)run`
-*   *   `+ (void)light` **Car类的声明与实现:**
-
-    //
-    //  Car.h
-    //  分类、扩展
-    //
-    //  Created by VanZhang on 2022/5/11.
-    //
-    #import <Foundation/Foundation.h>
-    
-    NS_ASSUME_NONNULL_BEGIN
     
     @interface Car : NSObject{
     @public
@@ -58,15 +37,8 @@
     @end
     
     NS_ASSUME_NONNULL_END
-    
-    
-    //
+
     //  Car.m
-    //  分类、扩展
-    //
-    //  Created by VanZhang on 2022/5/11.
-    //
-    
     #import "Car.h"
     
     @implementation Car
@@ -77,19 +49,9 @@
         NSLog(@"%s",__func__);
     }
     @end
-    
-    复制代码
 
 **分类(`Car+Test`)的声明与实现:**
 
-    //
-    //  Car+Test.h
-    //  分类、扩展
-    //
-    //  Created by VanZhang on 2022/5/11.
-    //
-    
-    
     #import "Car.h"
       
     @interface Car (Test)
@@ -97,16 +59,7 @@
     + (void)lightLongTime;
     @end
      
-    
-    //
-    //  Car+Test.m
-    //  分类、扩展
-    //
-    //  Created by VanZhang on 2022/5/11.
-    //
-    
     #import "Car+Test.h"
-    
     @implementation Car (Test)
     - (void)run{
         NSLog(@"%s",__func__);
@@ -122,93 +75,17 @@
     }
     
     @end
-    复制代码
 
 我们通过Clang指令对 两个.m文件进行转换,得到其底层实现的 `伪代码`(可参考的底层实现逻辑、因为OC是一个具备动态运行时特性的语言,部分细节还得到动态运行时才知道其真正的实现)
 
     clang -rewrite-objc 源码实现文件名.m
-    复制代码
-
-**Car类的底层实现:** ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/057dbac41cc94e1daf22293988b9b890~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0bd83e8e62f048939dbd0575be7dcb64~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?) 关于 如 Car类 等 基类NSObject的子类 的底层实现 我们之前已经探索过了相关的话题,感兴趣,可以结合这几篇文章进行了解:
-
-> *   **[OC的本质](https://juejin.cn/post/7094409219361193997/ "https://juejin.cn/post/7094409219361193997/")**
-> *   **[OC对象的本质【底层实现、内存布局、继承关系】](https://juejin.cn/post/7094503681684406302 "https://juejin.cn/post/7094503681684406302")**
-> *   **[几种OC对象【实例对象、类对象、元类】、对象的isa指针、superclass、对象的方法调用、Class的底层本质](https://juejin.cn/post/7096087582370431012 "https://juejin.cn/post/7096087582370431012")**
 
 1.Category的底层实现
 ---------------
+主类的核心信息是存放在结构体`_class_ro_t`中的
 
-**分类(Category)的底层实现(当前示例分类为`Car+Test`):**
-
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c69e3d4ff25d449982264c59e1d1bce0~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/81a6014e76524a71b4af742b3243904c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-仔细查看代码:
-
-    static struct /*_method_list_t*/ {
-        unsigned int entsize;  // sizeof(struct _objc_method)
-        unsigned int method_count;
-        struct _objc_method method_list[2];
-    } _OBJC_$_CATEGORY_INSTANCE_METHODS_Car_$_Test __attribute__ ((used, section ("__DATA,__objc_const"))) = {
-        sizeof(_objc_method),
-        2,
-        {{(struct objc_selector *)"run", "v16@0:8", (void *)_I_Car_Test_run},
-        {(struct objc_selector *)"runFaster", "v16@0:8", (void *)_I_Car_Test_runFaster}}
-    };
-    
-    static struct /*_method_list_t*/ {
-        unsigned int entsize;  // sizeof(struct _objc_method)
-        unsigned int method_count;
-        struct _objc_method method_list[2];
-    } _OBJC_$_CATEGORY_CLASS_METHODS_Car_$_Test __attribute__ ((used, section ("__DATA,__objc_const"))) = {
-        sizeof(_objc_method),
-        2,
-        {{(struct objc_selector *)"light", "v16@0:8", (void *)_C_Car_Test_light},
-        {(struct objc_selector *)"lightLongTime", "v16@0:8", (void *)_C_Car_Test_lightLongTime}}
-    }; 
-    
-     // 变量名对应着分类文件名 
-    static struct _category_t _OBJC_$_CATEGORY_Car_$_Test __attribute__ ((used, section ("__DATA,__objc_const"))) = 
-    {
-        "Car",
-        0, // &OBJC_CLASS_$_Car,
-        (const struct _method_list_t *)&_OBJC_$_CATEGORY_INSTANCE_METHODS_Car_$_Test,  // instance对象方法
-        (const struct _method_list_t *)&_OBJC_$_CATEGORY_CLASS_METHODS_Car_$_Test, //Class方法
-        0,
-        0,
-    };
-    复制代码
-
-从底层代码中我们发现结构体:
-
-*   `_category_t _OBJC_$_CATEGORY_Car_$_Test`
-*   `_OBJC_$_CATEGORY_INSTANCE_METHODS_Car_$_Test`
-*   `_OBJC_$_CATEGORY_CLASS_METHODS_Car_$_Test`
-*   根据结构体的名称 以及具体实现,我们可以 清晰得知:
-*   *   `_category_t _OBJC_$_CATEGORY_Car_$_Test` 对应 分类文件是`Person+Test`，并且里面记录着所有的分类信息:
-*   *   `_OBJC_$_CATEGORY_INSTANCE_METHODS_Car_$_Test` 对应 `struct _category_t`中的 `const struct _method_list_t *instance_methods;` //Instance对象方法
-*   *   `_OBJC_$_CATEGORY_CLASS_METHODS_Car_$_Test 对应` `struct _category_t` 中的 `const struct _method_list_t *class_methods;` // 类方法
-
-    struct _category_t {
-        const char *name;
-        struct _class_t *cls;
-        const struct _method_list_t *instance_methods; // Instance对象方法
-        const struct _method_list_t *class_methods;// 类方法
-        const struct _protocol_list_t *protocols;// 协议
-        const struct _prop_list_t *properties; // 属性
-    };
-    复制代码
-
-上下几张图一一对应，并且我们看到:
-
-*   定义了`_class_t`类型的`OBJC_CLASS_$_Car`结构体
-*   最后将`_OBJC_$_CATEGORY_Car_$_Test`的`cls`指针指向`OBJC_CLASS_$_Car`结构体地址
-*   我们这里可以看出，`cls`指针指向的 应该是 分类的 主类 类对象 的地址。 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/601acdc344f24f6f8f9ee7445f7b6a22~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/99323593f0e14aff979aa5d7c01b0262~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?) 并且,在了解[Class的底层本质](https://juejin.cn/post/7096087582370431012 "https://juejin.cn/post/7096087582370431012")的时候,我们得知,主类的核心信息是存放在结构体`_class_ro_t`中的![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7cca4b5a9b1c44e5abf4f0d830fc114c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+类的结构：
+![](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/7cca4b5a9b1c44e5abf4f0d830fc114c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 通过前面的分析我们发现:`分类源码中确实是将我们定义的对象方法，类方法，属性等都存放在catagory_t结构体中`  
 接下来我们在回到runtime源码查看 `catagory_t` 存储的方法，属性，协议等是如何存储在类对象中的。  
@@ -231,7 +108,6 @@
     
         property_list_t *propertiesForMeta(bool isMeta, struct header_info *hi);
     };
-    复制代码
 
 与我们通过clang命令转出来的底层实现高度相似:
 
@@ -243,185 +119,9 @@
         const struct _protocol_list_t *protocols;// 协议
         const struct _prop_list_t *properties; // 属性
     };
-    复制代码
 
 2.Category的加载处理过程
 -----------------
-
-前面我们通过模糊搜索,在`objc-rumtime-new.mm`找到`category_t`的实现,紧接着我们继续在`objc-rumtime-new.mm`文件尝试查找与 category 相关的 底层实现,我们找到了相关的几个函数: ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f9184f69b3ab427ea6ee94af88c01b99~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/039f536827f14b248296580b9e4b8269~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/67cf8a38b3964f10851edf7def99a87d~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
-
-    
-    
-    /***********************************************************************
-    * unattachedCategories
-    * Returns the class => categories map of unattached categories.
-    * Locking: runtimeLock must be held by the caller.
-    **********************************************************************/
-    static NXMapTable *unattachedCategories(void)
-    {
-        runtimeLock.assertWriting();
-    
-        static NXMapTable *category_map = nil;
-    
-        if (category_map) return category_map;
-    
-        // fixme initial map size
-        category_map = NXCreateMapTable(NXPtrValueMapPrototype, 16);
-    
-        return category_map;
-    }
-    
-    
-    /***********************************************************************
-    * addUnattachedCategoryForClass
-    * Records an unattached category.
-    * Locking: runtimeLock must be held by the caller.
-    **********************************************************************/
-    static void addUnattachedCategoryForClass(category_t *cat, Class cls, 
-                                              header_info *catHeader)
-    {
-        runtimeLock.assertWriting();
-    
-        // DO NOT use cat->cls! cls may be cat->cls->isa instead
-        NXMapTable *cats = unattachedCategories();
-        category_list *list;
-    
-        list = (category_list *)NXMapGet(cats, cls);
-        if (!list) {
-            list = (category_list *)
-                calloc(sizeof(*list) + sizeof(list->list[0]), 1);
-        } else {
-            list = (category_list *)
-                realloc(list, sizeof(*list) + sizeof(list->list[0]) * (list->count + 1));
-        }
-        list->list[list->count++] = (locstamped_category_t){cat, catHeader};
-        NXMapInsert(cats, cls, list);
-    }
-    
-    
-    /***********************************************************************
-    * removeUnattachedCategoryForClass
-    * Removes an unattached category.
-    * Locking: runtimeLock must be held by the caller.
-    **********************************************************************/
-    static void removeUnattachedCategoryForClass(category_t *cat, Class cls)
-    {
-        runtimeLock.assertWriting();
-    
-        // DO NOT use cat->cls! cls may be cat->cls->isa instead
-        NXMapTable *cats = unattachedCategories();
-        category_list *list;
-    
-        list = (category_list *)NXMapGet(cats, cls);
-        if (!list) return;
-    
-        uint32_t i;
-        for (i = 0; i < list->count; i++) {
-            if (list->list[i].cat == cat) {
-                // shift entries to preserve list order
-                memmove(&list->list[i], &list->list[i+1], 
-                        (list->count-i-1) * sizeof(list->list[i]));
-                list->count--;
-                return;
-            }
-        }
-    }
-    
-    
-    /***********************************************************************
-    * unattachedCategoriesForClass
-    * Returns the list of unattached categories for a class, and 
-    * deletes them from the list. 
-    * The result must be freed by the caller. 
-    * Locking: runtimeLock must be held by the caller.
-    **********************************************************************/
-    static category_list *
-    unattachedCategoriesForClass(Class cls, bool realizing)
-    {
-        runtimeLock.assertWriting();
-        return (category_list *)NXMapRemove(unattachedCategories(), cls);
-    }
-    
-    
-    /***********************************************************************
-    * removeAllUnattachedCategoriesForClass
-    * Deletes all unattached categories (loaded or not) for a class.
-    * Locking: runtimeLock must be held by the caller.
-    **********************************************************************/
-    static void removeAllUnattachedCategoriesForClass(Class cls)
-    {
-        runtimeLock.assertWriting();
-    
-        void *list = NXMapRemove(unattachedCategories(), cls);
-        if (list) free(list);
-    }
-    
-    // Attach method lists and properties and protocols from categories to a class.
-    // Assumes the categories in cats are all loaded and sorted by load order, 
-    // oldest categories first.
-    static void 
-    attachCategories(Class cls, category_list *cats, bool flush_caches)
-    {
-        if (!cats) return;
-        if (PrintReplacedMethods) printReplacements(cls, cats);
-    
-        bool isMeta = cls->isMetaClass();
-    
-        // fixme rearrange to remove these intermediate allocations
-        method_list_t **mlists = (method_list_t **)
-            malloc(cats->count * sizeof(*mlists));
-        property_list_t **proplists = (property_list_t **)
-            malloc(cats->count * sizeof(*proplists));
-        protocol_list_t **protolists = (protocol_list_t **)
-            malloc(cats->count * sizeof(*protolists));
-    
-        // Count backwards through cats to get newest categories first
-        int mcount = 0;
-        int propcount = 0;
-        int protocount = 0;
-        int i = cats->count;
-        bool fromBundle = NO;
-        while (i--) {
-            auto& entry = cats->list[i];
-    
-            method_list_t *mlist = entry.cat->methodsForMeta(isMeta);
-            if (mlist) {
-                mlists[mcount++] = mlist;
-                fromBundle |= entry.hi->isBundle();
-            }
-    
-            property_list_t *proplist = 
-                entry.cat->propertiesForMeta(isMeta, entry.hi);
-            if (proplist) {
-                proplists[propcount++] = proplist;
-            }
-    
-            protocol_list_t *protolist = entry.cat->protocols;
-            if (protolist) {
-                protolists[protocount++] = protolist;
-            }
-        }
-    
-        auto rw = cls->data();
-    
-        prepareMethodLists(cls, mlists, mcount, NO, fromBundle);
-        rw->methods.attachLists(mlists, mcount);
-        free(mlists);
-        if (flush_caches  &&  mcount > 0) flushCaches(cls);
-    
-        rw->properties.attachLists(proplists, propcount);
-        free(proplists);
-    
-        rw->protocols.attachLists(protolists, protocount);
-        free(protolists);
-    }
-    
-    复制代码
-
 ### 2.1 函数 `attachCategories`
 
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/46a16c2bcaf04a219071084bf0c453ed~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?) 通过分析查找到`objc-rumtime-new.mm`文件里的`attachCategories`函数，将分类文件里的数据信息都附加到对应的类对象或者元类对象里,代码如下:
@@ -568,14 +268,14 @@
 
 *   `memmove内存移动`
 *   `memcpy内存拷贝` 我们先来分别看一下这两个函数:
-
-    // memmove ：内存移动。
+```
+// memmove ：内存移动。
     /*  __dst : 移动内存的目的地
     *   __src : 被移动的内存首地址
     *   __len : 被移动的内存长度
     *   将__src的内存移动__len块内存到__dst中
     */
-    void	*memmove(void *__dst, const void *__src, size_t __len);
+    void    *memmove(void *__dst, const void *__src, size_t __len);
     
     // memcpy ：内存拷贝。
     /*  __dst : 拷贝内存的拷贝目的地
@@ -583,10 +283,8 @@
     *   __n : 被移动的内存长度
     *   将__src的内存拷贝__n块内存到__dst中
     */
-    void	*memcpy(void *__dst, const void *__src, size_t __n);
-     
-    复制代码
-
+    void    *memcpy(void *__dst, const void *__src, size_t __n);
+```
 下面我们图示经过memmove和memcpy方法过后的内存变化。
 
 ![未经过内存移动和拷贝时](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fd536998ff764aee8c7433b45a3ccd07~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
@@ -598,8 +296,6 @@
     // oldCount * sizeof(array()->lists[0]) 原来数组占据的空间
     memmove(array()->lists + addedCount, array()->lists, 
                       oldCount * sizeof(array()->lists[0]));
-     
-    复制代码
 
 ![memmove方法之后内存变化](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21aa3df305bc4a14bcc013c8c857c822~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
@@ -612,18 +308,14 @@ memcpy方法之后，内存变化
     // addedCount * sizeof(array()->lists[0]) 原来数组占据的空间
     memcpy(array()->lists, addedLists, 
                    addedCount * sizeof(array()->lists[0]));
-     
-    复制代码
 
 ![memmove方法之后，内存变化](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/32358179bed04d348512cbc79e633c0c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
 
 我们发现:
-
 *   原来指针并没有改变，至始至终指向开头的位置
 *   并且经过memmove和memcpy方法之后，分类的方法，属性，协议列表被放在了类对象中原本存储的方法，属性，协议列表前面
 
 那么为什么要将分类方法的列表追加到本来的对象方法前面呢?
-
 *   这样做的目的是为了保证分类方法优先调用
 *   我们知道当分类重写本类的方法时，会覆盖本类的方法。
 *   其实经过上面的分析我们知道分类和主类有相同的方法的实现源码时,分类实现优先于主类的本质上并不是方法覆盖，而是在方法栈中的顺序不同，
@@ -632,7 +324,6 @@ memcpy方法之后，内存变化
 
 3.总结
 ----
-
 *   编译时
     *   每一个`Category`都会生成一个`category_t`结构体对象，记录着所有的属性、方法和协议信息
     *   多个 `category_t` 会被放在 `category_list`中
@@ -661,7 +352,6 @@ memcpy方法之后，内存变化
 `dyld（dynamic link editor）`，Apple的动态链接器，可以用来装载`Mach-O文件（可执行文件、动态库等）`
 
 **启动APP时，`dyld`所做的事情如下：**
-
 1.  启动APP时，`dyld`会先装载APP的可执行文件，同时会递归加载所有依赖的动态库
 2.  当`dyld`把可执行文件、动态库都装载完毕后，会通知`Runtime`进行下一步的处理
 
@@ -681,7 +371,6 @@ memcpy方法之后，内存变化
 ------------
 
 **总结一下,整个启动过程可以概述为：**
-
 1.  APP的启动由`dyld`主导，将可执行文件加载到内存，顺便加载所有依赖的动态库
 2.  并由`Runtime`负责加载成`objc`定义的结构
 3.  然后所有初始化工作结束后，`dyld`就会调用`main函数`
@@ -714,21 +403,16 @@ memcpy方法之后，内存变化
     
         _dyld_objc_notify_register(&map_images, load_images, unmap_image);
     } 
-    复制代码
 
-我们在`_dyld_objc_notify_register(&map_images, load_images, unmap_image);`这段代码中发现了装载的过程: -`&map_images`:读取模块(images这里代表模块）
-
+我们在`_dyld_objc_notify_register(&map_images, load_images, unmap_image);`这段代码中发现了装载的过程:
+*   `&map_images`:读取模块(images这里代表模块）
 *   `load_images`:装载模块
 *   `unmap_image`:结束读取模块
 
 ### 4.1 map\_images 读取模块过程
-
-**a.我们进入到 `map_images`函数:** ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5036fccde57492fab406ef0900d9c0e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+ ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f5036fccde57492fab406ef0900d9c0e~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
 #### 4.1.1 `map_images_nolock`函数
-
-**b.我们继续进入`map_images_nolock`函数:**
-
     void 
     map_images_nolock(unsigned mhCount, const char * const mhPaths[],
                       const struct mach_header * const mhdrs[])
@@ -872,7 +556,6 @@ memcpy方法之后，内存变化
     
         firstTime = NO;
     }
-    复制代码
 
 #### 4.1.2 `_read_images`函数
 
@@ -881,20 +564,10 @@ memcpy方法之后，内存变化
         if (hCount > 0) {
             _read_images(hList, hCount, totalClasses, unoptimizedTotalClasses);
         }
-    复制代码
 
 **从`map_images_nolock函数` 到`_read_images函数` 的过程,即完成 动态库的装载准备,进入runtime的过程**  
 在`_read_images函数中`我们找到分类相关代码: ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/bea709e4112842bc80591b218d1ac2d7~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-    /***********************************************************************
-    * _read_images
-    * Perform initial processing of the headers in the linked 
-    * list beginning with headerList. 
-    *
-    * Called by: map_images_nolock
-    *
-    * Locking: runtimeLock acquired by map_images
-    **********************************************************************/
     void _read_images(header_info **hList, uint32_t hCount, int totalClasses, int unoptimizedTotalClasses)
     {
         header_info *hi;
@@ -1013,7 +686,7 @@ memcpy方法之后，内存变化
                 }
             }
         }
-    
+ 
         ts.log("IMAGE TIMES: discover classes");
     
         // Fix up remapped classes
@@ -1199,7 +872,7 @@ memcpy方法之后，内存变化
                 }
             }
         }
-    
+   
         ts.log("IMAGE TIMES: discover categories");
     
         // Category discovery MUST BE LAST to avoid potential races 
@@ -1274,7 +947,6 @@ memcpy方法之后，内存变化
     
     #undef EACH_HEADER
     }
-    复制代码
 
 从上述代码中我们可以知道这段代码是用来查找`有没有分类`的。
 
@@ -1326,16 +998,13 @@ memcpy方法之后，内存变化
         // 调用load方法
         call_load_methods();
     }
-    复制代码
 
 我们找到关键代码
-
 *   1.  `prepare_load_methods` 准备load方法
 *   2.  `call_load_methods` 调用load方法
 
 #### 4.2.1 prepare\_load\_methods底层实现
-
-贴上`prepare_load_methods`源码 ![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a408d45953464524a8cde0e3197e89f7~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
+![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a408d45953464524a8cde0e3197e89f7~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
     void prepare_load_methods(const headerType *mhdr)
     {
@@ -1363,9 +1032,8 @@ memcpy方法之后，内存变化
             add_category_to_loadable_list(cat);
         }
     }
-    复制代码
 
-进入`schedule_class_load`，这个函数底层如下
+进入`schedule_class_load`
 
 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/444709464da347c38dc2783a1e1baa89~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
@@ -1391,7 +1059,6 @@ memcpy方法之后，内存变化
         add_class_to_loadable_list(cls);
         cls->setInfo(RW_LOADED); 
     }
-    复制代码
 
 这里面添加的方法`add_class_to_loadable_list`的底层实现如下
 
@@ -1428,19 +1095,17 @@ memcpy方法之后，内存变化
         loadable_classes[loadable_classes_used].method = method;
         loadable_classes_used++;
     }
-     
-    复制代码
 
 我们发现这个添加过程实际上就是
 
 *   把`loadable_class`类型的结构体，存储到表待调度load的这张表`loadable_classes`中
 *   而存储的结构体`loadable_class`类型包含类名`cls`以及该类的`load`方法`IMP`。
-
-    struct loadable_class {
+```
+ struct loadable_class {
         Class cls;  // may be nil
         IMP method;
     };
-    复制代码
+```
 
 `cls->getLoadMethod()`方法得到的就是该类的`Load`方法
 
@@ -1453,8 +1118,7 @@ memcpy方法之后，内存变化
     * Called only from add_class_to_loadable_list.
     * Locking: runtimeLock must be read- or write-locked by the caller.
     **********************************************************************/
-    IMP 
-    objc_class::getLoadMethod()
+    IMP objc_class::getLoadMethod()
     {
         runtimeLock.assertLocked();
     
@@ -1477,7 +1141,6 @@ memcpy方法之后，内存变化
     
         return nil;
     }
-    复制代码
 
 *   `schedule_class_load`底层实现原理是：获取父类，然后继续递归调用
 *   `schedule_class_load`，然后把这些类按**父类的父类->父类->子类**这个顺序把类和类的load方法添加到`loadable_classes`表中。
@@ -1505,38 +1168,6 @@ memcpy方法之后，内存变化
 
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a1c20c2cf4ea4b8e83126b9b1620cb34~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-    
-    /***********************************************************************
-    * call_load_methods
-    * Call all pending class and category +load methods.
-    * Class +load methods are called superclass-first. 
-    * Category +load methods are not called until after the parent class's +load.
-    * 
-    * This method must be RE-ENTRANT, because a +load could trigger 
-    * more image mapping. In addition, the superclass-first ordering 
-    * must be preserved in the face of re-entrant calls. Therefore, 
-    * only the OUTERMOST call of this function will do anything, and 
-    * that call will handle all loadable classes, even those generated 
-    * while it was running.
-    *
-    * The sequence below preserves +load ordering in the face of 
-    * image loading during a +load, and make sure that no 
-    * +load method is forgotten because it was added during 
-    * a +load call.
-    * Sequence:
-    * 1. Repeatedly call class +loads until there aren't any more
-    * 2. Call category +loads ONCE.
-    * 3. Run more +loads if:
-    *    (a) there are more classes to load, OR
-    *    (b) there are some potential category +loads that have 
-    *        still never been attempted.
-    * Category +loads are only run once to ensure "parent class first" 
-    * ordering, even if a category +load triggers a new loadable class 
-    * and a new loadable category attached to that class. 
-    *
-    * Locking: loadMethodLock must be held by the caller 
-    *   All other locks must not be held.
-    **********************************************************************/
     void call_load_methods(void)
     {
         static bool loading = NO;
@@ -1566,7 +1197,6 @@ memcpy方法之后，内存变化
     
         loading = NO;
     }
-    复制代码
 
 **先观察这个函数实现部分:**
 
@@ -1585,7 +1215,6 @@ memcpy方法之后，内存变化
             more_categories = call_category_loads();
     
         } while (loadable_classes_used > 0  ||  more_categories);
-    复制代码
 
 接下来我们继续分析`call_class_loads`和`call_category_loads`底层实现。
 
@@ -1595,14 +1224,6 @@ memcpy方法之后，内存变化
 
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/5f6aeb89e4a44dda938ea019b00dbf44~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp?)
 
-    
-    /***********************************************************************
-    * call_class_loads
-    * Call all pending class +load methods.
-    * If new classes become loadable, +load is NOT called for them.
-    *
-    * Called only by call_load_methods().
-    **********************************************************************/
     static void call_class_loads(void)
     {
         int i;
@@ -1629,7 +1250,6 @@ memcpy方法之后，内存变化
         // Destroy the detached list.
         if (classes) free(classes);
     }
-    复制代码
 
 **简化源码如下:**
 
@@ -1666,18 +1286,6 @@ memcpy方法之后，内存变化
 
 然后看看调用分类的load函数`call_category_loads`
 
-    /***********************************************************************
-    * call_category_loads
-    * Call some pending category +load methods.
-    * The parent class of the +load-implementing categories has all of 
-    *   its categories attached, in case some are lazily waiting for +initalize.
-    * Don't call +load unless the parent class is connected.
-    * If new categories become loadable, +load is NOT called, and they 
-    *   are added to the end of the loadable list, and we return TRUE.
-    * Return FALSE if no new categories became loadable.
-    *
-    * Called only by call_load_methods().
-    **********************************************************************/
     static bool call_category_loads(void)
     {
         int i, shift;
@@ -1758,7 +1366,6 @@ memcpy方法之后，内存变化
     
         return new_categories_added;
     }
-    复制代码
 
 **简化代码如下:**
 
@@ -1843,3 +1450,239 @@ memcpy方法之后，内存变化
 ### 4.3 总结
 
 App装载过程大概可以简化如图 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b4ff895a730248388b67f86502edb38c~tplv-k3u1fbpfcp-zoom-in-crop-mark:4536:0:0:0.awebp)
+
+
+### 分类中添加实例变量和属性分别会发生什么，还是什么时候会发生问题？
+     添加实例变量编译时直接报错，因为类的内存结构已经确定，无法在分类中添加实例变量了。
+     添加属性没问题，但是在运行的时候使用这个属性程序crash。原因是没有实例变量也没有set/get方法
+     
+### 分类中为什么不能添加成员变量（runtime除外）？
+      类对象在创建的时候已经定好了成员变量，但是分类是运行时加载的，无法添加。
+      类对象里的 class_ro_t 类型的数据在运行期间不能改变，再添加方法和协议都是修改的 class_rw_t 的数据。
+      分类添加方法、协议是把category中的方法，协议放在category_t结构体中，再拷贝到类对象里面。但是category_t里面没有成员变量列表。
+      虽然category可以写上属性，其实是通过关联对象实现的，需要手动添加setter & getter。    
+      
+ ### 分类不能添加属性的实质原因
+> 1.我们知道在一个类中用@property声明属性，编译器会自动帮我们生成`_成员变量`和`setter/getter`，但分类的指针结构体中，根本没有`成员变量列表`。所以在分类中用`@property`声明属性，既无法生成`_成员变量`也无法生成`setter/getter`的实现。  
+> 2.因此结论是：我们可以用@property声明属性，编译和运行都会通过，只要不使用程序也不会崩溃。但如果调用了`_成员变量`和`setter/getter`方法，报错就在所难免了。
+
+### 因为分类会覆盖本类的同名方法，想要调用本类方法怎么做？
+ 倒序遍历方法列表，找到相同的方法名就行，因为本类的在方法列表第一个
+ 
+ ```Objective-C
+void invokeOriginalMethod(id target , SEL selector) {
+    uint count;
+    Method *list = class_copyMethodList([target class], &count);
+    for ( int i = count - 1 ; i >= 0; i--) {
+        Method method = list[i];
+        SEL name = method_getName(method);
+        IMP imp = method_getImplementation(method);
+        if (name == selector) {
+            ((void (*)(id, SEL))imp)(target, name);
+            break;
+        }
+    }
+    free(list);
+}
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        MJPerson *person = [[MJPerson alloc] init];
+        invokeOriginalMethod(person, @selector(run));
+    }
+    return 0;
+}
+ ```
+
+ ### 为什么在+(void)load或者+(void)initialize方法中总是要写dispatch_once函数？
+ 在多线程环境下，+load 和 +initialize 方法会自动调用，但它们的线程安全性有一些细微的差别：
+
++load 方法是在类加载到内存时自动调用的，通常在应用程序启动时。它是在主线程上同步执行的，因此不需要额外的线程保护机制。只要类被加载到内存中，+load 方法会被调用一次，并且在调用结束之前，不会有其他线程同时调用该方法。（给load方法加dispatch_once是为了防止主动调用load方法，虽然一般不会这么做）
+
++initialize 方法是在首次使用类时自动调用的，它是在多线程环境下按需异步执行的。虽然每个类只会被调用一次，但由于多线程的特性，多个线程可以同时访问并触发 +initialize 方法。因此，在 +initialize 方法中进行初始化时，需要考虑线程安全性。
+
+### 有没有可能+(void)load方法也被调用多次？如何避免？
+有一些特殊情况可能导致 +load 方法被多次调用：
+
+子类和分类的 +load 方法：如果一个类的子类或分类也实现了 +load 方法，那么它们的 +load 方法也会被调用。这意味着在继承关系中，每个类的 +load 方法都会被调用一次，从父类到子类，按照继承关系的顺序。
+
+动态加载的类：在运行时，通过 NSClassFromString 或其他动态加载类的方式，可以将类动态加载到内存中。如果一个类被多次动态加载，那么它的 +load 方法也会被多次调用。
+
+类簇（Class Cluster）：类簇是一种抽象类，它有多个具体的私有子类来提供不同的实现。当使用类簇时，不同的具体子类可能会有各自的 +load 方法，因此在使用不同的子类时，对应的 +load 方法也会被调用。
+
+总之，尽管 +load 方法在正常情况下只会被调用一次，但在特定的情况下，如继承关系、动态加载类和类簇中，可能会导致 +load 方法被多次调用。因此，在编写代码时，应当注意避免在 +load 方法中进行会产生副作用的操作，以保证代码的可靠性和稳定性。
+
+#### +load方法
+-   +load方法会在runtime加载类、分类时调用
+-   每个类、分类的+load，在程序运行过程中只调用一次
+-   `调用顺序`
+    -   1.先调用类的+load
+        -   按照编译先后顺序调用（先编译，先调用）
+        -   调用子类的+load之前会先调用父类的+load
+
+    -   2.再调用分类的+load
+        -   按照编译先后顺序调用（先编译，先调用）
+
+-   代码例子及图解佐证
+![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/426dfee073f0437499afdbc917aa72d1~tplv-k3u1fbpfcp-watermark.image?)
+
+##### objc4源码解读过程：objc-os.mm
+-   _objc_init
+-   load_images
+-   prepare_load_methods
+    -   schedule_class_load
+    -   add_class_to_loadable_list
+    -   add_category_to_loadable_list
+-   call_load_methods
+    -   call_class_loads
+    -   call_category_loads
+    -   (*load_method)(cls, SEL_load)
+-   `+load方法是根据方法地址直接调用，并不是经过objc_msgSend函数调用`
+
+##### + initialize方法
+-   `+initialize方法会在类第一次接收到消息时调用`
+-   调用顺序
+    -   先调用父类的+initialize，再调用子类的+initialize
+    -   (先初始化父类，再初始化子类，每个类只会初始化1次)
+##### objc4源码解读过程
+-   `objc-msg-arm64.s`
+    -   objc_msgSend
+-   `objc-runtime-new.mm`
+    -   class_getInstanceMethod
+    -   lookUpImpOrNil
+    -   lookUpImpOrForward
+    -   _class_initialize
+    -   callInitialize
+    -   objc_msgSend(cls, SEL_initialize)
+
+项目例子佐证 -
+
+![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b73f7793caf54581bf6a2f4eb8e431be~tplv-k3u1fbpfcp-watermark.image?)
+-   `每个类都实现了+ initialize方法`
+
+![image.png](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/390ae24151834a5e959f665b22bb9c6b~tplv-k3u1fbpfcp-watermark.image?)
+-   `先调用父类的+initialize，再调用子类的+initialize`
+-   `(先初始化父类，再初始化子类，每个类只会初始化1次)`
+
+> 解析  
+> 1.[Student alloc]会调用+initialize方法，因为他有父类Person，所以先调用Person的+initialize方法，又因为分类在前面，所以调用了Person(Test2)的+initialize方法。但是他自己本身没有实现+initialize方法，所以会去父类查找，然后分类方法在前面，所以调用了Person(Test2)的+initialize方法。  
+
+> 2.[Teacher alloc]会调用+initialize方法，因为他有父类Person，所以先调用Person的+initialize方法，但是前面已经初始化过了，所以跳过，调用自己的+initialize方法，但是因为他自己没有实现+initialize方法，所以调用父类的+initialize方法，又因为分类方法在前面，所以调用Person(Test) +initialize方法。 
+
+> 3.[Person alloc]，因为前面已经初始化过了，所以不会再调+initialize方法，所以这里不打印。
+
+##### +initialize和+load的区别
+-   +initialize是通过objc_msgSend进行调用的，所以有以下特点
+    -   如果子类没有实现+initialize，会调用父类的+initialize（所以父类的+initialize可能会被调用多次）
+    -   如果分类实现了+initialize，就覆盖类本身的+initialize调用
+
+### 关联对象
+    使用关联对象，需要在主对象 dealloc 的时候手动释放么？
+     不需要，主对象通过 dealloc -> object_dispose -> object_remove_assocations 进行关联对象的释放
+     
+```Objective-C     
+#import "MJPerson+Test.h"
+#import <objc/runtime.h>
+
+@implementation MJPerson (Test)
+/**
+ void objc_setAssociatedObject(id _Nonnull object, const void * _Nonnull key,
+                         id _Nullable value, objc_AssociationPolicy policy)
+ AssociationsManager = {static AssociationsHashMap map}
+ AssociationsHashMap map = [{object : AssociationsMap = {key : Associations = {policy,value}}}]
+ */
+- (void)setName:(NSString *)name  //key确保唯一就行，_cmd、@selector(name)、static类型的字符串都可以作为key
+{
+    objc_setAssociatedObject(self, @selector(name), name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (NSString *)name
+{
+    // 隐式参数
+    // _cmd == @selector(name)
+    return objc_getAssociatedObject(self, _cmd);
+}
+
+- (void)setWeight:(int)weight
+{
+    objc_setAssociatedObject(self, @selector(weight), @(weight), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (int)weight
+{
+    // _cmd == @selector(weight)
+    return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+
+@end
+```
+     
+### 关联对象的实现和原理:
+ 关联对象不存储在关联对象本身内存中，而是存储在一个全局容器中，由runtime管理。这个容器是由 AssociationsManager 管理并在它维护的一个单例 Hash 表AssociationsHashMap ；
+```
+ 第一层 AssociationsHashMap：类名object ：bucket（map）
+ 第二层 ObjectAssociationMap：key（name）：ObjcAssociation（value和policy）
+```
+ AssociationsManager 使用 AssociationsManagerLock 自旋锁保证了线程安全。
+
+![image.png](https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/5/14/1635a628a228e349~tplv-t2oaga2asx-jj-mark:3024:0:0:0:q75.awebp)
+
+### 给关联对象设置key的时候有哪几种方式？
+使用静态变量或全局变量作为关联的key：
+```
+static char associatedObjectKey; //这里没有给associatedObjectKey赋初值，并不是0或者nil，而是操作系统随机分配的内存，不会冲突。
+objc_setAssociatedObject(object, &associatedObjectKey, associatedObject, OBJC_ASSOCIATION_RETAIN);
+```
+
+使用指向静态变量的指针作为关联的key：
+```
+static char associatedObjectKey;
+static char *associatedObjectKeyPtr = &associatedObjectKey;
+objc_setAssociatedObject(object, associatedObjectKeyPtr, associatedObject, OBJC_ASSOCIATION_RETAIN);
+```
+使用静态的dispatch_once_t变量作为关联的key：
+```
+static dispatch_once_t onceToken;
+dispatch_once(&onceToken, ^{
+    objc_setAssociatedObject(object, &onceToken, associatedObject, OBJC_ASSOCIATION_RETAIN);
+});
+```
+
+使用自定义的字符串作为关联的key：
+```
+static NSString * const associatedObjectKey = @"AssociatedObjectKey";
+objc_setAssociatedObject(object, associatedObjectKey, associatedObject, OBJC_ASSOCIATION_RETAIN);
+```
+需要注意的是，关联的key应该具有全局唯一性，以避免不同的关联冲突。在使用字符串作为关联的key时，最好使用全局唯一的字符串，比如使用类名加上一个特定的后缀。
+
+
+还可以使用@selector，因为可以确保唯一性，且全局存在不会销毁
+
+关联对象的相关方法有:
+```
+objc_setAssociatedObject用于关联对象的设置,
+objc_getAssociatedObject用于关联对象的获取,
+objc_removeAssociatedObjects用于移除关联的对象等。
+这些方法可以在<objc/runtime.h>头文件中找到。
+```
+### 如何销毁关联对象？销毁的时候key也会销毁吗？
+在 Objective-C 中，可以使用 objc_setAssociatedObject 方法将关联对象与某个对象进行关联，并可以使用 objc_removeAssociatedObjects 方法来移除该对象的所有关联对象。
+
+当调用 objc_removeAssociatedObjects 方法移除关联对象时，只会移除该对象的关联对象值，而不会销毁关联对象的 key。关联对象的 key 仍然存在，可以再次使用。
+```
+// 关联对象的 key
+static char associatedObjectKey;
+// 设置关联对象
+objc_setAssociatedObject(object, &associatedObjectKey, associatedObject, OBJC_ASSOCIATION_RETAIN);
+// 移除关联对象
+objc_removeAssociatedObjects(object);
+```
+在上述示例中，关联对象的 key 是 associatedObjectKey，我们使用 objc_setAssociatedObject 将 associatedObject 关联到 object 上。然后，我们调用 objc_removeAssociatedObjects 移除 object 的所有关联对象。这将移除关联对象的值，但不会销毁关联对象的 key。
+
+如果您希望完全移除关联对象，并且不再使用相同的 key 进行关联，您可以选择在不需要关联对象时，手动调用 objc_setAssociatedObject 方法，并将关联对象的值设置为 nil，或者使用 objc_setAssociatedObject 方法将 nil 关联到对象上，以覆盖旧的关联对象。
+```
+objc_setAssociatedObject(object, &associatedObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
+```
+这样做会将关联对象的值设置为 nil，并且与该对象关联的 key 仍然存在，可以再次使用。
+也就是说key还是一直存在，并不会随关联对象的销毁而销毁，除非退出程序。
+

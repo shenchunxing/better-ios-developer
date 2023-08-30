@@ -62,6 +62,7 @@ struct Student_IMPL {
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Student *stu = [[Student alloc] init];
+        
         NSLog(@"stu - %zd", class_getInstanceSize([Student class])); //class_getInstanceSize 内存对齐：最大成员的倍数
         NSLog(@"stu - %zd", malloc_size((__bridge const void *)stu));//malloc_size 内存对齐：16的倍数
         

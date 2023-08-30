@@ -26,9 +26,9 @@ void block_copyedTest()
     // NSStackBlock
     int age = 10;
     block = [^{ //MRC下block变量不会强引用该block对象,block离开test2作用域就销毁了
-        NSLog(@"block---------%d", age); //不copy会访问混乱
+        NSLog(@"age = %d", age); //不copy会访问混乱
     } copy];
-    NSLog(@"block类型：%@",[block class]); //MRC下,必须copy,会变成mallocblock
+    NSLog(@"%@",[block class]); //MRC下,必须copy,会变成mallocblock
     [block release];
 }
 
@@ -60,6 +60,12 @@ void block_type()
     };
     NSLog(@"%p", [block2 copy]);//arc会自动copy,mrc需要手动，在堆上
     
+    //MRC下不会强引用
+    block = ^{
+        NSLog(@"block3---------%d", age);
+    };
+    NSLog(@"%@",[block class]); //__NSStackBlock__
+    
     NSLog(@"全局:%@ ,不copy在栈:%@ ,copy后在堆:%@", [block1 class],  [block2 class] ,[[block2 copy] class]);
 }
 
@@ -78,9 +84,8 @@ int main(int argc, const char * argv[]) {
         
         
         block_type(); //block类型
-        
+
         block_copyedTest();//mrc下copy了block
-        block();
         
         NSLog(@"------------------");
         

@@ -28,7 +28,6 @@
     __weak MJPerson *weakP = p;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSLog(@"1-------%@", p); //因为block对p这里有强引用，导致p打印完，才会释放
-        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             NSLog(@"2-------%@", weakP);//weakP指针是弱引用，
         });
@@ -41,7 +40,6 @@
     __weak MJPerson *weakP = p;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSLog(@"1-------%@", weakP);
-        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             NSLog(@"2-------%@", p);//因为block对p这里有强引用，导致p打印完，才会释放
         });
@@ -54,7 +52,6 @@
     __weak MJPerson *weakP = p;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSLog(@"1-------%@", p);
-        
         __strong MJPerson *strongPerson = weakP;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             NSLog(@"2-------%@", strongPerson);//因为strongPerson对weakP这里有强引用，导致打印完，才会释放

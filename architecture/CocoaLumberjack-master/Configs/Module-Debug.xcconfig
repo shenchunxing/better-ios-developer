@@ -1,0 +1,48 @@
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Module-Shared.xcconfig"
+
+// From https://gist.github.com/steipete/f517daee51845c360053f7385900e147
+// Hack to exclude arm64 when building Mac Catalyst in Xcode 12.2
+// If this is not set and we do not set macosx as SUPPORTED_PLATFORMS, then selecting Mac as target forces arm64.
+// This can be worked around by setting ONLY_ACTIVE_ARCH to NO (slow) or using the EXCLUDED_ARCHS trick
+// Inspired by https://github.com/Carthage/Carthage/issues/3019
+EXCLUDED_ARCHS__IS_MACCATALYST_YES__NATIVE_ARCH_64_BIT_x86_64=arm64 arm64e armv7 armv7s armv6 armv8
+EXCLUDED_ARCHS = $(inherited) $(EXCLUDED_ARCHS__IS_MACCATALYST_$(IS_MACCATALYST)__NATIVE_ARCH_64_BIT_$(NATIVE_ARCH_64_BIT))
+
+// Specifies whether binary files that are copied during the build, such as in a Copy Bundle Resources or Copy Files build phase, should be stripped of debugging symbols.
+COPY_PHASE_STRIP = NO
+
+// The type of debug information to produce.
+DEBUG_INFORMATION_FORMAT = dwarf
+
+// Controls whether assertion logic provided by `NSAssert` is included in the preprocessed source code or is elided during preprocessing.
+ENABLE_NS_ASSERTIONS = YES
+
+// When this setting is activated, the product will be built with options appropriate for running automated tests, such as making private interfaces accessible to the tests.
+ENABLE_TESTABILITY = YES
+
+// Check for violations of nullability annotations in function calls, return statements, and assignments.
+CLANG_UNDEFINED_BEHAVIOR_SANITIZER_NULLABILITY = YES
+
+// Specifies the degree to which the generated code is optimized for speed and binary size.
+GCC_OPTIMIZATION_LEVEL = 0
+
+// Space-separated list of preprocessor macros of the form `foo` or `foo=bar`
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) DEBUG=1
+
+// Metal debug info - not sure why we need it
+MTL_ENABLE_DEBUG_INFO = YES
+
+// If enabled, only the active architecture is built.
+ONLY_ACTIVE_ARCH = YES
+
+// This setting controls the way the Swift files in a module are rebuilt.
+SWIFT_COMPILATION_MODE = singlefile
+
+// Swift optimization (none, speed, size, wholemodule)
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+
+// If enabled, perform validation checks on the product as part of the build process.
+VALIDATE_PRODUCT = NO

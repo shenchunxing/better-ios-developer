@@ -1,11 +1,9 @@
-二、属性
-====
+# 属性
 
 1\. 属性的基本概念
 -----------
 
 Swift中跟实例相关的属性可以分为2大类:
-
 *   **`存储属性`**（Stored Property）
     *   类似于成员变量的概念
     *   存储在实例的内存中
@@ -17,35 +15,28 @@ Swift中跟实例相关的属性可以分为2大类:
     *   枚举、结构体、类都可以定义计算属性
 
 ### 1.1 存储属性
-
 关于存储属性，Swift有个明确的规定:
-
 *   在创建类或结构体的实例时，**必须为所有的存储属性设置一个合适的初始值**
 *   可以在初始化器里为存储属性设置一个初始值
     
-    swift
-    
-    复制代码
-    
-    `struct Point {
-     // 存储属性
-     var x: Int
-     var y: Int
-    } 
-    let p = Point(x: 10, y: 10)` 
+```
+struct Point {
+ // 存储属性
+ var x: Int
+ var y: Int
+} 
+let p = Point(x: 10, y: 10)
+```
     
 *   可以分配一个默认的属性值作为属性定义的一部分
-    
-    swift
-    
-    复制代码
-    
-    `struct Point {
+```
+struct Point {
      // 存储属性
      var x: Int = 10
      var y: Int = 10
     } 
-    let p = Point()` 
+    let p = Point()
+```
     
 
 ### 1.2 计算属性
@@ -55,91 +46,63 @@ Swift中跟实例相关的属性可以分为2大类:
 *   `let`代表常量，值是一直不变的
 *   计算属性的值是可能发生变化的（即使是只读计算属性）
     
-    swift
-    
-    复制代码
-    
-    `struct Circle {
+```swift
+struct Circle {
      // 存储属性
      var radius: Double 
      // 计算属性
      var diameter: Double {
-     set {
-     radius = newValue / 2
-     } 
-     get {
-     radius * 2
+         set {
+           radius = newValue / 2
+         } 
+         get {
+           radius * 2
+         }
      }
-     }
-    }
+ }
     var circle = Circle(radius: 5)
     print(circle.radius) // 5.0
     print(circle.diameter) // 10.0
     circle.diameter = 12
     print(circle.radius) // 6.0
     print(circle.diameter) // 12.0` 
+```
     
 *   set传入的新值默认叫做`newValue`，也可以自定义
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
+```swift
+struct Circle {
      // 存储属性
      var radius: Double 
      // 计算属性
      var diameter: Double {
-     set(newDiameter) {
-     radius = newDiameter / 2
-     } 
-     get {
-     radius * 2
+       set(newDiameter) {
+           radius = newDiameter / 2
+       } 
+       get {
+         radius * 2
+       }
      }
-     }
-    } 
+} 
     var circle = Circle(radius: 5)
     circle.diameter = 12
-    print(circle.diameter)` 
+    print(circle.diameter)//12
+```
     
 *   只读计算属性，只有`get`，没有`set`
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
+```swift
+struct Circle {
      // 存储属性
-     var radius: Double 
-     // 计算属性
-     var diameter: Double {
-     get {
-     radius * 2
-     }
-     }
-    }` 
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
-     // 存储属性
-     var radius: Double 
+     var radius: Double //8字节
      // 计算属性
      var diameter: Double { radius * 2 }
-     }
-    }` 
-    
+   }
+}
+```
 *   打印`Circle结构体`的内存大小，其占用才`8个字节`，其本质是因为计算属性相当于函数
-    
-    swift
-    
-    复制代码
-    
-    `var circle = Circle(radius: 5)
-    print(Mems.size(ofVal: &circle)) // 8` 
-    
+```swift
+var circle = Circle(radius: 5)
+print(Mems.size(ofVal: &circle)) // 8
+```
 
 > **我们可以通过反汇编来查看其内部做了什么**
 
@@ -148,41 +111,17 @@ Swift中跟实例相关的属性可以分为2大类:
 *   所以可以用此证明:计算属性只会生成`getter`和`setter`,不会开辟内存空间
 
 **注意：**
-
 *   一旦将存储属性变为计算属性，初始化构造器就会报错，只允许传入存储属性的值
 *   因为存储属性是直接存储在结构体内存中的，如果改成计算属性则不会分配内存空间来存储 ![-w646](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0e864fd3b6104be586e659d1e1f1b02b~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp) ![-w525](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc57b13c70a0424ebbf7f6df42150499~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 *   如果只有`setter`也会报错 ![-w651](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/510b7dcc067d4d73a7ecc95efd8c7992~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 *   只读计算属性：只有`get`，没有`set`
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
-     var radius: Double 
-     var diameter: Double { 
-     get { 
-     radius * 2 
-     }
-     } 
-    }
-    //可以简写成
-    struct Circle {
-     var radius: Double 
-     var diameter: Double { radius * 2  } 
-    }` 
-    
 
 2\. 枚举rawValue原理(计算属性)
 ----------------------
 
 *   1.  枚举原始值`rawValue`的本质也是计算属性，而且是只读的计算属性
-    
-    swift
-    
-    复制代码
-    
-    `enum TestEnum: Int {
+```swift
+enum TestEnum: Int {
      case test1, test2, test3
      var rawValue: Int {
      switch self {
@@ -195,20 +134,19 @@ Swift中跟实例相关的属性可以分为2大类:
      }
      }
     } 
-    print(TestEnum.test1.rawValue)//10` 
+print(TestEnum.test1.rawValue)//10
+```
     
 *   2.  下面我们去掉自己写的`rawValue`，然后转汇编看下本质是什么样的
     
     *   可以看到底层确实是调用了`getter`
-    
-    swift
-    
-    复制代码
-    
-     `enum TestEnum: Int {
+    ```swift
+    enum TestEnum: Int {
      case test1, test2, test3
      }
-     print(TestEnum.test1.rawValue)` 
+     print(TestEnum.test1.rawValue)
+    ```
+
     
     ![-w717](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6ba17ae69a634b95941c98bd85d2785e~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
@@ -219,51 +157,47 @@ Swift中跟实例相关的属性可以分为2大类:
     
     *   看下面的示例代码，如果不加`lazy`，那么Person初始化之后就会进行Car的初始化
     *   加上`lazy`，只有调用到属性的时候才会进行Car的初始化
-    
-    swift
-    
-    复制代码
-    
-    `class Car {
+```swift
+class Car {
      init() {
-     print("Car init!")
+         print("Car init!")
      }
      func run() {
-     print("Car is running!")
+         print("Car is running!")
      }
-    }
-    class Person {
-     lazy var car = Car()
-     init() {
+}
+
+class Person {
+ lazy var car = Car()
+ init() {
      print("Person init!")
-     }
-     func goOut() {
+ }
+ func goOut() {
      car.run()
-     }
-    }
-    let p = Person()
-    print("----")
-    p.goOut()
-    // 打印：
-    // Person init!
-    // ----
-    // Car init!
-    // Car is running!` 
+ }
+}
+
+let p = Person()
+print("----")
+p.goOut()
+// 打印：
+// Person init!
+// ----
+// Car init!
+// Car is running!
+```
     
 *   2.  `lazy`属性必须是`var`，不能是`let`  
         `let`必须在实例的初始化方法完成之前就拥有值
-    
-    swift
-    
-    复制代码
-    
-    `class PhotoView {
+```swift
+class PhotoView {
      lazy var image: UIImage = {
-     let url = "http://www.***.com/logo.png"
-     let data = Data(url: url)
-     return UIImage(data: data)
+         let url = "http://www.***.com/logo.png"
+         let data = Data(url: url)
+         return UIImage(data: data)
      }()
-    }` 
+}
+```
     
 *   3.  **注意：** `lazy`属性和普通的存储属性内存布局是一样的，不同的只是什么分配内存的时机,而且lazy属性可以通过闭包进行初始化
 *   4.  **延迟存储属性的注意点**
@@ -280,73 +214,63 @@ Swift中跟实例相关的属性可以分为2大类:
     *   只有存储属性可以设置属性观察器
     *   `willSet`会传递新值，默认叫`newValue`
     *   `didSet`会传递旧值，默认叫`oldValue`
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
+```swift
+struct Circle {
      // 存储属性
      var radius: Double {
-     willSet {
-     print("willSet", newValue)
-     }
-     didSet {
-     print("didSet", oldValue, radius)
-     }
+         willSet {
+         print("willSet", newValue)
+         }
+         didSet {
+         print("didSet", oldValue, radius)
+         }
      }
      init() {
-     radius = 1.0
-     print("Circle init!")
+         radius = 1.0
+         print("Circle init!")
      }
     }
     var circle = Circle()
     circle.radius = 10.5
     // 打印
     // willSet 10.5
-    // didSet 1.0 10.5` 
+    // didSet 1.0 10.5
+```
     
 *   2.  在初始化器中设置属性值不会触发`willSet`和`didSet`
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
+```swift
+struct Circle {
      // 存储属性
      var radius: Double {
-     willSet {
-     print("willSet", newValue)
-     }
-     didSet {
-     print("didSet", oldValue, radius)
-     }
+         willSet {
+             print("willSet", newValue)
+         }
+         didSet {
+             print("didSet", oldValue, radius)
+         }
      }
      init() {
-     radius = 1.0
-     print("Circle init!")
+         radius = 1.0
+         print("Circle init!")
      }
     }
-    var circle = Circle()` 
-    
+    var circle = Circle()
+```
 *   3.  在属性定义时设置初始值也不会触发`willSet`和`didSet`
-    
-    swift
-    
-    复制代码
-    
-    `struct Circle {
+```swift
+struct Circle {
      // 存储属性
      var radius: Double = 1.0 {
-     willSet {
-     print("willSet", newValue)
+         willSet {
+             print("willSet", newValue)
+         }
+         didSet {
+             print("didSet", oldValue, radius)
+         }
      }
-     didSet {
-     print("didSet", oldValue, radius)
-     }
-     }
-    }
-    var circle = Circle()` 
+}
+var circle = Circle()
+```
     
 *   4.  计算属性设置属性观察器会报错 ![-w657](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f0cb0a9d0e0e45858fa53006840c92ef~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
@@ -356,46 +280,39 @@ Swift中跟实例相关的属性可以分为2大类:
 *   1.  属性观察器、计算属性的功能，同样可以应用在全局变量和局部变量身上
 
 ### 5.1 全局变量
+```swift
+var num: Int {
+     get {
+         return 10
+     }
 
-swift
-
-复制代码
-
-`var num: Int {
- get {
- return 10
- }
-  
- set {
- print("setNum", newValue)
- }
+     set {
+         print("setNum", newValue)
+     }
 }
 num = 11 // setNum 11
-print(num) // 10` 
+print(num) // 10
+```
 
 ### 5.2 局部变量
-
-swift
-
-复制代码
-
-`func test() {
+```swift
+func test() {
  var age = 10 {
- willSet {
- print("willSet", newValue)
- }
-  
- didSet {
- print("didSet", oldValue, age)
- }
+     willSet {
+         print("willSet", newValue)
+     }
+
+     didSet {
+         print("didSet", oldValue, age)
+     }
  }
   
  age = 11
  // willSet 11
  // didSet 10 11
 }
-test()` 
-
+test()
+```
 二、inout
 =======
 
@@ -403,64 +320,61 @@ test()`
 ---------------
 
 看下面的示例代码，分别输出什么，为什么？
-
-swift
-
-复制代码
-
-`struct Shape { 
-var width: Int 
-var side: Int { 
-willSet { 
-print("willSet", newValue) 
-        }
-  
-didSet { 
-print("didSet", oldValue, side) 
-} 
-    }
-var girth: Int { 
-set { 
-width = newValue / side 
-print("setGirth", newValue) 
-} 
-get { 
-print("getGirth") 
-return width * side 
-} 
-    }
-func show() { 
-print("width=\(width), side=\(side), girth=\(girth)") 
-} 
-} 
-func test(_ num: inout Int) { 
-num = 20 
+```swift
+struct Shape {
+    var width: Int
+    var side: Int {
+        willSet {
+            print("willSet", newValue)
+                    }
+        
+        didSet {
+            print("didSet", oldValue, side)
+        }
+            }
+    var girth: Int {
+        set {
+            width = newValue / side
+            print("setGirth", newValue)
+        }
+        get {
+            print("getGirth")
+            return width * side
+        }
+            }
+    func show() {
+        print("width=\(width), side=\(side), girth=\(girth)")
+    }
 }
-  
-var s = Shape(width: 10, side: 4) 
-test(&s.width) 
+func test(_ num: inout Int) {
+    num = 20
+}
+
+var s = Shape(width: 10, side: 4)
+test(&s.width)
 s.show()
-  
-print("--------------------") 
+
+print("--------------------")
 test(&s.side)
-s.show() 
-print("--------------------") 
-test(&s.girth) 
 s.show()
-  
-// 打印: 
-//getGirth 
-//width=20, side=4, girth=80 
-//-------------------- 
-//willSet 20 
-//didSet 4 20 
-//getGirth 
-//width=20, side=20, girth=400 
-//-------------------- 
-//getGirth 
-//setGirth 20 
-//getGirth 
-//width=1, side=20, girth=20` 
+print("--------------------")
+test(&s.girth)
+s.show()
+
+// 打印:
+//getGirth
+//width=20, side=4, girth=80
+//--------------------
+//willSet 20
+//didSet 4 20
+//getGirth
+//width=20, side=20, girth=400
+//--------------------
+//getGirth
+//setGirth 20
+//getGirth
+//width=1, side=20, girth=20
+```
 
 **第一段打印**  
 初始化的时候会给width赋值为10，side赋值为4，并且不会调用side的属性观察器  
@@ -521,7 +435,6 @@ s.show()
 ![-w947](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6c080e2c15d74ed0b322d1d646e43026~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp)
 
 **对于没有属性观察器的`存储属性`来说:**
-
 *   `inout`的本质就是传进来一个`地址值`，然后将值存储到这个地址对应的存储空间内
 
 **对于设置了属性观察器和`计算属性`来说:**
@@ -551,18 +464,14 @@ s.show()
     *   存储类型属性(Stored Type Property):整个程序运行过程中，就只有一份内存（类似于全局变量）
     *   计算类型属性(Computed Type Property)
 *   2.  可以通过`static`定义类型属性
-    
-    swift
-    
-    复制代码
-    
-    `struct Car {
+```swift
+struct Car {
      static var count: Int = 0
      init() {
-     Car.count += 1
+         Car.count += 1
      }
-    }` 
-    
+    }
+```
 *   3.  如果是类，也可以用关键字`class`修饰`计算属性类型`
     
     swift

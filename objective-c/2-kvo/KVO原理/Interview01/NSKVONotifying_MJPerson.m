@@ -7,8 +7,10 @@
 //
 
 #import "NSKVONotifying_MJPerson.h"
+#import <objc/runtime.h>
 
 @implementation NSKVONotifying_MJPerson
+
 
 - (void)setAge:(int)age
 {
@@ -27,6 +29,19 @@ void _NSSetIntValueAndNotify()
 {
     // 通知监听器，某某属性值发生了改变
     [oberser observeValueForKeyPath:key ofObject:self change:nil context:nil];
+}
+
+bool __isKVOA() {
+    return true;
+}
+
+- (Class) class
+{
+  return class_getSuperclass(object_getClass(self));
+}
+
+- (void)dealloc {
+    
 }
 
 @end

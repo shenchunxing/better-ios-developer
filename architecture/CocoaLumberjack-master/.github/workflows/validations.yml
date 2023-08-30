@@ -1,0 +1,35 @@
+name: Validations
+
+on:
+  push:
+    branches: [ master ]
+  pull_request_target:
+    branches: [ master ]
+
+env:
+  LC_CTYPE: en_US.UTF-8
+  LANG: en_US.UTF-8
+
+jobs:
+  validate-cocoapods:
+    runs-on: macos-13
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ^14.3
+      - uses: actions/checkout@v3
+      - run: pod lib lint
+
+  run-danger:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request_target' }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: danger/swift
+        uses: docker://ghcr.io/danger/danger-swift-with-swiftlint:3.15.0
+        with:
+          args: --failOnErrors --no-publish-check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

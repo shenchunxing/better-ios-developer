@@ -48,9 +48,11 @@
           [self.person2 methodForSelector:@selector(setAge:)]);
 
 
-    NSLog(@"类对象 - %@ %@",
+    NSLog(@"类对象 - %@ - %@ - %@ - %@",
           object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson
-          object_getClass(self.person2)); // self.person2.isa //MJPerson
+          object_getClass(self.person2), // self.person2.isa //MJPerson
+          //注意：class被重写了，两者一样。目的是隐藏NSKVONotifying_MJPerson这个子类
+    [self.person1 class],[self.person2 class]);
     
     NSLog(@"类对象地址 - %p %p",
           object_getClass(self.person1),  // self.person1.isa //NSKVONotifying_MJPerson

@@ -22,7 +22,7 @@ class ViewController: UIViewController {
 
                    DispatchQueue.main.async {
                        //如果不提前解码图片，主线程这里赋值会自动解码图片，需要消耗性能
-                       //如果不提前解码，就需要动态缩放了。缩放到imageview的大小。这样可以减少图片显示时的处理计算。
+                       //如果不提前解码，只能去需要动态缩放了。缩放到imageview的大小。这样可以减少图片显示时的处理计算。
                        self.imageView.image = decodedImage
                    }
                }

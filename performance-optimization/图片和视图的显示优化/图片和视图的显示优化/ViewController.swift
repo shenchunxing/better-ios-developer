@@ -9,7 +9,7 @@ import UIKit
 
 class CustomDrawingView: UIView {
 
-    //1.draw（适合静态绘制）,该绘制会覆盖掉默认的一些设置，比如背景色，需要重新设置
+    //1.draw（适合静态绘制）,该绘制会覆盖掉默认的一些设置，比如背景色，需要重新在draw方法内部设置
     override func draw(_ rect: CGRect) {
         DispatchQueue.global().async {
             let image = self.drawImage(rect)

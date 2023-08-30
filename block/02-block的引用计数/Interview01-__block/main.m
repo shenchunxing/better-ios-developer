@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "MJPerson.h"
+#import <objc/runtime.h>
 
 typedef void (^MJBlock) (void);
 
@@ -46,9 +47,9 @@ int main(int argc, const char * argv[]) {
         
         MJBlock block = [^{
             NSLog(@"%p", person);
-        } copy];
+        } copy];//注意：MRC下block变量并没有对block产生强引用，copy后才会强引用，所以引用计数只增加一次
         
-        NSLog(@"%d",[person retainCount]); //2
+        NSLog(@"%d -%@",[person retainCount],object_getClass(block)); //2
         [person release];
         
         block();
