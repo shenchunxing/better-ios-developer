@@ -2,6 +2,25 @@
 
 ## 持续更新
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
+- 新增耗电检测 https://github.com/shenchunxing/better-ios-developer/wiki/耗电检测
+- 新增不要滥用多线程 https://github.com/shenchunxing/better-ios-developer/wiki/不要滥用多线程
+- 新增App包体积大小的优化方案 https://github.com/shenchunxing/better-ios-developer/wiki/App包体积大小的优化方案
+- 新增APP内存使用达到上限被强杀，怎么查找原因 https://github.com/shenchunxing/better-ios-developer/wiki/APP内存使用达到上限被强杀，怎么查找原因
+- 新增App通过注入动态库的方式实现热重载 https://github.com/shenchunxing/better-ios-developer/wiki/App通过注入动态库的方式实现热重载
+- 新增iOS12开始Auto Layout目前已经没有性能问题了 https://github.com/shenchunxing/better-ios-developer/wiki/iOS12开始Auto Layout目前已经没有性能问题了
+- 新增JavaScriptCore可以做什么 https://github.com/shenchunxing/better-ios-developer/wiki/JavaScriptCore可以做什么
+- 新增LLVM编译器 https://github.com/shenchunxing/better-ios-developer/wiki/LLVM编译器
+- 新增Mach‐O文件是怎样被加载到内存中的 https://github.com/shenchunxing/better-ios-developer/wiki/Mach‐O文件是怎样被加载到内存中的
+- 新增React Native、Flutter跨端方案的选择 https://github.com/shenchunxing/better-ios-developer/wiki/React Native、Flutter跨端方案的选择
+- 新增使用Aspects减少Runtime Method Swizzling使用的风险 https://github.com/shenchunxing/better-ios-developer/wiki/使用Aspects减少Runtime Method Swizzling使用的风险
+- 新增使用好用的GUI框架来提高界面性能 https://github.com/shenchunxing/better-ios-developer/wiki/使用好用的GUI框架来提高界面性能
+- 新增使用静态分析工具查找App内部潜在的代码问题 https://github.com/shenchunxing/better-ios-developer/wiki/使用静态分析工具查找App内部潜在的代码问题
+- 新增利用苹果自带的工具和代码就能实现监控CPU和内存 https://github.com/shenchunxing/better-ios-developer/wiki/利用苹果自带的工具和代码就能实现监控CPU和内存
+- 新增启动速度怎么做优化与监控 https://github.com/shenchunxing/better-ios-developer/wiki/启动速度怎么做优化与监控
+- 新增如何全面监控iOS的崩溃 https://github.com/shenchunxing/better-ios-developer/wiki/如何全面监控iOS的崩溃
+- 新增如何利用 RunLoop 原理去监控卡顿 https://github.com/shenchunxing/better-ios-developer/wiki/如何利用 RunLoop 原理去监控卡顿
+- 新增无侵入的埋点方案 https://github.com/shenchunxing/better-ios-developer/wiki/无侵入的埋点方案
+- 新增链接器：符号是怎么绑定到地址上的 https://github.com/shenchunxing/better-ios-developer/wiki/链接器：符号是怎么绑定到地址上的
 
 ## iOS底层原理
 - OC对象
