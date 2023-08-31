@@ -1,7 +1,7 @@
 主要用于学习和理解ios的知识，
 
 ## 持续更新
-- 新增异步绘制cell提高性能-VVeboTableView https://github.com/shenchunxing/better-ios-developer/wiki/异步绘制cell提高性能-VVeboTableView
+- 新增VVeboTableView:异步绘制tableViewCell提高性能的一种方案 https://github.com/shenchunxing/better-ios-developer/wiki/VVeboTableView:异步绘制tableViewCell提高性能的一种方案
 - 新增使用libextobjc框架的@onExit关键字来实现OC的defer https://github.com/shenchunxing/better-ios-developer/wiki/使用libextobjc框架的@onExit关键字来实现OC的defer
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
 - 新增耗电检测 https://github.com/shenchunxing/better-ios-developer/wiki/耗电检测
