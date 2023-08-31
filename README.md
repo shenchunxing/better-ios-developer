@@ -1,6 +1,7 @@
 主要用于学习和理解ios的知识，
 
 ## 持续更新
+- 新增iOS组件化过程中的几种路由方式 https://github.com/shenchunxing/better-ios-developer/wiki/iOS组件化过程中的几种路由方式
 - 新增关于卡顿优化的一些思路 https://github.com/shenchunxing/better-ios-developer/wiki/关于卡顿优化的一些思路
 - 新增深入了解苹果的动态库链接器dyld https://github.com/shenchunxing/better-ios-developer/wiki/深入了解苹果的动态库链接器dyld
 - 新增YTKNetwork是基于AFNetworking和命令模式的网络框架 https://github.com/shenchunxing/better-ios-developer/wiki/YTKNetwork是基于AFNetworking和命令模式的网络框架
