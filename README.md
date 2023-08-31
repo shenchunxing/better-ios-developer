@@ -1,6 +1,7 @@
 主要用于学习和理解ios的知识，
 
 ## 持续更新
+- 新增YTKNetwork是基于AFNetworking和命令模式的网络框架 https://github.com/shenchunxing/better-ios-developer/wiki/YTKNetwork是基于AFNetworking和命令模式的网络框架
 - 新增VVeboTableView:异步绘制tableViewCell提高性能的一种方案 https://github.com/shenchunxing/better-ios-developer/wiki/VVeboTableView:异步绘制tableViewCell提高性能的一种方案
 - 新增使用libextobjc框架的@onExit关键字来实现OC的defer https://github.com/shenchunxing/better-ios-developer/wiki/使用libextobjc框架的@onExit关键字来实现OC的defer
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
