@@ -9,7 +9,7 @@
 - 新增耗电检测 https://github.com/shenchunxing/better-ios-developer/wiki/耗电检测
 - 新增不要滥用多线程 https://github.com/shenchunxing/better-ios-developer/wiki/不要滥用多线程
 - 新增App包体积大小的优化方案 https://github.com/shenchunxing/better-ios-developer/wiki/App包体积大小的优化方案
-- 新增APP内存使用达到上限被强杀，怎么查找原因 https://github.com/shenchunxing/better-ios-developer/wiki/APP内存使用达到上限被强杀，怎么查找原因
+- 新增APP内存使用达到上限被强杀(OOM)，怎么查找原因 https://github.com/shenchunxing/better-ios-developer/wiki/APP内存使用达到上限被强杀(OOM)，怎么查找原因
 - 新增App通过注入动态库的方式实现热重载 https://github.com/shenchunxing/better-ios-developer/wiki/App通过注入动态库的方式实现热重载
 - 新增iOS12开始Auto Layout目前已经没有性能问题了 https://github.com/shenchunxing/better-ios-developer/wiki/iOS12开始Auto Layout目前已经没有性能问题了
 - 新增JavaScriptCore可以做什么 https://github.com/shenchunxing/better-ios-developer/wiki/JavaScriptCore可以做什么
