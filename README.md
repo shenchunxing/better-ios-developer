@@ -1,4 +1,4 @@
-主要用于学习和理解ios的知识，
+记录学习iOS开发的知识和实践demo
 
 ## 持续更新
 - Swift提高代码质量的一些Tips https://github.com/shenchunxing/better-ios-developer/wiki/Swift提高代码质量的一些Tips
