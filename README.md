@@ -1,6 +1,7 @@
 记录学习iOS开发的知识和实践demo
 
 ## 持续更新
+- 读《EffectiveObjective%E2%80%90C》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《EffectiveObjective%E2%80%90C》的记录总结
 - Swift提高代码质量的一些Tips https://github.com/shenchunxing/better-ios-developer/wiki/Swift提高代码质量的一些Tips
 - 新增iOS组件化过程中的几种路由方式 https://github.com/shenchunxing/better-ios-developer/wiki/iOS组件化过程中的几种路由方式
 - 新增关于卡顿优化的一些思路 https://github.com/shenchunxing/better-ios-developer/wiki/关于卡顿优化的一些思路
@@ -136,10 +137,6 @@
 
 
 ## 书籍和代码规范
- - [Swift提高代码质量的一些Tips](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/Swift提高代码质量的一些Tips.md) 
- - [《Effective Objective-C》干货三部曲（一）：概念篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（一）：概念篇.md) 
- - [《Effective Objective-C 》干货三部曲（二）：规范篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（二）：规范篇.md) 
- - [《Effective Objective-C 》干货三部曲（三）：技巧篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（三）：技巧篇.md) 
  - [《Objective-C 高级编程》干货三部曲（一）：引用计数篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（一）：引用计数篇.md) 
  - [《Objective-C 高级编程》干货三部曲（二）：Blocks篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（二）：Blocks篇.md) 
  - [《Objective-C 高级编程》干货三部曲（三）：GCD篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（三）：GCD篇.md)
