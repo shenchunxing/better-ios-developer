@@ -1,6 +1,7 @@
 记录学习iOS开发的知识和实践demo
 
 ## 持续更新
+- 读《Objective%E2%80%90C高级编程：iOS与OS-X多线程和内存管理》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《Objective%E2%80%90C高级编程：iOS与OS-X多线程和内存管理》的记录总结
 - 读《EffectiveObjective%E2%80%90C》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《EffectiveObjective%E2%80%90C》的记录总结
 - Swift提高代码质量的一些Tips https://github.com/shenchunxing/better-ios-developer/wiki/Swift提高代码质量的一些Tips
 - 新增iOS组件化过程中的几种路由方式 https://github.com/shenchunxing/better-ios-developer/wiki/iOS组件化过程中的几种路由方式
@@ -134,13 +135,6 @@
  * [谈谈 MVX 中的 View](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-view.md) 
  * [谈谈 MVX 中的 Controller](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-controller.md) 
  * [浅谈 MVC、MVP 和 MVVM 架构模式](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx.md) 
-
-
-## 书籍和代码规范
- - [《Objective-C 高级编程》干货三部曲（一）：引用计数篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（一）：引用计数篇.md) 
- - [《Objective-C 高级编程》干货三部曲（二）：Blocks篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（二）：Blocks篇.md) 
- - [《Objective-C 高级编程》干货三部曲（三）：GCD篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（三）：GCD篇.md)
-
 
 ## iOS第三方库源码解析系列
 - [iOS第三方库源码解析](https://github.com/shenchunxing/ios-third-party-analysis/blob/master/README.md)
