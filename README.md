@@ -1,12 +1,24 @@
-主要用于学习和理解ios的知识，
+记录学习iOS开发的知识和实践demo
 
 ## 持续更新
+<<<<<<< HEAD
 - 掌握这些GitHub搜索技巧，你的开发效率将翻倍 https://github.com/shenchunxing/better-ios-developer/wiki/掌握这些GitHub搜索技巧，你的开发效率将翻倍！
+=======
+- 读《Objective%E2%80%90C高级编程：iOS与OS-X多线程和内存管理》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《Objective%E2%80%90C高级编程：iOS与OS-X多线程和内存管理》的记录总结
+- 读《EffectiveObjective%E2%80%90C》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《EffectiveObjective%E2%80%90C》的记录总结
+- Swift提高代码质量的一些Tips https://github.com/shenchunxing/better-ios-developer/wiki/Swift提高代码质量的一些Tips
+- 新增iOS组件化过程中的几种路由方式 https://github.com/shenchunxing/better-ios-developer/wiki/iOS组件化过程中的几种路由方式
+- 新增关于卡顿优化的一些思路 https://github.com/shenchunxing/better-ios-developer/wiki/关于卡顿优化的一些思路
+- 新增深入了解苹果的动态库链接器dyld https://github.com/shenchunxing/better-ios-developer/wiki/深入了解苹果的动态库链接器dyld
+- 新增YTKNetwork是基于AFNetworking和命令模式的网络框架 https://github.com/shenchunxing/better-ios-developer/wiki/YTKNetwork是基于AFNetworking和命令模式的网络框架
+- 新增VVeboTableView:异步绘制tableViewCell提高性能的一种方案 https://github.com/shenchunxing/better-ios-developer/wiki/VVeboTableView:异步绘制tableViewCell提高性能的一种方案
+- 新增使用libextobjc框架的@onExit关键字来实现OC的defer https://github.com/shenchunxing/better-ios-developer/wiki/使用libextobjc框架的@onExit关键字来实现OC的defer
+>>>>>>> a7ae4a91e47536cc52689fb442dafe8a17f99198
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
 - 新增耗电检测 https://github.com/shenchunxing/better-ios-developer/wiki/耗电检测
 - 新增不要滥用多线程 https://github.com/shenchunxing/better-ios-developer/wiki/不要滥用多线程
 - 新增App包体积大小的优化方案 https://github.com/shenchunxing/better-ios-developer/wiki/App包体积大小的优化方案
-- 新增APP内存使用达到上限被强杀，怎么查找原因 https://github.com/shenchunxing/better-ios-developer/wiki/APP内存使用达到上限被强杀，怎么查找原因
+- 新增APP内存使用达到上限被强杀(OOM)，怎么查找原因 https://github.com/shenchunxing/better-ios-developer/wiki/APP内存使用达到上限被强杀(OOM)，怎么查找原因
 - 新增App通过注入动态库的方式实现热重载 https://github.com/shenchunxing/better-ios-developer/wiki/App通过注入动态库的方式实现热重载
 - 新增iOS12开始Auto Layout目前已经没有性能问题了 https://github.com/shenchunxing/better-ios-developer/wiki/iOS12开始Auto Layout目前已经没有性能问题了
 - 新增JavaScriptCore可以做什么 https://github.com/shenchunxing/better-ios-developer/wiki/JavaScriptCore可以做什么
@@ -19,7 +31,7 @@
 - 新增利用苹果自带的工具和代码就能实现监控CPU和内存 https://github.com/shenchunxing/better-ios-developer/wiki/利用苹果自带的工具和代码就能实现监控CPU和内存
 - 新增启动速度怎么做优化与监控 https://github.com/shenchunxing/better-ios-developer/wiki/启动速度怎么做优化与监控
 - 新增如何全面监控iOS的崩溃 https://github.com/shenchunxing/better-ios-developer/wiki/如何全面监控iOS的崩溃
-- 新增如何利用 RunLoop 原理去监控卡顿 https://github.com/shenchunxing/better-ios-developer/wiki/如何利用 RunLoop 原理去监控卡顿
+- 新增如何利用RunLoop原理去监控卡顿 https://github.com/shenchunxing/better-ios-developer/wiki/如何利用-RunLoop-原理去监控卡顿
 - 新增无侵入的埋点方案 https://github.com/shenchunxing/better-ios-developer/wiki/无侵入的埋点方案
 - 新增链接器：符号是怎么绑定到地址上的 https://github.com/shenchunxing/better-ios-developer/wiki/链接器：符号是怎么绑定到地址上的
 
@@ -127,17 +139,6 @@
  * [谈谈 MVX 中的 View](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-view.md) 
  * [谈谈 MVX 中的 Controller](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx-controller.md) 
  * [浅谈 MVC、MVP 和 MVVM 架构模式](https://github.com/shenchunxing/better-ios-developer/blob/master/architecture/mvx.md) 
-
-
-## 书籍和代码规范
- - [Swift提高代码质量的一些Tips](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/Swift提高代码质量的一些Tips.md) 
- - [《Effective Objective-C》干货三部曲（一）：概念篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（一）：概念篇.md) 
- - [《Effective Objective-C 》干货三部曲（二）：规范篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（二）：规范篇.md) 
- - [《Effective Objective-C 》干货三部曲（三）：技巧篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《EffectiveObjective-C》干货三部曲（三）：技巧篇.md) 
- - [《Objective-C 高级编程》干货三部曲（一）：引用计数篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（一）：引用计数篇.md) 
- - [《Objective-C 高级编程》干货三部曲（二）：Blocks篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（二）：Blocks篇.md) 
- - [《Objective-C 高级编程》干货三部曲（三）：GCD篇](https://github.com/shenchunxing/better-ios-developer/blob/master/代码技巧和规范/《Objective-C高级编程》干货三部曲（三）：GCD篇.md)
-
 
 ## iOS第三方库源码解析系列
 - [iOS第三方库源码解析](https://github.com/shenchunxing/ios-third-party-analysis/blob/master/README.md)
