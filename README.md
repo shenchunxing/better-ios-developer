@@ -1,6 +1,7 @@
 主要用于学习和理解ios的知识，
 
 ## 持续更新
+- 掌握这些GitHub搜索技巧，你的开发效率将翻倍 https://github.com/shenchunxing/better-ios-developer/wiki/掌握这些GitHub搜索技巧，你的开发效率将翻倍！
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
 - 新增耗电检测 https://github.com/shenchunxing/better-ios-developer/wiki/耗电检测
 - 新增不要滥用多线程 https://github.com/shenchunxing/better-ios-developer/wiki/不要滥用多线程
