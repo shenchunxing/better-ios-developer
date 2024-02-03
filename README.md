@@ -1,9 +1,7 @@
 记录学习iOS开发的知识和实践demo
 
 ## 持续更新
-<<<<<<< HEAD
 - 掌握这些GitHub搜索技巧，你的开发效率将翻倍 https://github.com/shenchunxing/better-ios-developer/wiki/掌握这些GitHub搜索技巧，你的开发效率将翻倍！
-=======
 - 读《Objective%E2%80%90C高级编程：iOS与OS-X多线程和内存管理》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《Objective%E2%80%90C高级编程：iOS与OS-X多线程和内存管理》的记录总结
 - 读《EffectiveObjective%E2%80%90C》的记录总结 https://github.com/shenchunxing/better-ios-developer/wiki/读《EffectiveObjective%E2%80%90C》的记录总结
 - Swift提高代码质量的一些Tips https://github.com/shenchunxing/better-ios-developer/wiki/Swift提高代码质量的一些Tips
@@ -13,7 +11,6 @@
 - 新增YTKNetwork是基于AFNetworking和命令模式的网络框架 https://github.com/shenchunxing/better-ios-developer/wiki/YTKNetwork是基于AFNetworking和命令模式的网络框架
 - 新增VVeboTableView:异步绘制tableViewCell提高性能的一种方案 https://github.com/shenchunxing/better-ios-developer/wiki/VVeboTableView:异步绘制tableViewCell提高性能的一种方案
 - 新增使用libextobjc框架的@onExit关键字来实现OC的defer https://github.com/shenchunxing/better-ios-developer/wiki/使用libextobjc框架的@onExit关键字来实现OC的defer
->>>>>>> a7ae4a91e47536cc52689fb442dafe8a17f99198
 - 新增iOS-Crash防护 https://github.com/shenchunxing/better-ios-developer/wiki/iOS-Crash防护
 - 新增耗电检测 https://github.com/shenchunxing/better-ios-developer/wiki/耗电检测
 - 新增不要滥用多线程 https://github.com/shenchunxing/better-ios-developer/wiki/不要滥用多线程
